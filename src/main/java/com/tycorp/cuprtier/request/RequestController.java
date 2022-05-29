@@ -140,7 +140,7 @@ public class RequestController {
                     )
                     .build();
 
-            return new ResponseEntity(resJavaxJson.toString(), HttpStatus.OK);
+            return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
          }
       }else {
          return new ResponseEntity(HttpStatus.BAD_REQUEST);

@@ -47,8 +47,8 @@ public class UserController {
       UploadQuota uploadQuota = GsonHelper.getExposeSensitiveGson()
               .fromJson(userJson.get("uploadQuota"), UploadQuota.class);
 
-      User user = new User(email, uploadQuota);
       if(!userRepository.findByEmail(email).isPresent()) {
+         User user = new User(email, uploadQuota);
          user = userRepository.save(user);
 
          javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
