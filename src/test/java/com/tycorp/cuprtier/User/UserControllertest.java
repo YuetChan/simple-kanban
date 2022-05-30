@@ -1,7 +1,6 @@
 package com.tycorp.cuprtier.User;
 
 import com.tycorp.cuprtier.core.AppConfig;
-import com.tycorp.cuprtier.report.Report;
 import com.tycorp.cuprtier.user.User;
 import com.tycorp.cuprtier.user.UserController;
 import com.tycorp.cuprtier.user.UserRepository;

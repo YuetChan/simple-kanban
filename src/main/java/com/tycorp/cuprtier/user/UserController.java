@@ -31,7 +31,29 @@ public class UserController {
                  "user",
                  GsonHelper.getExposeSensitiveGson().toJsonTree(user, User.class));
 
-         return new ResponseEntity(dataJson, HttpStatus.OK);
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
+      }else {
+         return NOT_FOUND_RES;
+      }
+   }
+
+   @CrossOrigin(origins = "http://localhost:3000")
+   @GetMapping(value = "/{id}/role", produces = "application/json")
+   public ResponseEntity<String> getUserRoleById(@PathVariable(name = "id") String id) {
+      Optional<User> userMaybe = userRepository.findById(id);
+      if(userMaybe.isPresent()) {
+         User user = userMaybe.get();
+
+         JsonObject dataJson = new JsonObject();
+         dataJson.addProperty("role", user.getRole());
+
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
          return NOT_FOUND_RES;
       }
@@ -43,12 +65,13 @@ public class UserController {
       JsonObject userJson = dataJson.get("user").getAsJsonObject();
 
       String email = userJson.get("email").getAsString();
+      String role = userJson.get("role").getAsString();
 
       UploadQuota uploadQuota = GsonHelper.getExposeSensitiveGson()
               .fromJson(userJson.get("uploadQuota"), UploadQuota.class);
 
       if(!userRepository.findByEmail(email).isPresent()) {
-         User user = new User(email, uploadQuota);
+         User user = new User(email, role, uploadQuota);
          user = userRepository.save(user);
 
          javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()

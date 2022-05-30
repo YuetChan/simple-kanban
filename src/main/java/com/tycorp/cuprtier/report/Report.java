@@ -34,6 +34,9 @@ public class Report {
    private Score score;
 
    @Expose
+   private long finalScore;
+
+   @Expose
    @Embedded
    @AttributeOverrides({
            @AttributeOverride(name = "entrepreneurship", column = @Column(name = "entrepreneurship_analysis")),
@@ -60,6 +63,11 @@ public class Report {
    )
    private Request request;
 
+   @Expose
+   @Column(name = "unlocked")
+   private boolean unlocked = false;
+
+   @Expose
    @Column(name = "updated_at")
    private long updatedAt;
 
@@ -67,16 +75,23 @@ public class Report {
       this.request = request;
       this.user = request.getUser();
 
+      this.score = new Score();
+      this.analysis = new Analysis();
       this.updatedAt = request.getCreatedAt();
    }
 
-   public long calculateFinalScore() {
+   public void calculateFinalScore() {
       long finalScore = (long) (score.getEntrepreneurship() * 0.2
               + score.getPhysique() * 0.4
               + score.getNonUtilCraftmanship() * 0.1
               + score.getUtilCraftmanship() * 0.2
               + score.getBonus() * 0.1);
 
-     return finalScore >= 100 ? 100 : finalScore;
+     this.finalScore = finalScore >= 100 ? 100 : finalScore;
    };
+
+   public void censorReport() {
+      analysis = null;
+   }
+
 }

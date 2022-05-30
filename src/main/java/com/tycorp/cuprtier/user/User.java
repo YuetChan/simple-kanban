@@ -47,9 +47,14 @@ public class User {
    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private List<Report> report;
 
-   public User(String email, UploadQuota uploadQuota) {
+   public User(String email, String role, UploadQuota uploadQuota) {
       this.email = email;
       this.name = "user" + email.hashCode();
+      this.role = role;
       this.uploadQuota = uploadQuota;
+   }
+
+   public void lockQuota() {
+      this.uploadQuota.setFull(true);
    }
 }

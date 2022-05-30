@@ -9,6 +9,9 @@ import com.tycorp.cuprtier.user.UploadQuota;
 import com.tycorp.cuprtier.user.User;
 import com.tycorp.cuprtier.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,14 +53,17 @@ public class RequestController {
                  "request",
                  GsonHelper.getExposeSensitiveGson().toJsonTree(request, Request.class));
 
-         return new ResponseEntity(dataJson.toString(), HttpStatus.OK);
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
          return NOT_FOUND_RES;
       }
    }
 
    @CrossOrigin(origins = "http://localhost:3000")
-   @GetMapping(value = "", produces = "application/json")
+   @GetMapping(value = "/users", produces = "application/json")
    public ResponseEntity<String> getRequestsByUserEmail(@RequestParam(value = "email") String email) {
       Optional<User> userMaybe = userRepository.findByEmail(email);
       if(userMaybe.isPresent()) {
@@ -71,10 +77,38 @@ public class RequestController {
                  "requests",
                  GsonHelper.getExposeSensitiveGson().toJsonTree(request, requestListType));
 
-         return new ResponseEntity(dataJson.toString(), HttpStatus.OK);
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
          return NOT_FOUND_RES;
       }
+   }
+
+   @CrossOrigin(origins = "http://localhost:3000")
+   @GetMapping(value = "", produces = "application/json")
+   public ResponseEntity<String> getAllRequests(@RequestParam(value = "sortBy") String sortBy,
+                                                @RequestParam(value = "unlocked") boolean unlocked,
+                                                @RequestParam(value = "page", defaultValue = "0") int start,
+                                                @RequestParam(value = "pageSize", defaultValue = "40") int size) {
+      var sortby = sortBy.equals("asc") ? Sort.by("createdAt").ascending() : Sort.by("createdAt").descending();
+
+      Page<Request> page = requestRepository.findAllByUnlocked(unlocked, PageRequest.of(start, size, sortby));
+      List<Request> requests = page.getContent();
+
+      Type requestListType = new TypeToken<ArrayList<Request>>() {}.getType();
+
+      JsonObject dataJson = new JsonObject();
+      dataJson.add(
+              "requests",
+              GsonHelper.getExposeSensitiveGson().toJsonTree(requests, requestListType));
+      dataJson.addProperty("totalPage", page.getTotalPages());
+
+      JsonObject resJson = new JsonObject();
+      resJson.add("data", dataJson);
+
+      return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
    @CrossOrigin(origins = "http://localhost:3000")
@@ -125,6 +159,9 @@ public class RequestController {
          if(user.getUploadQuota().isFull()) {
             return new ResponseEntity(HttpStatus.CONFLICT);
          }else {
+            user.lockQuota();
+            user = userRepository.save(user);
+
             request.setUser(user);
             request.setCreatedAt(System.currentTimeMillis());
             request = requestRepository.save(request);

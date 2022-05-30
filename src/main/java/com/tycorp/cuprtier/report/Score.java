@@ -20,4 +20,13 @@ public class Score {
 
    @Expose
    private long bonus;
+
+   public Score() {
+      this.entrepreneurship = 0;
+      this.physique = 0;
+      this.nonUtilCraftmanship = 0;
+      this.utilCraftmanship = 0;
+
+      this.bonus = 0;
+   }
 }
