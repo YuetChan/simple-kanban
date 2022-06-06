@@ -42,7 +42,7 @@ public class RequestController {
       if(requestMaybe.isPresent()) {
          Request request = requestMaybe.get();
 
-         int numOfProcessedRequest = (int)requestRepository.countByCreatedAtLessThanAndUnlocked(
+         int numOfProcessedRequest = request.isUnlocked() ? 0 : (int)requestRepository.countByCreatedAtLessThanAndUnlocked(
                  request.getCreatedAt(),
                  false);
 
@@ -112,12 +112,36 @@ public class RequestController {
    }
 
    @CrossOrigin(origins = "http://localhost:3000")
+   @GetMapping(value = "/lastUnestimated", produces = "application/json")
+   public ResponseEntity<String> getLastUnestimatedRequest() {
+      Page<Request> page = requestRepository.findAllByUnlocked(
+              false, PageRequest.of(0, 1, Sort.by("createdAt").ascending()));
+      List<Request> requests = page.getContent();
+
+      if(requests.size() == 0) {
+         return NOT_FOUND_RES;
+      }else {
+         JsonObject dataJson = new JsonObject();
+
+         dataJson.add(
+                 "request",
+                 GsonHelper.getExposeSensitiveGson().toJsonTree(requests.get(0), Request.class));
+
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
+      }
+   }
+
+   @CrossOrigin(origins = "http://localhost:3000")
    @PutMapping(value = "/{id}/unlock", produces = "application/json")
    public ResponseEntity<String> unlockRequestById(@PathVariable(name = "id") String id) {
       Optional<Request> requestMaybe = requestRepository.findById(id);
       if(requestMaybe.isPresent()) {
          Request request = requestMaybe.get();
          request.setUnlocked(true);
+         request.setUnlockedAt(System.currentTimeMillis());
 
          request = requestRepository.save(request);
 

@@ -57,4 +57,8 @@ public class Request {
    @Expose
    @Column(name = "created_at")
    private long createdAt;
+
+   @Expose
+   @Column(name = "unlocked_at")
+   private Long unlockedAt;
 }
