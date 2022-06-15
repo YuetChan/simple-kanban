@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,13 +44,13 @@ public class User {
            @AttributeOverride(name = "projectId", column = @Column(name = "project_id")),
            @AttributeOverride(name = "permit", column = @Column(name = "permit"))
    })
-   private List<Permission> permissionList;
+   private List<Permission> permissionList =  new ArrayList<>();
 
    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   private List<Project> projectList;
+   private List<Project> projectList = new ArrayList<>();
 
    @ManyToMany(mappedBy = "collaboratorList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   private List<Project> shareProjectList;
+   private List<Project> shareProjectList = new ArrayList<>();
 
    public User(String email, String role) {
       this.email = email;

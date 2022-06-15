@@ -36,7 +36,7 @@ public class TagService {
          existedTagListNames.add(existedTag.getName());
       });
 
-      List<Tag> newTagList = tagList
+      List<Tag> tagToAddList = tagList
               .stream()
               .map(tag -> {
                  tag.setProjectId(project.getId());
@@ -54,10 +54,10 @@ public class TagService {
               })
               .collect(Collectors.toList());
 
-      newTagList = (List<Tag>) tagRepository.saveAll(newTagList);
+      tagToAddList = (List<Tag>) tagRepository.saveAll(tagToAddList);
       existedTagList = (List<Tag>) tagRepository.saveAll(existedTagList);
 
-      existedTagList.addAll(newTagList);
+      existedTagList.addAll(tagToAddList);
 
       return existedTagList;
    }

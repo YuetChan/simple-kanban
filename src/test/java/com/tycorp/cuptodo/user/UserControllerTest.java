@@ -1,9 +1,6 @@
-package com.tycorp.cuptodo.User;
+package com.tycorp.cuptodo.user;
 
 import com.tycorp.cuptodo.core.AppConfig;
-import com.tycorp.cuptodo.user.User;
-import com.tycorp.cuptodo.user.UserController;
-import com.tycorp.cuptodo.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;

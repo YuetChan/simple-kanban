@@ -14,9 +14,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
    @Autowired
-   private TagService tagService;
-
-   @Autowired
    private ProjectRepository projectRepository;
 
    @Autowired
@@ -31,7 +28,8 @@ public class ProjectService {
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      if(userRepository.countByEmailIn(collaboratorEmailList) != collaboratorEmailList.size()) {
+      if(userRepository.countByEmailIn(collaboratorEmailList)
+              != collaboratorEmailList.size()) {
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
       }
 
@@ -53,32 +51,37 @@ public class ProjectService {
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      if(userRepository.countByEmailIn(updatedCollaboratorEmailList) != updatedCollaboratorList.size()) {
+      if(userRepository.countByEmailIn(updatedCollaboratorEmailList)
+              != updatedCollaboratorList.size()) {
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
       }
 
       // Remove share project from each target collaborators
       List<User> collaboratorList = project.getCollaboratorList();
 
-      List<User> collaboratorRemoveList = collaboratorList.stream()
+      List<User> collaboratorToRemoveList = collaboratorList.stream()
               .filter(collaborator -> !updatedCollaboratorEmailList.contains(collaborator.getEmail()))
               .collect(Collectors.toList());
 
-      List<String> collaboratorRemoveEmailList = collaboratorRemoveList.stream()
+      List<String> collaboratorToRemoveEmailList = collaboratorToRemoveList.stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      collaboratorRemoveList = userRepository.findAllByEmailIn(collaboratorRemoveEmailList);
-      collaboratorRemoveList.forEach(collaborator -> collaborator.removeShareProject(project));
+      collaboratorToRemoveList = userRepository.findAllByEmailIn(collaboratorToRemoveEmailList);
+      for(var collaborator : collaboratorToRemoveList) {
+         collaborator.removeShareProject(project);
+      }
+//      collaboratorToRemoveList.forEach(collaborator ->
+//              ;
 
-      userRepository.saveAll(collaboratorRemoveList);
+      userRepository.saveAll(collaboratorToRemoveList);
 
       // Add share project to each target collaborators
       List<String> collaboratorEmailList = collaboratorList.stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      List<String> collaboratorAddEmailList = updatedCollaboratorList.stream()
+      List<String> collaboratorToAddEmailList = updatedCollaboratorList.stream()
               .map(collaborator -> collaborator.getEmail())
               .filter(collaboratorEmail -> !collaboratorEmailList.contains(collaboratorEmail)
 
@@ -86,8 +89,8 @@ public class ProjectService {
                       && !collaboratorEmailList.contains(project.getUserEmail()))
               .collect(Collectors.toList());
 
-      List<User> collaboratorAddList = userRepository.findAllByEmailIn(collaboratorAddEmailList);
-      project.getCollaboratorList().addAll(collaboratorAddList);
+      List<User> collaboratorToAddList = userRepository.findAllByEmailIn(collaboratorToAddEmailList);
+      project.getCollaboratorList().addAll(collaboratorToAddList);
 
       return projectRepository.save(project);
    }

@@ -44,26 +44,14 @@ public class TaskController {
    private UserRepository userRepository;
 
    @CrossOrigin(origins = "http://localhost:3000")
-   @GetMapping(value = "", produces = "application/json")
-   public ResponseEntity<String> searchTasksByParams(@RequestParam(name = "startAt") long startAt,
-                                                     @RequestParam(name = "endAt") long endAt,
-                                                     @RequestParam(name = "start") int start,
-                                                     @RequestParam(name = "projectId") String projectId,
-                                                     @RequestParam(name = "tags") List<String> tags) {
-      Optional<Project> projectMaybe = projectRepository.findById(projectId);
-      if(projectMaybe.isPresent()) {
-         Page<Task> page = taskRepository.findByParams(projectId,
-                 startAt, endAt,
-                 tags,
-                 PageRequest.of(start, 20));
-
-         List<Task> taskList = page.getContent();
-
-         Type taskListType = new TypeToken<ArrayList<Task>>() {}.getType();
-
+   @GetMapping(value = "/{id}", produces = "application/json")
+   public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
+      Optional<Task> taskMaybe = taskRepository.findById(id);
+      if(taskMaybe.isPresent()) {
          JsonObject dataJson = new JsonObject();
-         dataJson.add("tasks",
-                 GsonHelper.getExposeSensitiveGson().toJsonTree(taskList, taskListType));
+         dataJson.add("task",
+                 GsonHelper.getExposeSensitiveGson()
+                         .toJsonTree(taskMaybe.get(), Task.class));
 
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
@@ -74,7 +62,41 @@ public class TaskController {
       }
    }
 
-   // Check permission in abac
+   @CrossOrigin(origins = "http://localhost:3000")
+   @GetMapping(value = "", produces = "application/json")
+   public ResponseEntity<String> searchTasksByParams(@RequestParam(name = "startAt") Optional<Long> startAtMaybe,
+                                                     @RequestParam(name = "endAt") Optional<Long> endAtMaybe,
+                                                     @RequestParam(name = "start") int start,
+                                                     @RequestParam(name = "projectId") String projectId,
+                                                     @RequestParam(name = "tags") Optional<List<String>> tagListMaybe) {
+      Optional<Project> projectMaybe = projectRepository.findById(projectId);
+      if(projectMaybe.isPresent()) {
+         Page<Task> page = taskRepository.findByParams(projectId,
+                 startAtMaybe.orElse(null), endAtMaybe.orElse(null),
+                 tagListMaybe.orElse(null),
+                 PageRequest.of(start, 20));
+
+         List<Task> taskList = page.getContent();
+
+         Type taskListType = new TypeToken<ArrayList<Task>>() {}.getType();
+
+         JsonObject dataJson = new JsonObject();
+         dataJson.add("tasks",
+                 GsonHelper.getExposeSensitiveGson().toJsonTree(taskList, taskListType));
+
+         dataJson.addProperty("totalElements", page.getTotalElements());
+         dataJson.addProperty("totalPages", page.getTotalPages());
+
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
+      }else {
+         return NOT_FOUND_RES;
+      }
+   }
+
+   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createTask(@RequestBody String reqJsonStr) {
@@ -107,7 +129,7 @@ public class TaskController {
       return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
    }
 
-   // Check permission in abac
+   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateTaskById(@PathVariable(name = "id") String id,

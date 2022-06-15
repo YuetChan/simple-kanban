@@ -16,9 +16,13 @@ public class ComplexTaskRepositoryImpl implements ComplexTaskRepository {
    protected EntityManager em;
 
    public Page<Task> findByParams(String projectId,
-                                  long startAt, long endAt,
-                                  List<String> tags,
+                                  Long startAt, Long endAt,
+                                  List<String> tagList,
                                   Pageable pageable) {
+      if(tagList != null && tagList.size() == 0) {
+         tagList = null;
+      }
+
       CriteriaBuilder cBuilder = em.getCriteriaBuilder();
 
       CriteriaQuery<Task> cqTask = cBuilder.createQuery(Task.class);
@@ -30,11 +34,19 @@ public class ComplexTaskRepositoryImpl implements ComplexTaskRepository {
       ListJoin<Task, Tag> task_tags_join = rSubTask.join(Task_.tagList, JoinType.LEFT);
 
       Predicate matchProjectId = cBuilder.equal(rSubTask.get(Task_.projectId), projectId);
-      Predicate matchTags = tags == null
-              ? cBuilder.conjunction()
-              : task_tags_join.get(Tag_.name).in(tags);
 
-      Predicate matchAll = cBuilder.and(matchProjectId, matchTags);
+      Predicate matchStartAt = startAt == null
+              ? cBuilder.conjunction()
+              : cBuilder.greaterThanOrEqualTo(rSubTask.get(Task_.createdAt), startAt);
+      Predicate matchEndAt = endAt == null
+              ? cBuilder.conjunction()
+              : cBuilder.lessThanOrEqualTo(rSubTask.get(Task_.createdAt), endAt);
+
+      Predicate matchTags = tagList == null
+              ? cBuilder.conjunction()
+              : task_tags_join.get(Tag_.name).in(tagList);
+
+      Predicate matchAll = cBuilder.and(matchProjectId, matchTags, matchStartAt, matchEndAt);
 
       Expression<Long> taskCount = cBuilder.count(rSubTask.get(Task_.id));
       Expression<String> id = rSubTask.get(Task_.id);
@@ -42,17 +54,20 @@ public class ComplexTaskRepositoryImpl implements ComplexTaskRepository {
       cqSubTask.select(rSubTask.get(Task_.id))
               .where(matchAll)
               .groupBy(id)
-              .having(cBuilder.equal(taskCount, tags == null ? 0 : tags.size()));
+              .having(cBuilder.greaterThanOrEqualTo(taskCount, tagList == null ? 0l : tagList.size()));
+
       cqTask.select(rTask)
               .where(cBuilder.in(rTask.get(Task_.id)).value(cqSubTask));
 
       rTask.fetch(Task_.tagList, JoinType.LEFT);
 
+      int totalElements = em.createQuery(cqTask).getResultList().size();
+
       List<Task> matchedTasks = em.createQuery(cqTask)
-              .setFirstResult(pageable.getPageNumber())
+              .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
               .setMaxResults(pageable.getPageSize())
               .getResultList();
 
-      return new PageImpl(matchedTasks);
+      return new PageImpl(matchedTasks, pageable, totalElements);
    }
 }

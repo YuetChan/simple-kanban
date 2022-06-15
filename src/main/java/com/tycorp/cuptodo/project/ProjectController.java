@@ -33,21 +33,14 @@ public class ProjectController {
    private UserRepository userRepository;
 
    @CrossOrigin(origins = "http://localhost:3000")
-   @GetMapping(value = "", produces = "application/json")
-   public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
-                                                           @RequestParam(name = "start") int start) {
-      Optional<User> userMaybe = userRepository.findByEmail(userEmail);
-      if(userMaybe.isPresent()) {
-         Page<Project> page = projectRepository.findByUserEmail(userEmail, PageRequest.of(start, 20));
-
-         List<Project> projectList = page.getContent();
-
-         Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
-
+   @GetMapping(value = "/{id}", produces = "application/json")
+   public ResponseEntity<String> getProjectById(@PathVariable(name = "id") String id) {
+      Optional<Project> projectMaybe = projectRepository.findById(id);
+      if(projectMaybe.isPresent()) {
          JsonObject dataJson = new JsonObject();
-         dataJson.add(
-                 "projects",
-                 GsonHelper.getExposeSensitiveGson().toJsonTree(projectList, projectListType));
+         dataJson.add("project",
+                 GsonHelper.getExposeSensitiveGson()
+                         .toJsonTree(projectMaybe.get(), Project.class));
 
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
@@ -58,7 +51,59 @@ public class ProjectController {
       }
    }
 
-   // Check permission in abac
+   @CrossOrigin(origins = "http://localhost:3000")
+   @GetMapping(value = "", produces = "application/json")
+   public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
+                                                           @RequestParam(name = "start") int start) {
+      Optional<User> userMaybe = userRepository.findByEmail(userEmail);
+      if(userMaybe.isPresent()) {
+         Page<Project> page = projectRepository.findByUserEmail(userEmail,
+                 PageRequest.of(start, 20));
+
+         List<Project> projectList = page.getContent();
+
+         Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
+
+         JsonObject dataJson = new JsonObject();
+         dataJson.add("projects",
+                 GsonHelper.getExposeSensitiveGson()
+                         .toJsonTree(projectList, projectListType));
+
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
+      }else {
+         return NOT_FOUND_RES;
+      }
+   }
+
+   @CrossOrigin(origins = "http://localhost:3000")
+   @GetMapping(value = "/share", produces = "application/json")
+   public ResponseEntity<String> searchShareProjectsByCollaboratorEmail(@RequestParam(name = "userEmail") String userEmail,
+                                                                        @RequestParam(name = "start") int start) {
+      Optional<User> userMaybe = userRepository.findByEmail(userEmail);
+      if(userMaybe.isPresent()) {
+         Page<Project> page = projectRepository.findProjectListByCollaborator(userMaybe.get(), PageRequest.of(start, 20));
+         List<Project> projectList = page.getContent();
+
+         Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
+
+         JsonObject dataJson = new JsonObject();
+         dataJson.add("projects",
+                 GsonHelper.getExposeSensitiveGson()
+                         .toJsonTree(projectList, projectListType));
+
+         JsonObject resJson = new JsonObject();
+         resJson.add("data", dataJson);
+
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
+      }else {
+         return new ResponseEntity(HttpStatus.BAD_REQUEST);
+      }
+   }
+
+   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createProject(@RequestBody String reqJsonStr) {
@@ -87,7 +132,7 @@ public class ProjectController {
       return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
    }
 
-   // Check permission in abac
+   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateProject(@PathVariable(name = "id") String id,

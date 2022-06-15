@@ -30,7 +30,8 @@ public class TaskService {
       task = taskRepository.save(task);
 
       // Populates from the child/owner side
-      List<Tag> tagAddedList = tagService.addTagListForProjectAndTask(tagList, task.getProject(), task);
+      List<Tag> tagAddedList = tagService.addTagListForProjectAndTask(tagList,
+              task.getProject(), task);
       task.getTagList().addAll(tagAddedList);
 
       return task;
@@ -41,26 +42,31 @@ public class TaskService {
       task.setDescription(updatedTask.getDescription());
       task.setSubTaskList(updatedTask.getSubTaskList());
 
-      // Remove and add tag list to task
+      // Remove tag list from or add tag to task
       List<Tag> tagList = task.getTagList();
-      List<String> tagListNames = tagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
+      List<String> tagListNames = tagList.stream()
+              .map(tag -> tag.getName())
+              .collect(Collectors.toList());
 
       List<Tag> updatedTagList = updatedTask.getTagList();
-      List<String> updatedTagListNames = updatedTagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
+      List<String> updatedTagListNames = updatedTagList.stream()
+              .map(tag -> tag.getName())
+              .collect(Collectors.toList());
 
-      List<Tag> tagRemoveList = tagList.stream()
+      List<Tag> tagToRemoveList = tagList.stream()
               .filter(tag -> !updatedTagListNames.contains(tag.getName()))
               .collect(Collectors.toList());
-      List<Tag> tagAddList = updatedTagList.stream()
+      List<Tag> tagToAddList = updatedTagList.stream()
               .filter(tag -> !tagListNames.contains(tag.getName()))
               .collect(Collectors.toList());
 
       // Populate from the child/owner side
-      List<Tag> tagAddedList = tagService.addTagListForProjectAndTask(tagAddList, task.getProject(), task);
+      List<Tag> tagAddedList = tagService.addTagListForProjectAndTask(tagToAddList,
+              task.getProject(), task);
       task.getTagList().addAll(tagAddedList);
 
       // Remove from parent/owner side
-      tagRemoveList.forEach(tag -> task.removeTag(tag));
+      tagToRemoveList.forEach(tag -> task.removeTag(tag));
 
       return taskRepository.save(task);
    }

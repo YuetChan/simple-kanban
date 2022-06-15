@@ -54,11 +54,11 @@ public class Project {
    )
    private List<User> collaboratorList = new ArrayList<>();
 
-   @Expose
+//   @Expose
    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private List<Task> taskList = new ArrayList<>();
 
-   @Expose
+//   @Expose
    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private List<Tag> tagList = new ArrayList<>();
 
