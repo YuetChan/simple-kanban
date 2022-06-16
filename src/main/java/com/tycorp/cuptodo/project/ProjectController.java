@@ -5,6 +5,8 @@ import com.google.gson.reflect.TypeToken;
 import com.tycorp.cuptodo.core.util.GsonHelper;
 import com.tycorp.cuptodo.user.User;
 import com.tycorp.cuptodo.user.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/projects")
 public class ProjectController {
+   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
    private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
@@ -35,6 +38,8 @@ public class ProjectController {
    @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getProjectById(@PathVariable(name = "id") String id) {
+      LOGGER.trace("getProjectById(id)");
+
       Optional<Project> projectMaybe = projectRepository.findById(id);
       if(projectMaybe.isPresent()) {
          JsonObject dataJson = new JsonObject();
@@ -55,6 +60,8 @@ public class ProjectController {
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                            @RequestParam(name = "start") int start) {
+      LOGGER.trace("searchProjectsByUserEmail(userEmail, start)");
+
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {
          Page<Project> page = projectRepository.findByUserEmail(userEmail,
@@ -82,6 +89,8 @@ public class ProjectController {
    @GetMapping(value = "/share", produces = "application/json")
    public ResponseEntity<String> searchShareProjectsByCollaboratorEmail(@RequestParam(name = "userEmail") String userEmail,
                                                                         @RequestParam(name = "start") int start) {
+      LOGGER.trace("searchShareProjectsByCollaboratorEmail(userEmail, start)");
+
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {
          Page<Project> page = projectRepository.findProjectListByCollaborator(userMaybe.get(), PageRequest.of(start, 20));
@@ -107,6 +116,8 @@ public class ProjectController {
    @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createProject(@RequestBody String reqJsonStr) {
+      LOGGER.trace("createProject(reqJsonStr)");
+
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();
@@ -137,6 +148,8 @@ public class ProjectController {
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateProject(@PathVariable(name = "id") String id,
                                                @RequestBody String reqJsonStr) {
+      LOGGER.trace("updateProject(id, reqJsonStr)");
+
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();

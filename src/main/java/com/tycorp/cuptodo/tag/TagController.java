@@ -4,9 +4,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tycorp.cuptodo.core.util.GsonHelper;
 import com.tycorp.cuptodo.project.Project;
+import com.tycorp.cuptodo.project.ProjectController;
 import com.tycorp.cuptodo.project.ProjectRepository;
 import com.tycorp.cuptodo.user.User;
 import com.tycorp.cuptodo.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +26,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/tags")
 public class TagController {
+   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
    private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
@@ -35,6 +40,8 @@ public class TagController {
    public ResponseEntity<String> searchTagsByProjectIdAndPrefix(@RequestParam(name = "projectId") String projectId,
                                                                 @RequestParam(name = "prefix") String prefix,
                                                                 @RequestParam(name = "start") int start) {
+      LOGGER.trace("Enter searchTagsByProjectIdAndPrefix(projectId, prefix, start)");
+
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(projectMaybe.isPresent()) {
          Page<Tag> page = tagRepository.findByNameLike(prefix, PageRequest.of(start, 20));

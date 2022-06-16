@@ -1,8 +1,8 @@
 package com.tycorp.cuptodo.project;
 
-import com.tycorp.cuptodo.tag.TagService;
 import com.tycorp.cuptodo.user.User;
 import com.tycorp.cuptodo.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProjectService {
    @Autowired
@@ -20,6 +21,8 @@ public class ProjectService {
    private UserRepository userRepository;
 
    public Project create(Project project) {
+      log.trace("Enter create(project)");
+
       // Init the user email for project
       project.setUserEmail(project.getUser().getEmail());
 
@@ -41,6 +44,8 @@ public class ProjectService {
    }
 
    public Project update(Project project, Project updatedProject) {
+      log.trace("Enter update(Project project, Project updatedProject)");
+
       // Update project properties
       project.setName(updatedProject.getName());
       project.setDescription(updatedProject.getDescription());
@@ -71,8 +76,6 @@ public class ProjectService {
       for(var collaborator : collaboratorToRemoveList) {
          collaborator.removeShareProject(project);
       }
-//      collaboratorToRemoveList.forEach(collaborator ->
-//              ;
 
       userRepository.saveAll(collaboratorToRemoveList);
 

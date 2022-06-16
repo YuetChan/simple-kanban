@@ -1,8 +1,12 @@
 package com.tycorp.cuptodo.task;
 
+import com.tycorp.cuptodo.project.ProjectController;
 import com.tycorp.cuptodo.tag.Tag;
 import com.tycorp.cuptodo.tag.TagService;
 import com.tycorp.cuptodo.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
+   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
+   
    @Autowired
    private TagService tagService;
 
@@ -22,6 +28,8 @@ public class TaskService {
    private UserRepository userRepository;
 
    public Task create(Task task) {
+      LOGGER.trace("Enter create(task)");
+
       // Temporarily remove tag list from task
       List<Tag> tagList = task.getTagList();
       task.setTagList(new ArrayList<>());
@@ -38,6 +46,8 @@ public class TaskService {
    }
 
    public Task update(Task task, Task updatedTask) {
+      LOGGER.trace("Enter update(task, updatedTask)");
+
       // Update task properties
       task.setDescription(updatedTask.getDescription());
       task.setSubTaskList(updatedTask.getSubTaskList());
@@ -64,8 +74,6 @@ public class TaskService {
       List<Tag> tagAddedList = tagService.addTagListForProjectAndTask(tagToAddList,
               task.getProject(), task);
       task.getTagList().addAll(tagAddedList);
-
-      task.getTagList().forEach(tag -> System.out.println(tag.getName()));
 
       // Remove from parent/owner side
       tagToRemoveList.forEach(tag -> task.removeTag(tag));

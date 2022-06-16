@@ -4,11 +4,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tycorp.cuptodo.core.util.GsonHelper;
 import com.tycorp.cuptodo.project.Project;
+import com.tycorp.cuptodo.project.ProjectController;
 import com.tycorp.cuptodo.project.ProjectRepository;
 import com.tycorp.cuptodo.tag.TagRepository;
 import com.tycorp.cuptodo.tag.TagService;
 import com.tycorp.cuptodo.user.User;
 import com.tycorp.cuptodo.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +29,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/tasks")
 public class TaskController {
+   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
    private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
@@ -46,6 +51,8 @@ public class TaskController {
    @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
+      LOGGER.trace("Enter getTaskById(id)");
+
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(taskMaybe.isPresent()) {
          JsonObject dataJson = new JsonObject();
@@ -69,6 +76,8 @@ public class TaskController {
                                                      @RequestParam(name = "start") int start,
                                                      @RequestParam(name = "projectId") String projectId,
                                                      @RequestParam(name = "tags") Optional<List<String>> tagListMaybe) {
+      LOGGER.trace("Enter searchTasksByParams(startAt, endAt, start, projectId, tags)");
+
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(projectMaybe.isPresent()) {
          Page<Task> page = taskRepository.findByParams(projectId,
@@ -100,6 +109,8 @@ public class TaskController {
    @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createTask(@RequestBody String reqJsonStr) {
+      LOGGER.trace("Enter createTask(reqJsonStr)");
+
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
@@ -134,6 +145,8 @@ public class TaskController {
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateTaskById(@PathVariable(name = "id") String id,
                                                 @RequestBody String reqJsonStr) {
+      LOGGER.trace("Enter updateTaskById(id, resJsonStr)");
+
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();

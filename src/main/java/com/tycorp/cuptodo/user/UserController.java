@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.tycorp.cuptodo.core.util.GsonHelper;
 
 import com.tycorp.cuptodo.user.value.Permit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.json.Json;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
@@ -22,7 +24,9 @@ public class UserController {
 
    @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "", produces = "application/json")
-   public ResponseEntity<String> getUserByParam(@RequestParam(name = "email") String email) {
+   public ResponseEntity<String> getUserByParams(@RequestParam(name = "email") String email) {
+      log.trace("Enter getUserByParams(email)");
+
       Optional<User> userMaybe = userRepository.findByEmail(email);
       if(userMaybe.isPresent()) {
          User user = userMaybe.get();
@@ -44,6 +48,8 @@ public class UserController {
    @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/{id}/role", produces = "application/json")
    public ResponseEntity<String> getUserRoleById(@PathVariable(name = "id") String id) {
+      log.trace("Enter getUserRoleById(id)");
+
       Optional<User> userMaybe = userRepository.findById(id);
       if(userMaybe.isPresent()) {
          User user = userMaybe.get();
@@ -66,6 +72,8 @@ public class UserController {
    public ResponseEntity<String> hasPermitByProjectId(@PathVariable(name = "id") String id,
                                                       @RequestParam(name = "permit") String permit,
                                                       @RequestParam(name = "projectId") String projectId) {
+      log.trace("Enter hasPermitByProjectId(id, permit, projectId)");
+
       Optional<User> userMaybe = userRepository.findById(id);
       if(userMaybe.isPresent()) {
          User user = userMaybe.get();
@@ -84,6 +92,8 @@ public class UserController {
 
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createUser(@RequestBody String reqJsonStr) {
+      log.trace("Enter hasPermitByProjectId(reqJsonStr)");
+
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject userJson = dataJson.get("user").getAsJsonObject();
 
