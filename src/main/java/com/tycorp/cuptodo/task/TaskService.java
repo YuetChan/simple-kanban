@@ -65,6 +65,8 @@ public class TaskService {
               task.getProject(), task);
       task.getTagList().addAll(tagAddedList);
 
+      task.getTagList().forEach(tag -> System.out.println(tag.getName()));
+
       // Remove from parent/owner side
       tagToRemoveList.forEach(tag -> task.removeTag(tag));
 

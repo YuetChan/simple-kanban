@@ -19,17 +19,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class ProjectServiceTest {
-   @Mock
-   private TagService tagService;
-
+   @InjectMocks
+   private ProjectService projectService;
    @Mock
    private ProjectRepository projectRepository;
 
    @Mock
    private UserRepository userRepository;
-
-   @InjectMocks
-   private ProjectService projectService;
 
    @Test
    public void shouldCreateProjectWithExpectedCollaboratorList() throws Exception {

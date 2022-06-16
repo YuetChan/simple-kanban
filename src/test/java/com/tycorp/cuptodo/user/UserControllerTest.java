@@ -44,6 +44,8 @@ public class UserControllerTest {
                               "    \"data\": {\n" +
                               "        \"user\": {\n" +
                               "            \"email\": \"yuetcheukchan@gmail.com\",\n" +
+                              "            \"name\": \"user-yuetcheukchan\",\n" +
+                              "            \"role\": \"user\"\n" +
                               "        }\n" +
                               "    }\n" +
                               "}"))
@@ -62,6 +64,8 @@ public class UserControllerTest {
                               "    \"data\": {\n" +
                               "        \"user\": {\n" +
                               "            \"email\": \"yuetcheukchan@gmail.com\",\n" +
+                              "            \"name\": \"user-yuetcheukchan\",\n" +
+                              "            \"role\": \"user\"\n" +
                               "            }\n" +
                               "    }\n" +
                               "}"))
