@@ -47,9 +47,7 @@ public class TagService {
       List<Tag> tagToAddList = tagList
               .stream()
               .map(tag -> {
-                 tag.setProjectId(project.getId());
                  tag.setProject(project);
-
                  return tag;
               })
               .filter(tag -> {

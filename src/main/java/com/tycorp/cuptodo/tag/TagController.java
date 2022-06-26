@@ -43,23 +43,24 @@ public class TagController {
       LOGGER.trace("Enter searchTagsByProjectIdAndPrefix(projectId, prefix, start)");
 
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
-      if(projectMaybe.isPresent()) {
-         Page<Tag> page = tagRepository.findByNameLike(prefix, PageRequest.of(start, 20));
-         List<Tag> tagList = page.getContent();
-
-         Type tagListType = new TypeToken<ArrayList<Tag>>() {}.getType();
-
-         JsonObject dataJson = new JsonObject();
-         dataJson.add(
-                 "tags",
-                 GsonHelper.getExposeSensitiveGson().toJsonTree(tagList, tagListType));
-
-         JsonObject resJson = new JsonObject();
-         resJson.add("data", dataJson);
-
-         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
-      }else {
+      if(!projectMaybe.isPresent()) {
          return NOT_FOUND_RES;
       }
+
+      Page<Tag> page = tagRepository.findByNameLike(prefix, PageRequest.of(start, 20));
+      List<Tag> tagList = page.getContent();
+
+      Type tagListType = new TypeToken<ArrayList<Tag>>() {}.getType();
+
+      JsonObject dataJson = new JsonObject();
+      dataJson.add(
+              "tags",
+              GsonHelper.getExposeSensitiveGson()
+                      .toJsonTree(tagList, tagListType));
+
+      JsonObject resJson = new JsonObject();
+      resJson.add("data", dataJson);
+
+      return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 }

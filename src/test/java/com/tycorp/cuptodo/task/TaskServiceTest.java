@@ -1,6 +1,9 @@
 package com.tycorp.cuptodo.task;
 
 import com.tycorp.cuptodo.project.Project;
+import com.tycorp.cuptodo.project.ProjectRepository;
+import com.tycorp.cuptodo.story.Story;
+import com.tycorp.cuptodo.story.StoryRepository;
 import com.tycorp.cuptodo.tag.Tag;
 import com.tycorp.cuptodo.tag.TagService;
 import com.tycorp.cuptodo.user.UserRepository;
@@ -13,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -21,11 +25,16 @@ import static org.mockito.Mockito.when;
 public class TaskServiceTest {
    @InjectMocks
    private TaskService taskService;
-   @Mock
-   private TaskRepository taskRepository;
 
    @Mock
    private TagService tagService;
+
+   @Mock
+   private ProjectRepository projectRepository;
+   @Mock
+   private StoryRepository storyRepository;
+   @Mock
+   private TaskRepository taskRepository;
 
    @Test
    public void shouldCreateTaskWithExpectedTagList() throws Exception {
@@ -45,8 +54,14 @@ public class TaskServiceTest {
       Project project = new Project();
       project.setId("project_id");
 
-      task.setProject(project);
+      task.setProjectId("project_id");
       task.setTagList(tagList);
+
+      Story story = new Story();
+      story.setId("story_id");
+
+      when(projectRepository.findById(Mockito.any())).thenReturn(Optional.of(project));
+      when(storyRepository.findById(Mockito.any())).thenReturn(Optional.of(story));
 
       when(taskRepository.save(Mockito.any())).thenReturn(task);
       when(tagService.addTagListForProjectAndTask(Mockito.any(), Mockito.any(), Mockito.any()))

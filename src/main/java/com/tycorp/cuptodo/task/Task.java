@@ -2,6 +2,7 @@ package com.tycorp.cuptodo.task;
 
 import com.google.gson.annotations.Expose;
 import com.tycorp.cuptodo.project.Project;
+import com.tycorp.cuptodo.story.Story;
 import com.tycorp.cuptodo.tag.Tag;
 import com.tycorp.cuptodo.task.value.Priority;
 import com.tycorp.cuptodo.task.value.Status;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.List;
 @Setter
 @Entity
 @NoArgsConstructor
+@Where(clause = "active=true")
 public class Task {
    @Expose
    @Id
@@ -29,18 +33,17 @@ public class Task {
 
    @Expose
    @Column(name = "title")
-   private String title;
+   private String title = "";
 
    @Expose
    @Column(name = "description")
-   private String description;
+   private String description = "";
 
    @Expose
    @Column(name = "note")
-   private String note;
+   private String note = "";
 
    @Expose
-   @Column(name = "project_id")
    private String projectId;
 
    @ManyToOne(fetch = FetchType.LAZY)
@@ -50,6 +53,17 @@ public class Task {
            inverseJoinColumns = @JoinColumn(name = "project_id")
    )
    private Project project;
+
+   @Expose
+   private String storyId;
+
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinTable(
+           name = "tasks_story_join",
+           joinColumns = @JoinColumn(name = "task_id"),
+           inverseJoinColumns = @JoinColumn(name = "story_id")
+   )
+   private Story story;
 
    @Expose
    @ElementCollection(fetch = FetchType.LAZY)
@@ -85,9 +99,24 @@ public class Task {
    @Expose
    @Column(name = "completed_at")
    private long completedAt = -1;
+
+   @Expose
+   @Column(name = "due_at")
+   private long dueAt = -1;
+
    @Expose
    @Column(name = "created_at")
    private long createdAt = System.currentTimeMillis();
+
+   @Column(name = "active")
+   private boolean active = true;
+
+   public void removeTags(List<Tag> tagList) {
+      // for loop to avoid comodification error when tagList is getTagList()
+      for(int i  = 0; i < tagList.size(); i++) {
+         removeTag(tagList.get(i));
+      }
+   }
 
    public void removeTag(Tag tag) {
       getTagList().remove(tag);

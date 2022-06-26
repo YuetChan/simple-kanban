@@ -1,17 +1,23 @@
 package com.tycorp.cuptodo.task;
 
+import com.tycorp.cuptodo.project.Project;
 import com.tycorp.cuptodo.project.ProjectController;
+import com.tycorp.cuptodo.project.ProjectRepository;
+import com.tycorp.cuptodo.story.Story;
+import com.tycorp.cuptodo.story.StoryRepository;
 import com.tycorp.cuptodo.tag.Tag;
 import com.tycorp.cuptodo.tag.TagService;
 import com.tycorp.cuptodo.user.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +31,31 @@ public class TaskService {
    private TaskRepository taskRepository;
 
    @Autowired
+   private ProjectRepository projectRepository;
+   @Autowired
+   private StoryRepository storyRepository;
+   @Autowired
    private UserRepository userRepository;
 
    public Task create(Task task) {
       LOGGER.trace("Enter create(task)");
+
+      // Check if project and story are existed
+      Optional<Project> projectMaybe = projectRepository.findById(task.getProjectId());
+      if(!projectMaybe.isPresent()) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+      }
+
+      task.setProject(projectMaybe.get());
+
+      if(task.getStoryId() != null) {
+         Optional<Story> storyMaybe = storyRepository.findById(task.getStoryId());
+         if(!storyMaybe.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+         }
+
+         task.setStory(storyMaybe.get());
+      }
 
       // Temporarily remove tag list from task
       List<Tag> tagList = task.getTagList();
@@ -76,7 +103,16 @@ public class TaskService {
       task.getTagList().addAll(tagAddedList);
 
       // Remove from parent/owner side
-      tagToRemoveList.forEach(tag -> task.removeTag(tag));
+      task.removeTags(tagToRemoveList);
+
+      return taskRepository.save(task);
+   }
+
+   public Task delete(Task task) {
+      LOGGER.trace("Enter delete(task)");
+
+      // Delete task
+      task.setActive(false);
 
       return taskRepository.save(task);
    }

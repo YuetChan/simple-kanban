@@ -2,6 +2,7 @@ package com.tycorp.cuptodo.user;
 
 import com.google.gson.annotations.Expose;
 import com.tycorp.cuptodo.project.Project;
+import com.tycorp.cuptodo.user.value.Permissible;
 import com.tycorp.cuptodo.user.value.Permission;
 import com.tycorp.cuptodo.user.value.Permit;
 import lombok.Getter;
@@ -12,7 +13,6 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -38,11 +38,11 @@ public class User {
 
    @Expose
    @ElementCollection(fetch = FetchType.LAZY)
-   @CollectionTable(name = "sub_tasks_task_join", joinColumns = @JoinColumn(name = "task_id"))
-   @Column(name = "permissions")
+   @CollectionTable(name = "permissions_user_join", joinColumns = @JoinColumn(name = "user_id"))
    @AttributeOverrides({
-           @AttributeOverride(name = "projectId", column = @Column(name = "project_id")),
-           @AttributeOverride(name = "permit", column = @Column(name = "permit"))
+           @AttributeOverride(name = "objectId", column = @Column(name = "object_id")),
+           @AttributeOverride(name = "permit", column = @Column(name = "permit")),
+           @AttributeOverride(name = "permissible", column = @Column(name = "permissible"))
    })
    private List<Permission> permissionList =  new ArrayList<>();
 
@@ -63,14 +63,13 @@ public class User {
       shareProject.getCollaboratorList().remove(this);
    }
 
-   public boolean hasPermitByProjectId(Permit permit, String projectId) {
-      return getPermissionList().stream().filter(permission -> {
-         if(permission.getProjectId().equals(projectId)) {
-            return permission.getPermit().equals(permit);
-         }
-
-         return false;
-      }).collect(Collectors.toList()).size() == 1;
-   }
-
+//   public boolean hasPermitByPermissbleAndObjectId(Permit permit, Permissible permissible, String projectId) {
+//      return getPermissionList().stream().filter(permission -> {
+//         if(permission.getPermissible().equals(permissible) && permission.getProjectId().equals(projectId)) {
+//            return permission.getPermit().equals(permit);
+//         }
+//
+//         return false;
+//      }).collect(Collectors.toList()).size() == 1;
+//   }
 }

@@ -2,13 +2,16 @@ package com.tycorp.cuptodo.project;
 
 import com.tycorp.cuptodo.user.User;
 import com.tycorp.cuptodo.user.UserRepository;
+import com.tycorp.cuptodo.user.value.Permission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,7 +47,7 @@ public class ProjectService {
    }
 
    public Project update(Project project, Project updatedProject) {
-      log.trace("Enter update(Project project, Project updatedProject)");
+      log.trace("Enter update(project, updatedProject)");
 
       // Update project properties
       project.setName(updatedProject.getName());
@@ -96,6 +99,29 @@ public class ProjectService {
       project.getCollaboratorList().addAll(collaboratorToAddList);
 
       return projectRepository.save(project);
+   }
+
+   public void updatePermissions(Project project, Map<String, List<Permission>> userPermissionsMp) {
+      List<String> userEmailList = new ArrayList<>();
+      for (Map.Entry<String,List<Permission>> entry : userPermissionsMp.entrySet()) {
+         userEmailList.add(entry.getKey());
+      }
+
+      List<User> userList = userRepository.findAllByEmailIn(userEmailList);
+      userList.stream().forEach(user -> {
+         List<Permission> nonTargetPermissionList = user.getPermissionList().stream()
+                 .filter(permission -> !permission.getProjectId().equals(project.getId()))
+                 .collect(Collectors.toList());
+         List<Permission> targetPermissionList = userPermissionsMp.get(user.getEmail());
+
+         List<Permission> newPermissionList = new ArrayList<>();
+         newPermissionList.addAll(nonTargetPermissionList);
+         newPermissionList.addAll(targetPermissionList);
+
+         user.setPermissionList(newPermissionList);
+      });
+
+      userRepository.saveAll(userList);
    }
 }
 

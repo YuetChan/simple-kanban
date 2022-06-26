@@ -1,5 +1,5 @@
 package com.tycorp.cuptodo.task.value;
 
 public enum Status {
-   TO_DO, IN_PROGRESS, DONE
+   BACK_LOG, TO_DO, IN_PROGRESS, DONE
 }

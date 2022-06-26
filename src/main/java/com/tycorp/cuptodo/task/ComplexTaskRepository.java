@@ -10,7 +10,8 @@ import java.util.List;
 public interface ComplexTaskRepository {
    // tagList, startAt, endAt are optional
    // tagList of size 0 or null for matching all tags
-   Page<Task> findByParams(String project,
+   Page<Task> findByParams(String projectId,
+                           String storyId,
                            Long startAt, Long endAt,
                            List<String> tagList,
                            Pageable pageable);
