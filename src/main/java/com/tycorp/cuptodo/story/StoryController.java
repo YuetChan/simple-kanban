@@ -30,6 +30,9 @@ public class StoryController {
    private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
+   private StoryService storyService;
+
+   @Autowired
    private StoryRepository storyRepository;
    @Autowired
    private ProjectRepository projectRepository;
@@ -96,17 +99,7 @@ public class StoryController {
       JsonObject storyJson = dataJson.get("story").getAsJsonObject();
       Story story = GsonHelper.getExposeSensitiveGson().fromJson(storyJson, Story.class);
 
-      Optional<Project> projectMaybe = projectRepository.findById(story.getProjectId());
-      if(!projectMaybe.isPresent()) {
-         return new ResponseEntity("project is invalid", HttpStatus.BAD_REQUEST);
-      }
-
-      if(projectMaybe.get().getStoryList().size() > 20) {
-         return new ResponseEntity("storyList exceeds max size", HttpStatus.BAD_REQUEST);
-      }
-
-      story.setProject(projectMaybe.get());
-      storyRepository.save(story);
+      storyService.create(story);
 
       javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
               .add("data",
@@ -135,12 +128,7 @@ public class StoryController {
          return NOT_FOUND_RES;
       }
 
-      Story story = storyMaybe.get();
-
-      story.setName(updatedStory.getName());
-      story.setDueAt(updatedStory.getDueAt());
-
-      storyRepository.save(story);
+      storyService.update(storyMaybe.get(), updatedStory);
 
       return new ResponseEntity(HttpStatus.NO_CONTENT);
    }
@@ -155,10 +143,7 @@ public class StoryController {
          return NOT_FOUND_RES;
       }
 
-      Story story = storyMaybe.get();
-      story.setActive(false);
-
-      storyRepository.save(story);
+      storyService.delete(storyMaybe.get());
 
       return new ResponseEntity(HttpStatus.OK);
    }

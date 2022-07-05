@@ -40,10 +40,14 @@ public class TaskService {
    public Task create(Task task) {
       LOGGER.trace("Enter create(task)");
 
+      if(task.getTagList().size() > 20 || task.getSubTaskList().size() > 10) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "tagList or subTaskList exceed max size");
+      }
+
       // Check if project and story are existed
       Optional<Project> projectMaybe = projectRepository.findById(task.getProjectId());
       if(!projectMaybe.isPresent()) {
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "project does not exist");
       }
 
       task.setProject(projectMaybe.get());
@@ -74,6 +78,10 @@ public class TaskService {
 
    public Task update(Task task, Task updatedTask) {
       LOGGER.trace("Enter update(task, updatedTask)");
+
+      if(task.getTagList().size() > 20 || task.getSubTaskList().size() > 10) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "tagList or subTaskList exceed max size");
+      }
 
       // Update task properties
       task.setDescription(updatedTask.getDescription());
@@ -113,7 +121,6 @@ public class TaskService {
 
       // Delete task
       task.setActive(false);
-
       return taskRepository.save(task);
    }
 }

@@ -132,12 +132,6 @@ public class ProjectController {
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();
       Project project = GsonHelper.getExposeSensitiveGson().fromJson(projectJson, Project.class);
 
-      Optional<User> userMaybe = userRepository.findByEmail(project.getUserEmail());
-      if(!userMaybe.isPresent()) {
-         return new ResponseEntity("user is invalid", HttpStatus.BAD_REQUEST);
-      }
-
-      project.setUser(userMaybe.get());
       project = projectService.create(project);
 
       javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
@@ -162,10 +156,6 @@ public class ProjectController {
 
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();
       Project updatedProject = GsonHelper.getExposeSensitiveGson().fromJson(projectJson, Project.class);
-
-      if(updatedProject.getCollaboratorList().size() > 20) {
-         return new ResponseEntity("collaboratorList exceeds max size", HttpStatus.BAD_REQUEST);
-      }
 
       Optional<Project> projectMaybe = projectRepository.findById(id);
       if(!projectMaybe.isPresent()) {

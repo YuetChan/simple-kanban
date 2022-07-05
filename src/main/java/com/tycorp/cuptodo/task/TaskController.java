@@ -6,7 +6,6 @@ import com.tycorp.cuptodo.core.util.GsonHelper;
 import com.tycorp.cuptodo.project.Project;
 import com.tycorp.cuptodo.project.ProjectController;
 import com.tycorp.cuptodo.project.ProjectRepository;
-import com.tycorp.cuptodo.story.Story;
 import com.tycorp.cuptodo.story.StoryRepository;
 import com.tycorp.cuptodo.tag.TagRepository;
 import com.tycorp.cuptodo.tag.TagService;
@@ -122,10 +121,6 @@ public class TaskController {
       Task task = GsonHelper.getExposeSensitiveGson()
               .fromJson(taskJson, Task.class);
 
-      if(task.getTagList().size() > 20 || task.getSubTaskList().size() > 10) {
-         return new ResponseEntity("tagList or subTaskList exceed max size", HttpStatus.BAD_REQUEST);
-      }
-
       task = taskService.create(task);
 
       javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
@@ -152,10 +147,6 @@ public class TaskController {
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
       Task updatedTask = GsonHelper.getExposeSensitiveGson()
               .fromJson(taskJson, Task.class);
-
-      if(updatedTask.getTagList().size() > 20 || updatedTask.getSubTaskList().size() > 10) {
-         return new ResponseEntity("tagList or subTaskList exceed max size", HttpStatus.BAD_REQUEST);
-      }
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {

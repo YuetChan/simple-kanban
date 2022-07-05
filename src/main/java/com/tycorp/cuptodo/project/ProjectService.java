@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,8 +27,17 @@ public class ProjectService {
    public Project create(Project project) {
       log.trace("Enter create(project)");
 
-      // Init the user email for project
-      project.setUserEmail(project.getUser().getEmail());
+      Optional<User> userMaybe = userRepository.findByEmail(project.getUserEmail());
+      if(!userMaybe.isPresent()) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user is invalid");
+      }
+
+      // Init the user for project
+      project.setUser(userMaybe.get());
+
+      if(project.getCollaboratorList().size() > 20) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "collaboratorList exceeds max size");
+      }
 
       // Check if all collaborators are valid
       List<String> collaboratorEmailList = project.getCollaboratorList().stream()
@@ -48,6 +58,10 @@ public class ProjectService {
 
    public Project update(Project project, Project updatedProject) {
       log.trace("Enter update(project, updatedProject)");
+
+      if(updatedProject.getCollaboratorList().size() > 20) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "collaboratorList exceeds max size");
+      }
 
       // Update project properties
       project.setName(updatedProject.getName());
@@ -102,16 +116,25 @@ public class ProjectService {
    }
 
    public void updatePermissions(Project project, Map<String, List<Permission>> userPermissionsMp) {
+      log.trace("Enter updatePermissions(project, userPermissionsMp)");
+
+      // collect user email list in userPermissionsMp
       List<String> userEmailList = new ArrayList<>();
       for (Map.Entry<String,List<Permission>> entry : userPermissionsMp.entrySet()) {
          userEmailList.add(entry.getKey());
       }
 
+      // get user list using user email list
       List<User> userList = userRepository.findAllByEmailIn(userEmailList);
+
+
       userList.stream().forEach(user -> {
+         // collect non target permissionList
          List<Permission> nonTargetPermissionList = user.getPermissionList().stream()
                  .filter(permission -> !permission.getProjectId().equals(project.getId()))
                  .collect(Collectors.toList());
+
+         // collect target permissionList
          List<Permission> targetPermissionList = userPermissionsMp.get(user.getEmail());
 
          List<Permission> newPermissionList = new ArrayList<>();
