@@ -16,9 +16,9 @@ export class JwtAuthMiddleware implements NestMiddleware {
 	}
 
   async use(req: any, res: any, next: () => void) {
-		const jwt = req.headers['authorization']?.replace('Bearer ', '');
-		console.log(jwt)
+		console.trace('Enter JwtAuthMiddleware --> user(reqm res, next)');
 
+		const jwt = req.headers['authorization']?.replace('Bearer ', '');
 		if(jwt) { 
 			const { email } = this.jwtSvc.decode(jwt) as User;
 
@@ -29,24 +29,23 @@ export class JwtAuthMiddleware implements NestMiddleware {
 					}
 			}).then(res => {
 				if(res.status === HttpStatus.OK) {
-					console.log(res);
+					console.debug('Res ', res);
 
 					return res.data.data.user;
 				}
 				
-				console.error(res)
+				console.debug('Res ', res);
 				throw new InternalServerErrorException();
 			}).catch(err => {
-				console.error(err)
+				console.debug('Err ', err)
 				throw new InternalServerErrorException();
 			});
-			
-
+		
 		}else { 
 			req.user = null;
 		}
 
-		console.log('jwt auth finished', req.user);
+		console.debug('User ', req.user);
     next();
   }
 

@@ -3,8 +3,6 @@ import { ConfigService } from "@nestjs/config";
 
 import axios from 'axios';
 
-import * as moment from "moment";
-
 @Injectable()
 export class RegisterService {
 
@@ -13,25 +11,22 @@ export class RegisterService {
   constructor(private configSvc: ConfigService) { this.REST_HOST = this.configSvc.get<string>('REST_HOST'); }
 
   async register(user: User): Promise<User> {
-		console.log('register', user);
+		console.trace('Enter register(user)');
 
-		return await axios.get(
-			 `${this.REST_HOST}/users`, { 
-				params: {  email: user.email  } 
+		return await axios.get(`${this.REST_HOST}/users`, { 
+				params: { email: user.email } 
 		}).then(async res => {
-			console.log('get user by email', 'res', res)
+			console.debug('Res ', res);
 
 			const user = res.data.data.user;
 
-			const role = await axios.get(
-				 `${this.REST_HOST}/users/${user.id}/role`).then(res => {
-					console.log('get user role by id', 'res', res)
-					if(res.status === HttpStatus.OK) { return res.data.data.role; }
+			const role = await axios.get(`${this.REST_HOST}/users/${user.id}/role`).then(res => {
+					console.debug('Res ', res);
 
-					console.error(res)
+					if(res.status === HttpStatus.OK) { return res.data.data.role; }
 					throw new InternalServerErrorException();
 				}).catch(err => {
-					console.error(err)
+					console.debug(err)
 					throw new InternalServerErrorException();
 				});
 
@@ -42,34 +37,22 @@ export class RegisterService {
 				role: role
 			};
 		}).catch(async err => {
-			console.log('get user by email', 'err', err)
+			console.debug('Err', err)
 
-			const res = await axios.post<{
-				data: {
-					user: any
-				}
-			}>(`${this.REST_HOST}/users`, {
+			const res = await axios.post<{ data: { user: any } }>(`${this.REST_HOST}/users`, {
 				data: {
 					user: {
 						email: user.email,
-						role: 'user',
-						uploadQuota: {
-							full: false,
-							lastUploadedAt: moment().tz('America/New_York').unix()
-						}
+						role: 'user'
 					}
 				}
 			}).then(res => {
-				console.log('post user', 'res', res)
+				console.debug('Res ', res)
 
-				if(res.status !== HttpStatus.CREATED) {
-					console.log(res)
-					throw new InternalServerErrorException();
-				}
-
+				if(res.status !== HttpStatus.CREATED) { throw new InternalServerErrorException(); }
 				return res;
 			}).catch(err => {
-				console.log('post user', 'err', err)
+				console.debug('Err ', err);
 				throw new InternalServerErrorException();
 			});
 			

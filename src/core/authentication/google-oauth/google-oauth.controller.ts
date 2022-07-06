@@ -10,22 +10,22 @@ export class GoogleOauthController {
 
   constructor(
     private jwtAuthSvc: JwtAuthService, 
-    private configSvc: ConfigService) { 
-      this.UI_HOST = this.configSvc.get<string>('UI_HOST');
-    }
+    private configSvc: ConfigService) { this.UI_HOST = this.configSvc.get<string>('UI_HOST'); }
 
   @Get()
   @UseGuards(GoogleOauthGuard)
-  async googleAuth(@Req() req) { return req; }
+  async googleAuth(@Req() req) { 
+    console.trace('Enter googleAuth(req)');
+    return req; 
+  }
 
   @Get('redirect')
   @UseGuards(GoogleOauthGuard)
   async googleAuthRedirect(@Req() req, @Res() res) { 
-    console.log(req.user);
+    console.trace('Enter googleAuthRedirect(req, res)')
 
-    
     res.cookie('jwt', await this.jwtAuthSvc.getJwt(req.user, LoginType.GOOGLE));
-    res.redirect(302, `${this.UI_HOST}/new-request`);
+    res.redirect(302, `${this.UI_HOST}`);
   }
 
 }

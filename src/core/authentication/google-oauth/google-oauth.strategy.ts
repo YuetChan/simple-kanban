@@ -21,6 +21,8 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
     accessToken: string, 
     refreshToken: string, 
     profile: any): Promise<any> {
+    console.trace('Enter validate(accessToken, refreshToken, profile)');
+
     const { id, name, emails } = profile;
     return {
       providerId: id,
