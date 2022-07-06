@@ -8,6 +8,7 @@ import com.tycorp.cuptodo.project.ProjectController;
 import com.tycorp.cuptodo.project.ProjectRepository;
 import com.tycorp.cuptodo.task.Task;
 import com.tycorp.cuptodo.task.TaskRepository;
+import com.tycorp.cuptodo.task.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,11 @@ public class StoryController {
    private StoryService storyService;
 
    @Autowired
+   private TaskService taskService;
+
+   @Autowired
    private StoryRepository storyRepository;
+
    @Autowired
    private ProjectRepository projectRepository;
    @Autowired
@@ -153,23 +158,9 @@ public class StoryController {
    @PutMapping(value = "/{id}/tasks", produces = "application/json")
    public ResponseEntity<String> attachTaskToStoryById(@PathVariable(name = "id") String id,
                                                        @RequestParam(name = "taskId") String taskId) {
-      LOGGER.trace("Enter attachTaskToStoryById");
+      LOGGER.trace("Enter attachTaskToStoryById(id, taskId)");
 
-      Optional<Story> storyMaybe = storyRepository.findById(id);
-      Optional<Task> taskMaybe = taskRepository.findById(taskId);
-
-      if(!storyMaybe.isPresent() ) {
-         return NOT_FOUND_RES;
-      }
-
-      if(!taskMaybe.isPresent()) {
-         return new ResponseEntity("taskId is invalid", HttpStatus.BAD_REQUEST);
-      }
-
-      Task task = taskMaybe.get();
-      task.setStory(storyMaybe.get());
-
-      taskRepository.save(task);
+      taskService.attachTaskToStory(taskId, id);
 
       return new ResponseEntity(HttpStatus.OK);
    }
@@ -179,32 +170,9 @@ public class StoryController {
    @DeleteMapping(value = "/{id}/tasks", produces = "application/json")
    public ResponseEntity<String> detachStoryFromTaskById(@PathVariable(name = "id") String id,
                                                          @RequestParam(name = "taskId") String taskId) {
-      LOGGER.trace("Enter detachStoryFromTaskById");
+      LOGGER.trace("Enter detachStoryFromTaskById(id, taskId)");
 
-      Optional<Story> storyMaybe = storyRepository.findById(id);
-      Optional<Task> taskMaybe = taskRepository.findById(taskId);
-
-      if(!storyMaybe.isPresent()) {
-         return NOT_FOUND_RES;
-      }
-
-      if(!taskMaybe.isPresent()) {
-         return new ResponseEntity("taskId is invalid", HttpStatus.BAD_REQUEST);
-      }
-
-      Story story = storyMaybe.get();
-      Task task = taskMaybe.get();
-
-      if(task.getStory() == null) {
-         return new ResponseEntity(HttpStatus.OK);
-      }
-
-      if(!story.getId().equals(task.getStory().getId())) {
-         return new ResponseEntity("taskId is invalid", HttpStatus.BAD_REQUEST);
-      }
-
-      story.removeTask(task);
-      storyRepository.save(story);
+      storyService.detachStoryFromTask(id, taskId);
 
       return new ResponseEntity(HttpStatus.OK);
    }

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -121,6 +122,26 @@ public class TaskService {
 
       // Delete task
       task.setActive(false);
+      return taskRepository.save(task);
+   }
+
+   public Task attachTaskToStory(String taskId, String storyId) {
+      LOGGER.trace("Enter attachTaskToStory(taskId, storyId)");
+
+      Optional<Story> storyMaybe = storyRepository.findById(storyId);
+      Optional<Task> taskMaybe = taskRepository.findById(taskId);
+
+      if(!storyMaybe.isPresent() ) {
+         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+      }
+
+      if(!taskMaybe.isPresent()) {
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "taskId is invalid");
+      }
+
+      Task task = taskMaybe.get();
+      task.setStory(storyMaybe.get());
+
       return taskRepository.save(task);
    }
 }
