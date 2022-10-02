@@ -1,9 +1,9 @@
 package com.tycorp.cuptodo.project;
 
 import com.google.gson.annotations.Expose;
-import com.tycorp.cuptodo.story.Story;
 import com.tycorp.cuptodo.tag.Tag;
 import com.tycorp.cuptodo.task.Task;
+import com.tycorp.cuptodo.task.TaskNode;
 import com.tycorp.cuptodo.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,13 +58,17 @@ public class Project {
    private List<User> collaboratorList = new ArrayList<>();
 
    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   private List<Story> storyList = new ArrayList<>();
-
-   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private List<Task> taskList = new ArrayList<>();
 
    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   private List<TaskNode> taskNodeList = new ArrayList<>();
+
+   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private List<Tag> tagList = new ArrayList<>();
+
+   @Expose
+   @OneToOne(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+   private ProjectUUID projectUUID;
 
    @Expose
    @Column(name = "created_at")
@@ -73,13 +77,4 @@ public class Project {
    @Column(name = "active")
    private boolean active = true;
 
-   public void removeStory(Story story) {
-      storyList.remove(story);
-      story.setProject(null);
-   }
-
-   public void removeTask(Task task) {
-      taskList.remove(task);
-      task.setProject(null);
-   }
 }

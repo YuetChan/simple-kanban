@@ -1,21 +1,20 @@
 package com.tycorp.cuptodo.project;
 
-import com.google.gson.JsonArray;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tycorp.cuptodo.core.util.GsonHelper;
-import com.tycorp.cuptodo.story.Story;
-import com.tycorp.cuptodo.story.StoryRepository;
 import com.tycorp.cuptodo.task.Task;
 import com.tycorp.cuptodo.task.TaskRepository;
 import com.tycorp.cuptodo.user.User;
 import com.tycorp.cuptodo.user.UserRepository;
-import com.tycorp.cuptodo.user.value.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.json.Json;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/projects")
@@ -38,8 +36,6 @@ public class ProjectController {
    private ProjectRepository projectRepository;
 
    @Autowired
-   private StoryRepository storyRepository;
-   @Autowired
    private TaskRepository taskRepository;
    @Autowired
    private UserRepository userRepository;
@@ -48,20 +44,22 @@ public class ProjectController {
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getProjectById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getProjectById(id)");
+      LOGGER.debug("GetMapping getProjectById with parameters id: {}", id);
 
       Optional<Project> projectMaybe = projectRepository.findById(id);
       if(!projectMaybe.isPresent()) {
+         LOGGER.debug("Project not found");
          return NOT_FOUND_RES;
       }
 
       JsonObject dataJson = new JsonObject();
       dataJson.add("project",
-              GsonHelper.getExposeSensitiveGson()
-                      .toJsonTree(projectMaybe.get(), Project.class));
+              GsonHelper.getExposeSensitiveGson().toJsonTree(projectMaybe.get(), Project.class));
 
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
+      LOGGER.debug("Response json built: {}", resJson.toString());
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
@@ -70,25 +68,32 @@ public class ProjectController {
    public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                            @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchProjectsByUserEmail(userEmail, start)");
+      LOGGER.debug("GetMapping searchProjectsByUserEmail with parameters userEmail: {}, start: {}", userEmail, start);
 
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {
+         LOGGER.debug("User exists");
+
          Page<Project> page = projectRepository.findByUserEmail(userEmail,
-                 PageRequest.of(start, 20));
+                 PageRequest.of(start, 20, Sort.by("createdAt").descending()));
          List<Project> projectList = page.getContent();
 
          Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
 
          JsonObject dataJson = new JsonObject();
          dataJson.add("projects",
-                 GsonHelper.getExposeSensitiveGson()
-                         .toJsonTree(projectList, projectListType));
+                 GsonHelper.getExposeSensitiveGson().toJsonTree(projectList, projectListType));
+
+         dataJson.addProperty("page", start);
+         dataJson.addProperty("totalPage", page.getTotalPages());
 
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
 
+         LOGGER.debug("Response json built: {}", resJson.toString());
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
+         LOGGER.debug("User not found");
          return NOT_FOUND_RES;
       }
    }
@@ -98,25 +103,32 @@ public class ProjectController {
    public ResponseEntity<String> searchShareProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                                 @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchShareProjectsByUserEmail(userEmail, start)");
+      LOGGER.debug("GetMapping searchShareProjectsByUserEmail with parameters userEmail: {}, start: {}", userEmail, start);
 
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {
+         LOGGER.debug("User exists");
+
          Page<Project> page = projectRepository.findProjectListByCollaborator(userMaybe.get(),
-                 PageRequest.of(start, 20));
+                 PageRequest.of(start, 20, Sort.by("createdAt").descending()));
          List<Project> projectList = page.getContent();
 
          Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
 
          JsonObject dataJson = new JsonObject();
          dataJson.add("projects",
-                 GsonHelper.getExposeSensitiveGson()
-                         .toJsonTree(projectList, projectListType));
+                 GsonHelper.getExposeSensitiveGson().toJsonTree(projectList, projectListType));
+
+         dataJson.addProperty("page", start);
+         dataJson.addProperty("totalPage", page.getTotalPages());
 
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
 
+         LOGGER.debug("Response json built: {}", resJson.toString());
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
+         LOGGER.debug("User not found");
          return new ResponseEntity("userEmail is invalid", HttpStatus.BAD_REQUEST);
       }
    }
@@ -126,6 +138,7 @@ public class ProjectController {
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createProject(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createProject(reqJsonStr)");
+      LOGGER.debug("PostMapping createProject with @RequestBody", reqJsonStr);
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
@@ -133,6 +146,7 @@ public class ProjectController {
       Project project = GsonHelper.getExposeSensitiveGson().fromJson(projectJson, Project.class);
 
       project = projectService.create(project);
+      LOGGER.debug("Project created");
 
       javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
               .add("data",
@@ -142,6 +156,7 @@ public class ProjectController {
                                               .add("id", project.getId())))
               .build();
 
+      LOGGER.debug("Response json built: {}", resJavaxJson.toString());
       return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
    }
 
@@ -149,137 +164,59 @@ public class ProjectController {
    @CrossOrigin(origins = "http://localhost:3000")
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateProjectById(@PathVariable(name = "id") String id,
-                                                   @RequestBody String reqJsonStr) {
+                                                   @RequestBody String reqJsonStr) throws JsonProcessingException {
       LOGGER.trace("Enter updateProjectById(id, reqJsonStr)");
+      LOGGER.debug("PatchMapping updateProjectById with parameters id and @RequestBody", id, reqJsonStr);
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();
       Project updatedProject = GsonHelper.getExposeSensitiveGson().fromJson(projectJson, Project.class);
 
-      Optional<Project> projectMaybe = projectRepository.findById(id);
-      if(!projectMaybe.isPresent()) {
-         return NOT_FOUND_RES;
-      }
+      JsonObject collaboratorEmailSecretMapJson = dataJson.get("collaboratorEmailSecretMap").getAsJsonObject();
+      try {
+         LOGGER.debug("Convert collaboratorEmailSecretMap json to map");
+         Map<String, String> collaboratorEmailSecretMap = new ObjectMapper()
+                 .readValue(collaboratorEmailSecretMapJson.toString(), HashMap.class);
 
-      Project project = projectMaybe.get();
-      projectService.update(project, updatedProject);
-
-      return new ResponseEntity(HttpStatus.NO_CONTENT);
-   }
-
-   // Check correctness --- in progress
-   // Check permission in abac --- in progress
-   @CrossOrigin(origins = "http://localhost:3000")
-   @PatchMapping(value = "/{id}/permissions", produces = "application/json")
-   public ResponseEntity<String> updateProjectPermissionList(@PathVariable(name = "id") String id,
-                                                             @RequestBody String reqJsonStr) {
-      LOGGER.trace("Enter updateProjectPermissionList(id, reqJsonStr)");
-
-      JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
-
-      Type projectPermissionListType = new TypeToken<ArrayList<ProjectPermissionDto>>() {}.getType();
-
-      JsonArray projectPermissionListJson = dataJson.get("projectPermissions").getAsJsonArray();
-      List<ProjectPermissionDto> projectPermissionsDtoList = GsonHelper.getExposeSensitiveGson()
-              .fromJson(projectPermissionListJson, projectPermissionListType);
-
-      if(projectPermissionsDtoList.size() > 200) {
-         return new ResponseEntity("permissionList exceeds max size", HttpStatus.BAD_REQUEST);
-      }
-
-      Optional<Project> projectMaybe = projectRepository.findById(id);
-      if(!projectMaybe.isPresent()) {
-         return NOT_FOUND_RES;
-      }
-
-      Project project = projectMaybe.get();
-      Map<String, List<Permission>> userPermissionListMp = new HashMap<>();
-
-      for(ProjectPermissionDto dto : projectPermissionsDtoList) {
-         String userEmail = dto.getUserEmail();
-         if(userPermissionListMp.get(userEmail) == null) {
-            List<Permission> permissionList = new ArrayList<>();
-            permissionList.add(new Permission(id, dto.getPermissible(), dto.getPermit()));
-
-            userPermissionListMp.put(userEmail, permissionList);
-         }else {
-            Permission permissionToAdd = new Permission(id, dto.getPermissible(), dto.getPermit());
-
-            boolean isDuplicated = userPermissionListMp.get(userEmail).stream()
-                    .filter(permission -> permission.equals(permissionToAdd))
-                    .collect(Collectors.toList())
-                    .size() > 0;
-
-            if(!isDuplicated) {
-               List<Permission> permissionList = userPermissionListMp.get(userEmail);
-               permissionList.add(permissionToAdd);
-               userPermissionListMp.put(userEmail, permissionList);
-            }
+         Optional<Project> projectMaybe = projectRepository.findById(id);
+         if(!projectMaybe.isPresent()) {
+            LOGGER.debug("Project not found");
+            return NOT_FOUND_RES;
          }
+
+         Project project = projectMaybe.get();
+
+         projectService.update(project, updatedProject, collaboratorEmailSecretMap);
+         LOGGER.debug("Project updated");
+
+         return new ResponseEntity(HttpStatus.NO_CONTENT);
+      }catch(JsonProcessingException e) {
+         LOGGER.debug("CollaboratorEmailSecretMap json to map conversion failed", e);
+         return new ResponseEntity(HttpStatus.BAD_REQUEST);
       }
-
-      projectService.updatePermissions(project, userPermissionListMp);
-
-      return new ResponseEntity(HttpStatus.NO_CONTENT);
    }
 
-   // should be used on story creation
    @CrossOrigin(origins = "http://localhost:3000")
-   @PutMapping(value = "/{id}/storys", produces = "application/json")
-   public ResponseEntity<String> attachProjectToStoryById(@PathVariable(name = "id") String id,
-                                                          @RequestParam(name = "storyId") String storyId) {
-      LOGGER.trace("Enter attachProjectToStoryById(id)");
+   @DeleteMapping(value = "/{id}", produces = "application/json")
+   public ResponseEntity<String> deleteProjectById(@PathVariable(name = "id") String id) {
+      LOGGER.trace("Enter deleteProjectById(id)");
+      LOGGER.debug("DeleteMapping deleteProjectById with parameters id", id);
 
       Optional<Project> projectMaybe = projectRepository.findById(id);
-      Optional<Story> storyMaybe = storyRepository.findById(storyId);
+      if(projectMaybe.isPresent()) {
+         LOGGER.debug("Project exists");
 
-      if(!projectMaybe.isPresent()) {
+         Project project = projectMaybe.get();
+
+         projectService.delete(project);
+         LOGGER.debug("Project deleted");
+
+         return new ResponseEntity(HttpStatus.OK);
+      }else {
+         LOGGER.debug("Project not found");
          return NOT_FOUND_RES;
       }
-
-      if(!storyMaybe.isPresent()) {
-         return new ResponseEntity("storyId is invalid", HttpStatus.BAD_REQUEST);
-      }
-
-      Story story = storyMaybe.get();
-      if(story.getProject() != null) {
-         return new ResponseEntity("story already has project attached", HttpStatus.CONFLICT);
-      }
-
-      story.setProject(projectMaybe.get());
-      storyRepository.save(story);
-
-      return new ResponseEntity(HttpStatus.OK);
-   }
-
-   // should be used on task creation
-   @CrossOrigin(origins = "http://localhost:3000")
-   @PutMapping(value = "/{id}/tasks", produces = "application/json")
-   public ResponseEntity<String> attachProjectToTaskById(@PathVariable(name = "id") String id,
-                                                         @RequestParam(name = "taskId") String taskId) {
-      LOGGER.trace("Enter attachProjectToTaskById(id)");
-
-      Optional<Project> projectMaybe = projectRepository.findById(id);
-      Optional<Task> taskMaybe = taskRepository.findById(taskId);
-
-      if(!projectMaybe.isPresent()) {
-         return NOT_FOUND_RES;
-      }
-
-      if(!taskMaybe.isPresent()) {
-         return new ResponseEntity("taskId is invalid", HttpStatus.BAD_REQUEST);
-      }
-
-      Task task = taskMaybe.get();
-      if(task.getProject() != null) {
-         return new ResponseEntity("task already has project attached", HttpStatus.CONFLICT);
-      }
-
-      task.setProject(projectMaybe.get());
-      taskRepository.save(task);
-
-      return new ResponseEntity(HttpStatus.OK);
    }
 
 }

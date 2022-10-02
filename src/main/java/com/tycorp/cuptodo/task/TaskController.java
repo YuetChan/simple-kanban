@@ -4,9 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tycorp.cuptodo.core.util.GsonHelper;
 import com.tycorp.cuptodo.project.Project;
-import com.tycorp.cuptodo.project.ProjectController;
 import com.tycorp.cuptodo.project.ProjectRepository;
-import com.tycorp.cuptodo.story.StoryRepository;
 import com.tycorp.cuptodo.tag.TagRepository;
 import com.tycorp.cuptodo.tag.TagService;
 import com.tycorp.cuptodo.user.UserRepository;
@@ -28,7 +26,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/tasks")
 public class TaskController {
-   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
    private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
@@ -43,8 +41,6 @@ public class TaskController {
    @Autowired
    private ProjectRepository projectRepository;
    @Autowired
-   private StoryRepository storyRepository;
-   @Autowired
    private TagRepository tagRepository;
    @Autowired
    private UserRepository userRepository;
@@ -53,6 +49,7 @@ public class TaskController {
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getTaskById(id)");
+      LOGGER.debug("GetMapping getTaskById with parameters id: {}", id);
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
@@ -72,48 +69,54 @@ public class TaskController {
 
    @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "", produces = "application/json")
-   public ResponseEntity<String> searchTasksByParams(@RequestParam(name = "startAt") Optional<Long> startAtMaybe,
-                                                     @RequestParam(name = "endAt") Optional<Long> endAtMaybe,
-                                                     @RequestParam(name = "start") int start,
-                                                     @RequestParam(name = "projectId") String projectId,
-                                                     @RequestParam(name = "storyId") Optional<String> storyIdMaybe,
-                                                     @RequestParam(name = "tags") Optional<List<String>> tagListMaybe) {
-      LOGGER.trace("Enter searchTasksByParams(startAt, endAt, start, projectId, storyId, tags)");
+   public ResponseEntity<String> searchTasks(@RequestParam(name = "start") int start,
+                                             @RequestParam(name = "pageSize") int pageSize,
+                                             @RequestParam(name = "projectId") String projectId,
+                                             @RequestParam(name = "tags") Optional<List<String>> tagListMaybe) {
+      LOGGER.trace("Enter searchTasks(start, pageSize, projectId, tags)");
+      LOGGER.debug("GetMapping searchTasks with parameters start: {}, pageSize: {}, projectId: {}, tags: {}",
+              start, pageSize, projectId, tagListMaybe.orElse(new ArrayList<>()));
 
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(!projectMaybe.isPresent()) {
+         LOGGER.debug("Project not found");
          return NOT_FOUND_RES;
       }
 
+      LOGGER.debug("Find task by params");
       Page<Task> page = taskRepository.findByParams(projectId,
-              storyIdMaybe.orElse(null),
-              startAtMaybe.orElse(null), endAtMaybe.orElse(null),
-              tagListMaybe.orElse(null),
-              PageRequest.of(start, 20));
+              false,
+              tagListMaybe.orElse(new ArrayList<>()),
+              PageRequest.of(start, pageSize));
 
       List<Task> taskList = page.getContent();
+      for(var task : taskList) {
+//         List<Tag> updatedTagList = new ArrayList();
+         for(var tag : task.getTagList()) {
+            tag.setProjectId(projectId);
+//            updatedTagList.add(tag);
+         }
+      }
 
       Type taskListType = new TypeToken<ArrayList<Task>>() {}.getType();
 
       JsonObject dataJson = new JsonObject();
       dataJson.add("tasks",
-              GsonHelper.getExposeSensitiveGson()
-                      .toJsonTree(taskList, taskListType));
-
-      dataJson.addProperty("totalElements", page.getTotalElements());
-      dataJson.addProperty("totalPages", page.getTotalPages());
+              GsonHelper.getExposeSensitiveGson().toJsonTree(taskList, taskListType));
+      dataJson.addProperty("totalPage", page.getTotalPages());
 
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
+      LOGGER.debug("Response json built: {}", resJson.toString());
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
-   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createTask(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createTask(reqJsonStr)");
+      LOGGER.debug("PostMapping createTask with @RequestBody", reqJsonStr);
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
@@ -122,6 +125,7 @@ public class TaskController {
               .fromJson(taskJson, Task.class);
 
       task = taskService.create(task);
+      LOGGER.debug("Task created");
 
       javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
               .add("data",
@@ -132,15 +136,16 @@ public class TaskController {
               )
               .build();
 
+      LOGGER.debug("Response json built", resJavaxJson.toString());
       return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
    }
 
-   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateTaskById(@PathVariable(name = "id") String id,
                                                 @RequestBody String reqJsonStr) {
       LOGGER.trace("Enter updateTaskById(id, resJsonStr)");
+      LOGGER.debug("PatchMapping updateTaskById with parameters id and @RequestBody", id, reqJsonStr);
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
@@ -150,10 +155,13 @@ public class TaskController {
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
+         LOGGER.debug("Task not found");
          return NOT_FOUND_RES;
       }
 
       taskService.update(taskMaybe.get(), updatedTask);
+      LOGGER.debug("Task updated");
+
       return new ResponseEntity(HttpStatus.NO_CONTENT);
    }
 
@@ -161,13 +169,17 @@ public class TaskController {
    @DeleteMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> deleteTaskById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter deleteTaskById(id)");
+      LOGGER.debug("DeleteMapping deleteTaskById with parameters id", id);
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
+         LOGGER.debug("Task not found");
          return NOT_FOUND_RES;
       }
 
       taskService.delete(taskMaybe.get());
+      LOGGER.debug("Task deleted");
+
       return new ResponseEntity(HttpStatus.OK);
    }
 

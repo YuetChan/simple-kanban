@@ -31,8 +31,7 @@ public class Tag {
    private String name = "";
 
    @Expose
-   @Column(name = "user_email")
-   private String userEmail;
+   private String projectId;
 
    @ManyToMany()
    @JoinTable(

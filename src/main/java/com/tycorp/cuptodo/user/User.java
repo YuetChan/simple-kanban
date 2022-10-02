@@ -5,6 +5,7 @@ import com.tycorp.cuptodo.project.Project;
 import com.tycorp.cuptodo.user.value.Permissible;
 import com.tycorp.cuptodo.user.value.Permission;
 import com.tycorp.cuptodo.user.value.Permit;
+import com.tycorp.cuptodo.user_secret.UserSecret;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,6 +47,9 @@ public class User {
    })
    private List<Permission> permissionList =  new ArrayList<>();
 
+   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   private UserSecret userSecret;
+
    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private List<Project> projectList = new ArrayList<>();
 
@@ -63,13 +67,4 @@ public class User {
       shareProject.getCollaboratorList().remove(this);
    }
 
-//   public boolean hasPermitByPermissbleAndObjectId(Permit permit, Permissible permissible, String projectId) {
-//      return getPermissionList().stream().filter(permission -> {
-//         if(permission.getPermissible().equals(permissible) && permission.getProjectId().equals(projectId)) {
-//            return permission.getPermit().equals(permit);
-//         }
-//
-//         return false;
-//      }).collect(Collectors.toList()).size() == 1;
-//   }
 }

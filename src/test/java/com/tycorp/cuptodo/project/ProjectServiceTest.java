@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,16 +18,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class ProjectServiceTest {
+   @Spy
    @InjectMocks
    private ProjectService projectService;
 
    @Mock
    private ProjectRepository projectRepository;
-
    @Mock
    private UserRepository userRepository;
 
@@ -35,15 +36,15 @@ public class ProjectServiceTest {
       Project project = new Project();
 
       User owner = new User();
-      owner.setEmail("project_owner@gmail.com");
+      owner.setEmail("project_owner@cuptodo.com");
 
       project.setUser(owner);
 
       User collaborator_1 = new User();
-      collaborator_1.setEmail("collaborator_1@gmail.com");
+      collaborator_1.setEmail("collaborator_1@cuptodo.com");
 
       User collaborator_2 = new User();
-      collaborator_1.setEmail("collaborator_2@gmail.com");
+      collaborator_1.setEmail("collaborator_2@cuptodo.com");
 
       List<User> collaboratorList = new ArrayList<>();
       collaboratorList.add(collaborator_1);
@@ -51,19 +52,24 @@ public class ProjectServiceTest {
 
       project.setCollaboratorList(collaboratorList);
 
-      List<String> collaboratorEmailList = collaboratorList.stream()
+      List<String> collaboratorEmailList = collaboratorList
+              .stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      when(userRepository.findByEmail(Mockito.any())).thenReturn(Optional.of(owner));
-      when(userRepository.findAllByEmailIn(Mockito.any())).thenReturn(collaboratorList);
-      when(userRepository.countByEmailIn(Mockito.any())).thenReturn(2);
+      doReturn(true).when(projectService).checkIfUserForEmailExists(Mockito.any());
+      doReturn(true).when(projectService).checkIfCollaboratorListValid(Mockito.any());
+      doReturn(true).when(projectService).checkIfCollaboratorListCountValid(Mockito.any());
+
+      doNothing().when(projectService).attachCollaboratorListToProject(Mockito.any());
+      doNothing().when(projectService).attachUserToProject(Mockito.any());
 
       when(projectRepository.save(Mockito.any())).thenReturn(project);
 
-      Project createdProject = projectService.create(project);
+      doNothing().when(projectService).attachNewProjectUUIDToProject(Mockito.any());
 
-      List<String> actualCollaboratorEmailList = createdProject.getCollaboratorList().stream()
+      List<String> actualCollaboratorEmailList = projectService.create(project).getCollaboratorList()
+              .stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
@@ -72,17 +78,19 @@ public class ProjectServiceTest {
    }
 
    @Test
-   public void shouldThrowResponseStatusExceptionWhenCreateProjectWithNonExistedUser() throws Exception {
-      when(userRepository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
-
+   public void shouldThrowResponseStatusExceptionWhenCreateProjectWithInvalidUser() throws Exception {
+      doReturn(false).when(projectService).checkIfUserForEmailExists(Mockito.any());
       assertThrows(ResponseStatusException.class, () -> {
-         Project createdProject = projectService.create(new Project());
+         projectService.create(new Project());
       });
    }
 
    @Test
-   public void shouldThrowResponseStatusExceptionWhenCreateProjectWithCollaboratorListExceedMaxSize() throws Exception {
+   public void shouldThrowResponseStatusExceptionWhenCreateProjectWithCollaboratorListCountExceedMaximum() throws Exception {
       when(userRepository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
+      doReturn(true).when(projectService).checkIfUserForEmailExists(Mockito.any());
+      doReturn(false).when(projectService).checkIfCollaboratorListCountValid(Mockito.any());
+      doReturn(true).when(projectService).checkIfCollaboratorListValid(Mockito.any());
 
       Project project = new Project();
 
@@ -94,146 +102,161 @@ public class ProjectServiceTest {
       project.setCollaboratorList(collaboratorList);
 
       assertThrows(ResponseStatusException.class, () -> {
-         Project createdProject = projectService.create(project);
+         projectService.create(project);
+      });
+   }
+
+   @Test
+   public void shouldThrowResponseStatusExceptionWhenUpdateProjectWithCollaboratorListCountExceedMaximum() throws Exception {
+      Project originalProject = new Project();
+
+      User owner = new User();
+      owner.setEmail("project_owner@cuptodo.com");
+
+      originalProject.setUser(owner);
+
+      User collaborator_1 = new User();
+      collaborator_1.setEmail("collaborator_1@cuptodo.com");
+      collaborator_1.getShareProjectList().add(originalProject);
+
+      User collaborator_2 = new User();
+      collaborator_2.setEmail("collaborator_2@cuptodo.com");
+      collaborator_2.getShareProjectList().add(originalProject);
+
+      List<User> collaboratorList = new ArrayList<>();
+      collaboratorList.add(collaborator_1);
+      collaboratorList.add(collaborator_2);
+
+      originalProject.setCollaboratorList(collaboratorList);
+
+      Project updatedProject = new Project();
+      updatedProject.setUser(owner);
+
+      User collaborator_3 = new User();
+      collaborator_3.setEmail("collaborator_3@cuptodo.com");
+
+      Map<String, String> collaboratorEmailSecretMap = new HashMap();
+      collaboratorEmailSecretMap.put("collaborator_3@gmail.com", "ABCDE");
+
+      List<User> updatedCollaboratorList = new ArrayList<>();
+      updatedCollaboratorList.add(collaborator_3);
+      updatedProject.setCollaboratorList(updatedCollaboratorList);
+
+      doReturn(false).when(projectService).checkIfCollaboratorListCountValid(Mockito.any());
+      doReturn(true).when(projectService).checkIfCollaboratorListValid(Mockito.any());
+
+      assertThrows(ResponseStatusException.class, () -> {
+         projectService.update(originalProject, updatedProject,
+                 collaboratorEmailSecretMap);
+      });
+   }
+
+   @Test
+   public void shouldThrowResponseStatusExceptionWhenUpdateProjectWithCollaboratorListInvalid() throws Exception {
+      Project originalProject = new Project();
+
+      User owner = new User();
+      owner.setEmail("project_owner@cuptodo.com");
+
+      originalProject.setUser(owner);
+
+      User collaborator_1 = new User();
+      collaborator_1.setEmail("collaborator_1@cuptodo.com");
+      collaborator_1.getShareProjectList().add(originalProject);
+
+      User collaborator_2 = new User();
+      collaborator_2.setEmail("collaborator_2@cuptodo.com");
+      collaborator_2.getShareProjectList().add(originalProject);
+
+      List<User> collaboratorList = new ArrayList<>();
+      collaboratorList.add(collaborator_1);
+      collaboratorList.add(collaborator_2);
+
+      originalProject.setCollaboratorList(collaboratorList);
+
+      Project updatedProject = new Project();
+      updatedProject.setUser(owner);
+
+      User collaborator_3 = new User();
+      collaborator_3.setEmail("collaborator_3@cuptodo.com");
+
+      Map<String, String> collaboratorEmailSecretMap = new HashMap();
+      collaboratorEmailSecretMap.put("collaborator_3@gmail.com", "ABCDE");
+
+      List<User> updatedCollaboratorList = new ArrayList<>();
+      updatedCollaboratorList.add(collaborator_3);
+      updatedProject.setCollaboratorList(updatedCollaboratorList);
+
+      doReturn(true).when(projectService).checkIfCollaboratorListCountValid(Mockito.any());
+      doReturn(false).when(projectService).checkIfCollaboratorListValid(Mockito.any());
+
+      assertThrows(ResponseStatusException.class, () -> {
+         projectService.update(originalProject, updatedProject,
+                 collaboratorEmailSecretMap);
       });
    }
 
    @Test
    public void shouldUpdateProjectAndReflectCollaboratorList() throws Exception {
-      Project project = new Project();
+      Project originalProject = new Project();
 
       User owner = new User();
-      owner.setEmail("project_owner@gmail.com");
+      owner.setEmail("project_owner@cuptodo.com");
 
-      project.setUser(owner);
+      originalProject.setUser(owner);
 
       User collaborator_1 = new User();
-      collaborator_1.setEmail("collaborator_1@gmail.com");
-      collaborator_1.getShareProjectList().add(project);
+      collaborator_1.setEmail("collaborator_1@cuptodo.com");
+      collaborator_1.getShareProjectList().add(originalProject);
 
       User collaborator_2 = new User();
-      collaborator_2.setEmail("collaborator_2@gmail.com");
-      collaborator_2.getShareProjectList().add(project);
+      collaborator_2.setEmail("collaborator_2@cuptodo.com");
+      collaborator_2.getShareProjectList().add(originalProject);
 
-      List<User> collaboratorList = new ArrayList<>();
-      collaboratorList.add(collaborator_1);
-      collaboratorList.add(collaborator_2);
+      List<User> originalCollaboratorList = new ArrayList<>();
+      originalCollaboratorList.add(collaborator_1);
+      originalCollaboratorList.add(collaborator_2);
 
-      project.setCollaboratorList(collaboratorList);
+      originalProject.setCollaboratorList(originalCollaboratorList);
 
       Project updatedProject = new Project();
       updatedProject.setUser(owner);
 
       User collaborator_3 = new User();
-      collaborator_3.setEmail("collaborator_3@gmail.com");
+      collaborator_3.setEmail("collaborator_3@cuptodo.com");
+
+      Map<String, String> collaboratorEmailSecretMap = new HashMap();
+      collaboratorEmailSecretMap.put("collaborator_3@cuptodo.com", "ABCDE");
 
       List<User> updatedCollaboratorList = new ArrayList<>();
       updatedCollaboratorList.add(collaborator_3);
 
-      List<String> updatedCollaboratorEmailList = updatedCollaboratorList.stream()
+      List<String> updatedCollaboratorEmailList = updatedCollaboratorList
+              .stream()
+              .map(collaborator -> collaborator.getEmail())
+              .collect(Collectors.toList());
+      updatedProject.setCollaboratorList(updatedCollaboratorList);
+
+      List<String> originalCollaboratorEmailList = originalCollaboratorList
+              .stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      updatedProject.setCollaboratorList(updatedCollaboratorList);
-
-      when(userRepository.findAllByEmailIn(Mockito.any())).thenReturn(collaboratorList);
-      when(userRepository.countByEmailIn(Mockito.any())).thenReturn(1);
+      when(userRepository.findAllByEmailIn(Mockito.any())).thenReturn(updatedCollaboratorList);
+      doReturn(true).when(projectService).checkIfSecretsAreValid(Mockito.any(), Mockito.any());
+      doReturn(true).when(projectService).checkIfCollaboratorListCountValid(Mockito.any());
+      doReturn(true).when(projectService).checkIfCollaboratorListValid(Mockito.any());
 
       when(projectRepository.save(Mockito.any())).thenReturn(updatedProject);
 
-      Project _updatedProject = projectService.update(project, updatedProject);
-
-      List<String> actualCollaboratorEmailList = _updatedProject.getCollaboratorList().stream()
+      List<String> actualCollaboratorEmailList = projectService.update(originalProject, updatedProject,
+                      collaboratorEmailSecretMap).getCollaboratorList()
+              .stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      assertTrue(updatedCollaboratorEmailList.containsAll(actualCollaboratorEmailList));
       assertTrue(actualCollaboratorEmailList.containsAll(updatedCollaboratorEmailList));
-   }
-
-   @Test
-   public void shouldThrowResponseStatusExceptionWhenUpdateProjectWithCollaboratorListExceedMaxSize() throws Exception {
-      Project project = new Project();
-
-      User owner = new User();
-      owner.setEmail("project_owner@gmail.com");
-
-      project.setUser(owner);
-
-      User collaborator_1 = new User();
-      collaborator_1.setEmail("collaborator_1@gmail.com");
-      collaborator_1.getShareProjectList().add(project);
-
-      User collaborator_2 = new User();
-      collaborator_2.setEmail("collaborator_2@gmail.com");
-      collaborator_2.getShareProjectList().add(project);
-
-      List<User> collaboratorList = new ArrayList<>();
-      collaboratorList.add(collaborator_1);
-      collaboratorList.add(collaborator_2);
-
-      project.setCollaboratorList(collaboratorList);
-
-      Project updatedProject = new Project();
-      updatedProject.setUser(owner);
-
-      User collaborator_3 = new User();
-      collaborator_3.setEmail("collaborator_3@gmail.com");
-
-      List<User> updatedCollaboratorList = new ArrayList<>();
-      updatedCollaboratorList.add(collaborator_3);
-
-      List<String> updatedCollaboratorEmailList = updatedCollaboratorList.stream()
-              .map(collaborator -> collaborator.getEmail())
-              .collect(Collectors.toList());
-
-      updatedProject.setCollaboratorList(updatedCollaboratorList);
-
-      when(userRepository.findAllByEmailIn(Mockito.any())).thenReturn(collaboratorList);
-      when(userRepository.countByEmailIn(Mockito.any())).thenReturn(1);
-
-      when(projectRepository.save(Mockito.any())).thenReturn(updatedProject);
-
-      Project _updatedProject = projectService.update(project, updatedProject);
-
-      List<String> actualCollaboratorEmailList = _updatedProject.getCollaboratorList().stream()
-              .map(collaborator -> collaborator.getEmail())
-              .collect(Collectors.toList());
-
-      assertTrue(updatedCollaboratorEmailList.containsAll(actualCollaboratorEmailList));
-      assertTrue(actualCollaboratorEmailList.containsAll(updatedCollaboratorEmailList));
-   }
-
-   @Test
-   public void shouldUpdateUserPermissionsForProject() {
-      Project project = new Project();
-      project.setId("project_id_1");
-
-      Map<String, List<Permission>> userPermissionsMp = new HashMap();
-      List<Permission> permissionList = new ArrayList();
-      permissionList.add(new Permission(project.getId(), Permissible.PROJECT_STORY.toString(), Permit.READ.toString()));
-      permissionList.add(new Permission(project.getId(), Permissible.PROJECT_STORY.toString(), Permit.WRITE.toString()));
-
-      userPermissionsMp.put("yuetcheukchan@gmail.com", permissionList);
-      userPermissionsMp.put("cchan@gmail.com", permissionList);
-
-      User user1 = new User();
-      user1.setEmail("yuetcheukchan@gmail.com");
-
-      User user2 = new User();
-      user2.setEmail("cchan@gmail.com");
-
-      List<User> userList = new ArrayList();
-      userList.add(user1);
-      userList.add(user2);
-
-      when(userRepository.findAllByEmailIn(Mockito.any())).thenReturn(userList);
-      when(userRepository.saveAll(Mockito.any())).thenReturn(userList);
-
-      projectService.updatePermissions(project, userPermissionsMp);
-
-      assertTrue(userList.get(0).getPermissionList().size() == 2);
-      assertTrue(userList.get(1).getPermissionList().size() == 2);
+      assertTrue(actualCollaboratorEmailList.containsAll(originalCollaboratorEmailList));
    }
 
 }

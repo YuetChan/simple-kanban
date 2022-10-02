@@ -2,7 +2,6 @@ package com.tycorp.cuptodo.task;
 
 import com.google.gson.annotations.Expose;
 import com.tycorp.cuptodo.project.Project;
-import com.tycorp.cuptodo.story.Story;
 import com.tycorp.cuptodo.tag.Tag;
 import com.tycorp.cuptodo.task.value.Priority;
 import com.tycorp.cuptodo.task.value.Status;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -43,9 +41,6 @@ public class Task {
    @Column(name = "note")
    private String note = "";
 
-   @Expose
-   private String projectId;
-
    @ManyToOne(fetch = FetchType.LAZY)
    @JoinTable(
            name = "tasks_project_join",
@@ -53,17 +48,6 @@ public class Task {
            inverseJoinColumns = @JoinColumn(name = "project_id")
    )
    private Project project;
-
-   @Expose
-   private String storyId;
-
-   @ManyToOne(fetch = FetchType.LAZY)
-   @JoinTable(
-           name = "tasks_story_join",
-           joinColumns = @JoinColumn(name = "task_id"),
-           inverseJoinColumns = @JoinColumn(name = "story_id")
-   )
-   private Story story;
 
    @Expose
    @ElementCollection(fetch = FetchType.LAZY)
@@ -83,22 +67,13 @@ public class Task {
    private List<Tag> tagList = new ArrayList<>();
 
    @Expose
-   @Column(name = "completed")
-   private boolean completed = false;
-
-   @Expose
-   @Column(name = "status")
-   @Enumerated(EnumType.STRING)
-   private Status status = Status.TO_DO;
-
-   @Expose
    @Column(name = "priority")
    @Enumerated(EnumType.STRING)
    private Priority priority = Priority.LOW;
 
    @Expose
-   @Column(name = "completed_at")
-   private long completedAt = -1;
+   @Column(name = "assignee_email")
+   private String assigneeEmail;
 
    @Expose
    @Column(name = "due_at")
@@ -108,8 +83,13 @@ public class Task {
    @Column(name = "created_at")
    private long createdAt = System.currentTimeMillis();
 
+   @Expose
+   @OneToOne(mappedBy = "task", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+   private TaskNode taskNode;
+
    @Column(name = "active")
    private boolean active = true;
+
 
    public void removeTags(List<Tag> tagList) {
       // for loop to avoid comodification error when tagList is getTagList()

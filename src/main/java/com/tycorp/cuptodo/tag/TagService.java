@@ -1,15 +1,17 @@
 package com.tycorp.cuptodo.tag;
 
 import com.tycorp.cuptodo.project.Project;
-import com.tycorp.cuptodo.project.ProjectController;
 import com.tycorp.cuptodo.task.Task;
 import com.tycorp.cuptodo.task.TaskRepository;
 import com.tycorp.cuptodo.user.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class TagService {
-   private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(TagService.class);
    
    @Autowired
    private TagRepository tagRepository;
@@ -27,44 +29,52 @@ public class TagService {
    @Autowired
    private UserRepository userRepository;
 
-   public List<Tag> addTagListForProjectAndTask(List<Tag> tagList, Project project, Task task) {
+   public List<Tag> addTagListToProjectAndTask(List<Tag> tagList, Project project, Task task) {
       LOGGER.trace("Enter addTagListForProjectAndTask(tagList, project, task)");
 
-      List<Tag> existedTagList = tagRepository.findByProjectIdAndNameIn(project.getId(), tagList
-              .stream()
-              .map(tag -> tag.getName())
-              .collect(Collectors.toList()));
+      LOGGER.debug("Find tag by project id and name in");
+      List<String> tagNameList = getNameList(tagList);
+      Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(), tagNameList,
+              PageRequest.of(0, 3000));
 
-      List<String> existedTagListNames = new ArrayList<>();
+      if(page.getTotalElements() > 3000) {
+         LOGGER.debug("Total tags count exceed 3000");
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Total tag count exceed 3000");
+      }
 
-      existedTagList.forEach(existedTag -> {
-         task.getTagList().add(existedTag);
-         existedTag.getTaskList().add(task);
+      List<Tag> currentTagList = page.getContent();
+      attachTagListToTask(currentTagList, task);
 
-         existedTagListNames.add(existedTag.getName());
-      });
+      List<String> currentTagNameList = getNameList(currentTagList);
 
       List<Tag> tagToAddList = tagList
               .stream()
-              .map(tag -> {
-                 tag.setProject(project);
-                 return tag;
-              })
-              .filter(tag -> {
-                 if(!existedTagListNames.contains(tag.getName())) {
-                    tag.getTaskList().add(task);
-                    return true;
-                 }else {
-                    return false;
-                 }
-              })
+              .filter(tag -> !currentTagNameList.contains(tag.getName()))
               .collect(Collectors.toList());
+      attachTagListToProject(tagToAddList, project);
+      attachTagListToTask(tagToAddList, task);
 
-      tagToAddList = (List<Tag>) tagRepository.saveAll(tagToAddList);
-      existedTagList = (List<Tag>) tagRepository.saveAll(existedTagList);
+      List<Tag> updatedTagList = new ArrayList<>();
+      updatedTagList.addAll(tagToAddList);
+      updatedTagList.addAll(currentTagList);
 
-      existedTagList.addAll(tagToAddList);
+      return (List<Tag>) tagRepository.saveAll(updatedTagList);
+   }
 
-      return existedTagList;
+   public void attachTagListToTask(List<Tag> tagList, Task task) {
+      LOGGER.trace("Enter attachTagListToTask(tagList, task)");
+      tagList.forEach(currentTag -> currentTag.getTaskList().add(task));
+   }
+
+   public void attachTagListToProject(List<Tag> tagList, Project project) {
+      LOGGER.trace("Enter attachTagListToProject(tagList, project)");
+      tagList.forEach(tag -> tag.setProject(project));
+   }
+
+   public List<String> getNameList(List<Tag> tagList) {
+      LOGGER.trace("Enter getNameList(tagList)");
+      return tagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
    }
 }
+
+
