@@ -2,17 +2,15 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
 
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
 
-  constructor(configSvc: ConfigService) {
+  constructor() {
     super({
-      clientID: configSvc.get<string>('GOOGLE_CLIENT_ID'),
-      clientSecret: configSvc.get<string>('GOOGLE_SECRET'),
-      
-      callbackURL: configSvc.get<string>('GOOGLE_REDIRECT'),
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_REDIRECT,
       scope: ['email', 'profile'],
     });
   }

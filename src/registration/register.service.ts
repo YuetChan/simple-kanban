@@ -1,5 +1,4 @@
 import { HttpStatus, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 
 import axios from 'axios';
 
@@ -8,27 +7,26 @@ export class RegisterService {
 
 	private REST_HOST = '';
 
-  constructor(private configSvc: ConfigService) { this.REST_HOST = this.configSvc.get<string>('REST_HOST'); }
+  constructor() { this.REST_HOST = process.env.REST_HOST; }
 
   async register(user: User): Promise<User> {
 		console.trace('Enter register(user)');
 
+		console.debug('Get user by user email');
+
 		return await axios.get(`${this.REST_HOST}/users`, { 
 				params: { email: user.email } 
 		}).then(async res => {
-			console.debug('Res ', res);
+			console.debug('Get role by id');
 
 			const user = res.data.data.user;
-
 			const role = await axios.get(`${this.REST_HOST}/users/${user.id}/role`).then(res => {
-					console.debug('Res ', res);
-
-					if(res.status === HttpStatus.OK) { return res.data.data.role; }
+				if(res.status === HttpStatus.OK) { return res.data.data.role; }
 					throw new InternalServerErrorException();
-				}).catch(err => {
-					console.debug(err)
+			}).catch(err => {
+					console.debug('Err', err);
 					throw new InternalServerErrorException();
-				});
+			});
 
 			return {
 				id: user.id,
@@ -37,7 +35,7 @@ export class RegisterService {
 				role: role
 			};
 		}).catch(async err => {
-			console.debug('Err', err)
+			console.debug('Create user');
 
 			const res = await axios.post<{ data: { user: any } }>(`${this.REST_HOST}/users`, {
 				data: {
@@ -47,12 +45,10 @@ export class RegisterService {
 					}
 				}
 			}).then(res => {
-				console.debug('Res ', res)
-
 				if(res.status !== HttpStatus.CREATED) { throw new InternalServerErrorException(); }
 				return res;
 			}).catch(err => {
-				console.debug('Err ', err);
+				console.debug('Err', err);
 				throw new InternalServerErrorException();
 			});
 			

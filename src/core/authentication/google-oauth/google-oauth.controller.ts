@@ -1,5 +1,4 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtAuthService, LoginType } from '../jwt/jwt-auth.service';
 import { GoogleOauthGuard } from './google-oauth.guard';
 
@@ -8,9 +7,7 @@ export class GoogleOauthController {
 
   UI_HOST = '';
 
-  constructor(
-    private jwtAuthSvc: JwtAuthService, 
-    private configSvc: ConfigService) { this.UI_HOST = this.configSvc.get<string>('UI_HOST'); }
+  constructor(private jwtAuthSvc: JwtAuthService) { this.UI_HOST = process.env.UI_HOST; }
 
   @Get()
   @UseGuards(GoogleOauthGuard)

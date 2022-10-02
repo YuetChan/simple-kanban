@@ -9,15 +9,19 @@ export class JwtAuthService {
     private jwtSvc: JwtService,
     private registerSvc: RegisterService) { }
 
-  // the user refer to the
   async getJwt(user, loginType: LoginType) {
+    console.trace('Enter getJwt(user, loginType');
+
     if(loginType === LoginType.GOOGLE) {
       try {
+        console.debug('Register or get user')
         const registeredUser = await this.registerSvc.register({
           email: user.email,
           name: user.name
-        })
+        });
   
+        console.debug('Sign jwt');
+
         return this.jwtSvc.sign({ 
           provider: user.provider,
   
@@ -26,13 +30,13 @@ export class JwtAuthService {
           name: registeredUser.name,
         }) ;
       }catch(e) {
-        console.error(e);
+        console.error('Err', e);
         throw new InternalServerErrorException();
       }
     }
 
     return this.jwtSvc.sign({ 
-      provider: 'cup_fitness',
+      provider: 'cup_kanban',
 
       id: user.id,
       email: user.email,
@@ -42,4 +46,4 @@ export class JwtAuthService {
   }
 }
 
-export enum LoginType { GOOGLE, HK_PODCAST }
+export enum LoginType { GOOGLE }
