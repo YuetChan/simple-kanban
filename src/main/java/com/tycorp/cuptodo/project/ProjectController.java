@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tycorp.cuptodo.core.util.GsonHelper;
-import com.tycorp.cuptodo.task.Task;
 import com.tycorp.cuptodo.task.TaskRepository;
 import com.tycorp.cuptodo.user.User;
 import com.tycorp.cuptodo.user.UserRepository;

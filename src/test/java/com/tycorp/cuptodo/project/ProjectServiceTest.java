@@ -258,5 +258,4 @@ public class ProjectServiceTest {
       assertTrue(actualCollaboratorEmailList.containsAll(updatedCollaboratorEmailList));
       assertTrue(actualCollaboratorEmailList.containsAll(originalCollaboratorEmailList));
    }
-
 }
