@@ -112,7 +112,7 @@ const KanbanTable = () => {
     const backlog = 'backlog';
     const backlogCardStacks = tasksContextState._allTasks?.backlog.map(task => {
       return (getCardStack(<KanbanCard 
-        hightlight={ matchAll(task) } 
+        highlight={ matchAll(task) } 
         task={ task } 
         category={ backlog }
         handleOnCardClick={ handleOnCardClick } />))
@@ -121,7 +121,7 @@ const KanbanTable = () => {
     const todo = 'todo';  
     const todoCardStacks = tasksContextState._allTasks?.todo.map(task => {
       return (getCardStack(<KanbanCard 
-        hightlight={ matchAll(task) } 
+        highlight={ matchAll(task) } 
         task={ task } 
         category={ todo }  
         handleOnCardClick={ handleOnCardClick }/>));
@@ -130,7 +130,7 @@ const KanbanTable = () => {
     const inProgress = 'inProgress';
     const inProgressCardStacks = tasksContextState._allTasks?.inProgress.map(task => {
       return (getCardStack(<KanbanCard 
-        hightlight={ matchAll(task) } 
+        highlight={ matchAll(task) } 
         task={ task } 
         category={ inProgress } 
         handleOnCardClick={ handleOnCardClick }/>));
@@ -139,7 +139,7 @@ const KanbanTable = () => {
     const done = 'done';  
     const doneCardStacks = tasksContextState._allTasks?.done.map(task => {
       return (getCardStack(<KanbanCard 
-        hightlight={ matchAll(task) } 
+        highlight={ matchAll(task) } 
         task={ task } 
         category={ done } 
         handleOnCardClick={ handleOnCardClick }/>))

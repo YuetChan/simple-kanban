@@ -2,13 +2,14 @@ import React, { useEffect } from "react";
 
 import { Pagination, Stack } from "@mui/material";
 
-import KanbanTagArea from "../components/kanban-common/kanban-tags-area";
-
 import { useKanbanProjectsContext } from "../providers/kanban-projects";
-
-import { searchTagsByProjectIdAndPrefix } from "../apis/tags-api";
 import { useKanbanTagsSearchResultPanelContext } from "../providers/kanban-tags-search-result-panel";
 import { useKanbanDrawerContext } from "../providers/kanban-drawer";
+
+import KanbanTagArea from "../components/kanban-common/kanban-tags-area";
+
+import { searchTagsByProjectIdAndPrefix } from "../apis/tags-api";
+import { Tag } from "../features/Tag";
 
 const KanbanTagsResultPanel = (props: any) => {
   const projectsContextState = useKanbanProjectsContext().state;
@@ -18,12 +19,12 @@ const KanbanTagsResultPanel = (props: any) => {
   const drawerContextState = useKanbanDrawerContext().state;
   const drawerContextDispatch = useKanbanDrawerContext().Dispatch;
 
-  const [ tags, setTags ] = React.useState([]);
+  const [ tags, setTags ] = React.useState<Array<Tag>>([]);
 
   const [ page, setPage ] = React.useState(1);
   const [ totalPage, setTotalPage ] = React.useState(1);
 
-  const fetchTags = (page) => {
+  const fetchTags = (page: number) => {
     const timeout = setTimeout(() => {  
       searchTagsByProjectIdAndPrefix(projectsContextState?._activeProject?.id, 
         drawerContextState._tagsEditAreaSearchStr, page).then(res => {
@@ -37,7 +38,7 @@ const KanbanTagsResultPanel = (props: any) => {
     return () => clearTimeout(timeout);  
   }
 
-  const handlePageChange = (e, val) => {
+  const handlePageChange = (e: any, val: number) => {
     if(projectsContextState._activeProject) {
       fetchTags(val - 1); 
     }

@@ -9,7 +9,7 @@ const KanbanDrawerPrioritySelect = () => {
 
   const [ priority, setPriority ] = React.useState('all');
 
-  const handleOnPriorityChange = (e) => {
+  const handleOnPriorityChange = (e: any) => {
     setPriority(e.target.value);
 
     drawerContextDispatch({

@@ -1,12 +1,23 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 import { Stack, TextField } from "@mui/material";
 
 import KanbanTagArea from "./kanban-tags-area";
 
-const KanbanTagsEditArea = (props: any) => {
-  const [ tags, setTags ] = React.useState([])
+interface TagsEditsAreaProps {
+  label?: string,
+  inputRef?: any,
+  disabled?: boolean,
+  tags?: Array<string>,
+  handleOnTagsChange?: Function,
+  handleOnTextFieldChange?: Function,
+  handleOnKeyPress?: Function,
+  handleOnFocus?: Function,
+  handleOnBlur?: Function
+}
+
+const KanbanTagsEditArea = (props: TagsEditsAreaProps) => {
+  const [ tags, setTags ] = React.useState<Array<string>>([])
   const [ tagInput, setTagInput ] = React.useState('');
 
   useEffect(() => {
@@ -14,16 +25,16 @@ const KanbanTagsEditArea = (props: any) => {
   }, []);
 
   useEffect(() => {
-    if(props.handleTagsChange) {
-      props.handleTagsChange(tags);
+    if(props.handleOnTagsChange) {
+      props.handleOnTagsChange(tags);
     } 
-  }, [tags]);
+  }, [ tags ]);
 
-  const handleOnDeleteClick = (e, tagToDelete) => {
+  const handleOnDeleteClick = (e: any, tagToDelete: string) => {
     setTags(tags.filter(tag => tag !== tagToDelete));
   }
 
-  const handleOnTextFieldChange = (e) => {
+  const handleOnTextFieldChange = (e: any) => {
     if(props.handleOnTextFieldChange) {
       props.handleOnTextFieldChange(e);
     }
@@ -31,7 +42,7 @@ const KanbanTagsEditArea = (props: any) => {
     setTagInput(e.target.value);
   }
 
-  const handleOnKeyPress = (e) => {
+  const handleOnKeyPress = (e: any) => {
     const newTag = e.target.value;
 
     if(e.keyCode === 13) {
@@ -46,7 +57,7 @@ const KanbanTagsEditArea = (props: any) => {
     }
   }
 
-  const handleOnFocus = (e) => {
+  const handleOnFocus = (e: any) => {
     if(props.handleOnFocus) {
       props.handleOnFocus(e);
     }
@@ -62,8 +73,8 @@ const KanbanTagsEditArea = (props: any) => {
     <section>
       <Stack direction="column" alignItems="start" spacing={ 1 }>
         <TextField 
-          label={ props.label } 
-          disabled={ props.disabled }
+          label={ props.label? props.label : ""  } 
+          disabled={ props.disabled? props.disabled : true }
           variant="standard" 
           onChange={ (e) => handleOnTextFieldChange(e) }
           onKeyDown={ handleOnKeyPress }

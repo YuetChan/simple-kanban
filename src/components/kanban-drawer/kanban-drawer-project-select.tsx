@@ -1,9 +1,15 @@
 import { FormControl, MenuItem, Select, Tooltip } from "@mui/material";
 
 import { useKanbanProjectsContext } from "../../providers/kanban-projects";
-import { truncate } from "../../apis/text-api";
+import { truncate } from "../../libs/text-lib";
 
-const KanbanDrawerProjectSelect = (props: any) => {
+interface DrawerProjectSelectProps {
+  yourProjectDisabled: boolean,
+  handleOnProjectChange: Function
+}
+
+const KanbanDrawerProjectSelect = (props: DrawerProjectSelectProps) => {
+  // ------------------ Project ------------------ 
   const projectsContextState = useKanbanProjectsContext().state;
 
   return (
@@ -19,16 +25,16 @@ const KanbanDrawerProjectSelect = (props: any) => {
         {
           projectsContextState._allProjects.map(project => {
             return (
-                <MenuItem key={ project.id } value={ project.id }>
-                  <Tooltip style={{
-                    width: "100%",
-                    height: "100%"
-                  }} title={ project.name }>
-                    <div>
-                      { truncate(project.name, 7) }
-                    </div>
-                  </Tooltip>
-                </MenuItem>
+              <MenuItem key={ project.id } value={ project.id }>
+                <Tooltip style={{
+                  width: "100%",
+                  height: "100%"
+                }} title={ project.name }>
+                  <div>
+                    { truncate(project.name, 7) }
+                  </div>
+                </Tooltip>
+              </MenuItem>
             )
           })
         }

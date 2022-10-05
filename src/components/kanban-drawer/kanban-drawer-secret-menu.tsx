@@ -8,6 +8,7 @@ import { useKanbanUsersContext } from "../../providers/kanban-users";
 import { generateUserSecretById, getUserByEmail } from "../../apis/users-api";
 
 const KanbanDrawerSecretMenu = (props: any) => {
+  // ------------------ User ------------------
   const usersContextState = useKanbanUsersContext().state;
   const usersContextDispatch = useKanbanUsersContext().Dispatch;
 
@@ -22,6 +23,7 @@ const KanbanDrawerSecretMenu = (props: any) => {
     });
   }
   
+  // ------------------ Html template ------------------
   return (
     <Menu
       anchorEl={ props.secretMenuAnchorEl }

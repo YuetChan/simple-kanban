@@ -5,19 +5,20 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { useKanbanDatesContext } from "../../providers/kanban-dates";
 
+
+// Unused
 const KanbanDrawerDateFilter = (props: any) => {
-  // 
   const datesContextState = useKanbanDatesContext().state;
   const datesContextDispatch = useKanbanDatesContext().Dispatch;
 
-  const handleOnFromDateChange = (date) => {
+  const handleOnFromDateChange = (date: Date) => {
     datesContextDispatch({
       type: 'fromDate_update',
       value: date
     });
   }
 
-  const handleOnToDateChange = (date) => {
+  const handleOnToDateChange = (date: Date) => {
     datesContextDispatch({
       type: 'toDate_update',
       value: date
@@ -32,12 +33,12 @@ const KanbanDrawerDateFilter = (props: any) => {
       <div>Created from: </div>
       <DatePicker 
         selected={ datesContextState?._fromDate } 
-        onChange={(date) => handleOnFromDateChange(date)} />
+        onChange={(date: Date) => handleOnFromDateChange(date)} />
 
       <div>To: </div>
       <DatePicker 
         selected={ datesContextState?._toDate } 
-        onChange={(date) => handleOnToDateChange(date)} />
+        onChange={(date: Date) => handleOnToDateChange(date)} />
     </Stack>
   )
 }

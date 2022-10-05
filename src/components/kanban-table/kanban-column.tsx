@@ -7,12 +7,23 @@ import { useKanbanTasksContext } from "../../providers/kanban-tasks";
 
 import { stringToEnum } from "../../apis/backend-enum-api";
 import { updateTask } from "../../apis/tasks-api";
+import { Task } from "../../features/Task";
 
-const KanbanColumn = (props: any) => {
+interface ColumnProps {
+  category: string,
+  meta: {
+    headUUID: string,
+    tailUUID: string
+  },
+  
+  children: any
+}
+
+const KanbanColumn = (props: ColumnProps) => {
   // ------------------ Task ------------------
   const tasksContextState = useKanbanTasksContext().state;
 
-  const [ tasks , setTasks ] = React.useState([]);
+  const [ tasks , setTasks ] = React.useState<Array<Task>>([]);
 
   // ------------------ Table ------------------
   const tableContextDispatch = useKanbanTableContext().Dispatch;
@@ -25,7 +36,7 @@ const KanbanColumn = (props: any) => {
   const [ , drop ] = useDrop(() => {
     return { 
       accept: 'card',
-      drop: (item, monitor) => {
+      drop: (item: Task, monitor) => {
         if(!monitor.didDrop()) {
           const statusEnum = stringToEnum(props.category);
 
@@ -82,7 +93,7 @@ const KanbanColumn = (props: any) => {
   }, [ tasks ]);
   
   // ------------------ Helper func ------------------
-  const updateTaskAndRefresh = (task) => {
+  const updateTaskAndRefresh = (task: Task) => {
     updateTask(task).then(res => {
       tableContextDispatch({
         type: 'table_refresh'

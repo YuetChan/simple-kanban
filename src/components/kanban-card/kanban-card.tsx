@@ -10,19 +10,31 @@ import { mergeRefs } from "react-merge-refs";
 import { useKanbanTableContext } from '../../providers/kanban-table';
 
 import { updateTask } from '../../apis/tasks-api';
-import { truncate } from '../../apis/text-api';
+import { truncate } from '../../libs/text-lib';
 import { stringToEnum } from '../../apis/backend-enum-api';
 
 import KanbanTagArea from '../kanban-common/kanban-tags-area';
 import { textToAvatar } from '../../apis/avatar-api';
+import { Task } from '../../features/Task';
 
-const KanbanCard = (props: any) => {
+interface CardProps {
+  task: Task,
+  category: string,
+  highlight?: boolean,
+  showDescription?: boolean,
+
+  handleOnCardClick?: Function
+}
+
+const KanbanCard = (props: CardProps) => {
   // ------------------ Table ------------------
   const tableContextDispatch = useKanbanTableContext().Dispatch;
 
   // ------------------ Card edit dialog ------------------
   const handleOnCardClick = () => {
-    props.handleOnCardClick(props.task);
+    if(props.handleOnCardClick) {
+      props.handleOnCardClick(props.task);
+    }
   };
 
   // ------------------ DnD ------------------
@@ -36,7 +48,7 @@ const KanbanCard = (props: any) => {
   const [ , drop ] = useDrop(() => {
     return { 
       accept: 'card',
-      drop: (item) => {
+      drop: (item: Task) => {
         if(item.id !== props.task?.id) {
           const updatedTask = {
             ... item,
@@ -55,7 +67,7 @@ const KanbanCard = (props: any) => {
   }, [ props.task ]);
 
   // ------------------ Helper func ------------------
-  const updateTaskAndRefresh = (task) => {
+  const updateTaskAndRefresh = (task: Task) => {
     updateTask(task).then(res => {
       tableContextDispatch({
         type: 'table_refresh'
@@ -66,7 +78,7 @@ const KanbanCard = (props: any) => {
   }
 
   // ------------------ HTML template ------------------  
-  const getAvatarHTML = (email) => {
+  const getAvatarHTML = (email: string) => {
     return (
       <Avatar
         sx={{ 
@@ -78,7 +90,7 @@ const KanbanCard = (props: any) => {
     )
   }
 
-  const getPriorityHTML = (priority) => {
+  const getPriorityHTML = (priority: string) => {
     if(priority === stringToEnum('low')) {
       return (
         <Typography                   
@@ -122,7 +134,8 @@ const KanbanCard = (props: any) => {
     }
   }
 
-  const getDueAtHTML = (dueAt) => {
+  const getDueAtHTML = (dueAt: number) => {
+    console.log(dueAt);
     return (
       <Typography 
         sx={{
@@ -141,7 +154,7 @@ const KanbanCard = (props: any) => {
   return (
       <Card 
         ref={ mergeRefs([ drag, drop ]) }
-        sx={{ width: "100%", background: props.hightlight? "#FFA59B": null }}>
+        sx={{ width: "100%", background: props.highlight? "#FFA59B": null }}>
         <CardActionArea 
           href="javascript:void(0)" 
           onClick={ handleOnCardClick }>
@@ -176,7 +189,7 @@ const KanbanCard = (props: any) => {
               </Typography>
 
               {
-                props.showDescription
+                (props.showDescription? props.showDescription : false)
                 ? (               
                   <Typography variant="body2" color="text.secondary">
                     { truncate(props.task?.description, 100) }

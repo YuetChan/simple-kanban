@@ -5,8 +5,15 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import toMaterialStyle from 'material-color-hash';
 
-const KanbanTagArea = (props: any) => {
-  const { tag, showDelete, handleOnDeleteClick } = props;
+interface TagAreaProps {
+  tag: string,
+  showDelete?: boolean,
+
+  handleOnDeleteClick?: Function
+}
+
+const KanbanTagArea = (props: TagAreaProps) => {
+  const { tag } = props;
 
   const style = {
     ... toMaterialStyle(tag),
@@ -19,16 +26,20 @@ const KanbanTagArea = (props: any) => {
       direction="row" 
       alignItems="center" 
       sx={ style }>
-      <div>{ tag }</div>
+      <div>{ tag? tag : "" }</div>
       &nbsp;
 
       {
-        showDelete
+        (props.showDelete? props.showDelete : false)
         ? (
           <IconButton 
             aria-label="delete"
             sx={{ padding: "0px" }}
-            onClick={ (e) => handleOnDeleteClick(e, tag) }>
+            onClick={ (e: any) => {
+              if(props.handleOnDeleteClick) {
+                props.handleOnDeleteClick((e, tag))
+              }
+            } }>
             <CloseIcon fontSize='small' />
           </ IconButton>
           )

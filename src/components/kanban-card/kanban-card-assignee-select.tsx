@@ -2,12 +2,20 @@ import React from "react";
 import { Avatar, FormControl, InputLabel, MenuItem, Select, Stack } from "@mui/material";
 
 import { textToAvatar } from "../../apis/avatar-api";
-import { truncate } from "../../apis/text-api"
+import { truncate } from "../../libs/text-lib"
 
-const KanbanCardAssigneeSelect = (props: any) => {
+interface AssigneeSelectProps {
+  assignee: string,
+  allAssignees: Array<string>,
+
+  handleOnSelectChange: Function
+}
+
+const KanbanCardAssigneeSelect = (props: AssigneeSelectProps) => {
+  // ------------------ Assignee ------------------
   const [ assignee, setAssignee ] = React.useState(props.assignee? props.assignee : 'none');
 
-  const getAssigneeHTML = (assignee) => {
+  const getAssigneeHTML = (assignee: string) => {
     return (
       <Stack 
         direction="row" 

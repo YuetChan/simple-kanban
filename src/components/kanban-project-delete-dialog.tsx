@@ -2,7 +2,15 @@ import React, { useEffect } from "react";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField } from "@mui/material";
 
-const KanbanProjectDeleteDialog = (props: any) => {
+interface ProjectDeleteDialogProps {
+  open: boolean,
+  label: string,
+  
+  handleOnClose: Function,
+  handleOnDelete: Function
+}
+
+const KanbanProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
   const [ enable, setEnable ] = React.useState(false);
   const [ value, setValue ] = React.useState('');
 
@@ -20,7 +28,7 @@ const KanbanProjectDeleteDialog = (props: any) => {
     }
   }
 
-  const handleOnChange = (e) => {
+  const handleOnChange = (e: any) => {
     setValue(e.target.value);
   }
 
