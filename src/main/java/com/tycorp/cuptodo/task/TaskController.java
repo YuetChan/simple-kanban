@@ -64,6 +64,7 @@ public class TaskController {
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
+      LOGGER.debug("Response json built: {}", resJson);
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
@@ -108,7 +109,7 @@ public class TaskController {
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
-      LOGGER.debug("Response json built: {}", resJson.toString());
+      LOGGER.debug("Response json built: {}", resJson);
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 

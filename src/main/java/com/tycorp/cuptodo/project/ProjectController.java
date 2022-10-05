@@ -62,7 +62,7 @@ public class ProjectController {
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
+//   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                            @RequestParam(name = "start") int start) {
@@ -132,7 +132,6 @@ public class ProjectController {
       }
    }
 
-   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createProject(@RequestBody String reqJsonStr) {
@@ -159,7 +158,6 @@ public class ProjectController {
       return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
    }
 
-   // Check permission in abac --- done
    @CrossOrigin(origins = "http://localhost:3000")
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateProjectById(@PathVariable(name = "id") String id,

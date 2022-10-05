@@ -133,7 +133,7 @@ public class ProjectService {
    }
 
    public void updateCollaboratorListForProject(Project originalProject, Project updatedProject,
-                                                 Map<String, String> collaboratorEmailSecretMap) {
+                                                Map<String, String> collaboratorEmailSecretMap) {
       LOGGER.trace("Enter updateCollaboratorListFromProject(project)");
 
       List<User> updatedCollaboratorList = updatedProject.getCollaboratorList();
@@ -189,7 +189,7 @@ public class ProjectService {
    }
 
    public boolean checkIfSecretsAreValid(List<User> userList,
-                                          Map<String, String> userEmailSecretMap) {
+                                         Map<String, String> userEmailSecretMap) {
       LOGGER.trace("Enter checkIfSecretsAreValid(userList, userEmailSecretMap)");
       for(var collaborator: userList) {
          if (!collaborator.getUserSecret()
