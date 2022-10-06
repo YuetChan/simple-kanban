@@ -12,17 +12,17 @@ import createEmotionCache from '../src/createEmotionCache';
 import '../styles/globals.css';
 import '../styles/kanban-card.scss';
 
-import { KanbanProjectsProvider } from '../src/providers/kanban-projects';
-import { KanbanTasksProvider } from '../src/providers/kanban-tasks';
-import { KanbanTagsSearchResultPanelProvider } from '../src/providers/kanban-tags-search-result-panel';
-import { KanbanUsersProvider } from '../src/providers/kanban-users';
-import { KanbanDatesProvider } from '../src/providers/kanban-dates';
-import { KanbanDrawerProvider } from '../src/providers/kanban-drawer';
-import { KanbanCardCreateProvider } from '../src/providers/kanban-card-create';
-import { KanbanProjectCreateDialogProvider } from '../src/providers/kanban-project-create-dialog';
+import { ProjectsCacheProvider } from '../src/providers/projects-cache';
+import { TasksCacheProvider } from '../src/providers/tasks-cache';
+import { TagsSearchResultPanelProvider } from '../src/providers/tags-search-result-panel';
+import { UserCacheProvider } from '../src/providers/user-cache';
+import { KanbanDatesProvider } from '../src/providers/dates-cache';
+import { TasksSearchProvider } from '../src/providers/tasks-search';
+import { TaskCreateProvider } from '../src/providers/task-create';
+import { ProjectCreateDialogProvider } from '../src/providers/project-create-dialog';
 import { KanbanTableProvider } from '../src/providers/kanban-table';
-import { KanbanCardUpdateProvider } from '../src/providers/kanban-card-update';
-import { KanbanProjectDeleteDialogProvider } from '../src/providers/kanban-project-delete-dialog';
+import { TaskUpdateProvider } from '../src/providers/task-update';
+import { ProjectDeleteDialogProvider } from '../src/providers/project-delete-dialog';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -49,28 +49,28 @@ export default function MyApp(props: MyAppProps) {
           
           <DndProvider backend={ HTML5Backend }>
           <KanbanTableProvider>
-          <KanbanProjectDeleteDialogProvider>
-          <KanbanProjectCreateDialogProvider>
-          <KanbanCardCreateProvider>
-          <KanbanCardUpdateProvider>
+          <ProjectDeleteDialogProvider>
+          <ProjectCreateDialogProvider>
+          <TaskCreateProvider>
+          <TaskUpdateProvider>
        
-          <KanbanDrawerProvider>
+          <TasksSearchProvider>
           <KanbanDatesProvider>
-          <KanbanUsersProvider>
-          <KanbanProjectsProvider>
-            <KanbanTasksProvider>
-            <KanbanTagsSearchResultPanelProvider>
+          <UserCacheProvider>
+          <ProjectsCacheProvider>
+            <TasksCacheProvider>
+            <TagsSearchResultPanelProvider>
                         <Component { ...pageProps } />
-                    </KanbanTagsSearchResultPanelProvider>
-            </KanbanTasksProvider>
-          </KanbanProjectsProvider>
-          </KanbanUsersProvider>
+                    </TagsSearchResultPanelProvider>
+            </TasksCacheProvider>
+          </ProjectsCacheProvider>
+          </UserCacheProvider>
           </KanbanDatesProvider>
-          </KanbanDrawerProvider>
-          </KanbanCardUpdateProvider> 
-          </KanbanCardCreateProvider>
-          </KanbanProjectCreateDialogProvider>
-          </KanbanProjectDeleteDialogProvider>
+          </TasksSearchProvider>
+          </TaskUpdateProvider> 
+          </TaskCreateProvider>
+          </ProjectCreateDialogProvider>
+          </ProjectDeleteDialogProvider>
           </KanbanTableProvider>  
           </DndProvider>
 

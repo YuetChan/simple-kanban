@@ -5,27 +5,27 @@ import { Stack } from '@mui/material'
 import type { NextPage } from 'next';
 import Head from 'next/head';
 
-import { useKanbanTagsSearchResultPanelContext } from '../src/providers/kanban-tags-search-result-panel';
-import { useKanbanProjectsContext } from '../src/providers/kanban-projects';
-import { useKanbanUsersContext } from '../src/providers/kanban-users';
-import { useKanbanDrawerContext } from '../src/providers/kanban-drawer';
-import { useKanbanProjectCreateDialogContext } from '../src/providers/kanban-project-create-dialog';
-import { useKanbanCardCreateContext } from '../src/providers/kanban-card-create';
-import { useKanbanTasksContext } from '../src/providers/kanban-tasks';
+import { useTagsSearchResultPanelContext } from '../src/providers/tags-search-result-panel';
+import { useProjectsCacheContext } from '../src/providers/projects-cache';
+import { useUserCacheContext } from '../src/providers/user-cache';
+import { useTasksSearchContext } from '../src/providers/tasks-search';
+import { useProjectCreateDialogContext } from '../src/providers/project-create-dialog';
+import { useTaskCreateContext } from '../src/providers/task-create';
+import { useTasksCacheContext } from '../src/providers/tasks-cache';
 import { useKanbanTableContext } from '../src/providers/kanban-table';
-import { useKanbanProjectDeleteDialogContext } from '../src/providers/kanban-project-delete-dialog';
+import { useProjectDeleteDialogContext } from '../src/providers/project-delete-dialog';
 
-import { createProject, deleteProject, getProjectById, searchProjectsByUserEmail } from '../src/apis/projects-api';
-import { createTask } from '../src/apis/tasks-api';
-import { getUserByEmail, getUserSecretById } from '../src/apis/users-api';
+import { createProject, deleteProject, getProjectById, searchProjectsByUserEmail } from '../src/features/project/services/projects-service';
+import { createTask } from '../src/features/task/services/tasks-service';
+import { getUserByEmail, getUserSecretById } from '../src/features/user/services/users-service';
 
-import KanbanDrawer from '../src/components/kanban-drawer/kanban-drawer';
-import KanbanTable from '../src/components/kanban-table/kanban-table';
-import KanbanTagsResultPanel from '../src/components/kanban-tags-search-result-panel';
-import KanbanTaskAddButton from '../src/components/kanban-task-add-button';
-import KanbanCardCreateDialog from '../src/components/kanban-card/kanban-card-create-dialog';
-import KanbanFirstProjectCreateDialog from '../src/components/kanban-project-create-dialog';
-import KanbanDrawerDeleteDialog from '../src/components/kanban-project-delete-dialog';
+import KanbanDrawer from '../src/layouts/kanban-drawer';
+import KanbanTable from '../src/layouts/kanban-table';
+import KanbanTagsResultPanel from '../src/features/task/components/task-search-tags-search-result-panel';
+import TaskAddButton from '../src/features/task/components/task-add-button';
+import TaskCreateDialog from '../src/features/task/components/task-create-dialog';
+import ProjectCreateDialog from '../src/features/project/components/project-create-dialog';
+import KanbanDrawerDeleteDialog from '../src/features/project/components/project-delete-dialog';
 
 import { getCookie } from 'cookies-next';
 import jwt_decode from "jwt-decode";
@@ -35,15 +35,15 @@ const Home: NextPage = () => {
   const [ authed, setAuthed ] = React.useState(false);
 
   // ------------------ Project ------------------
-  const projectsContextState = useKanbanProjectsContext().state;
-  const projectsContextDispatch = useKanbanProjectsContext().Dispatch;
+  const projectsContextState = useProjectsCacheContext().state;
+  const projectsContextDispatch = useProjectsCacheContext().Dispatch;
 
   // ------------------ Task ------------------
-  const tasksContextState = useKanbanTasksContext().state;
+  const tasksContextState = useTasksCacheContext().state;
 
   // ------------------ User ------------------
-  const usersContextState = useKanbanUsersContext().state;
-  const usersContextDispatch = useKanbanUsersContext().Dispatch;
+  const usersContextState = useUserCacheContext().state;
+  const usersContextDispatch = useUserCacheContext().Dispatch;
 
   useEffect(() => {
     if(authed) {
@@ -85,13 +85,13 @@ const Home: NextPage = () => {
   }, []);
 
   // ------------------ Drawer ------------------
-  const drawerContextState = useKanbanDrawerContext().state;
+  const drawerContextState = useTasksSearchContext().state;
 
   // ------------------ Table ------------------
   const tableContextDispatch = useKanbanTableContext().Dispatch;
 
   // ------------------ Card create dialog ------------------
-  const cardCreateContextState = useKanbanCardCreateContext().state;
+  const cardCreateContextState = useTaskCreateContext().state;
 
   const [ cardCreateOpen, setCardCreateOpen ] = React.useState(false);
  
@@ -113,7 +113,7 @@ const Home: NextPage = () => {
   }
 
   // ------------------ Project delete dialog ------------------ 
-  const projectDeleteDialogState = useKanbanProjectDeleteDialogContext().state;
+  const projectDeleteDialogState = useProjectDeleteDialogContext().state;
   const [ projectDeleteDialogOpen, setProjectDeleteDialogOpen ] = React.useState(false);
 
   const handleOnProjectDeleteDialogClose = () => {
@@ -140,11 +140,11 @@ const Home: NextPage = () => {
   }, [ projectDeleteDialogState ])
 
   // ------------------ Tag search result panel ------------------
-  const tagsSearchResultPanelContextState = useKanbanTagsSearchResultPanelContext().state;
+  const tagsSearchResultPanelContextState = useTagsSearchResultPanelContext().state;
 
   // ------------------ Project create dialog ------------------
-  const projectCreateDialogState = useKanbanProjectCreateDialogContext().state;
-  const projectCreateDialogDispatch = useKanbanProjectCreateDialogContext().Dispatch;
+  const projectCreateDialogState = useProjectCreateDialogContext().state;
+  const projectCreateDialogDispatch = useProjectCreateDialogContext().Dispatch;
 
   const handleOnProjectCreateClick = (project) => {
     createProject(project).then(res => {
@@ -262,14 +262,14 @@ const Home: NextPage = () => {
             bottom: "4px",
             left: "244px"
             }}>
-            <KanbanTaskAddButton handleOnClick={ handleOnTaskAddClick }/>
+            <TaskAddButton handleOnClick={ handleOnTaskAddClick }/>
           </div>
         )
         : null
       }  
 
       <div>
-        <KanbanCardCreateDialog 
+        <TaskCreateDialog 
           label="Create Kanban Card"
           open={ cardCreateOpen }
           handleOnApply={ (task) => handleOnCardCreateDialogApply(task) }
@@ -277,7 +277,7 @@ const Home: NextPage = () => {
       </div>    
 
       <div>
-        <KanbanFirstProjectCreateDialog 
+        <ProjectCreateDialog 
           title="Create Project"
           description="Please enter the project name to create your project."
           open={ projectCreateDialogState.show } 
