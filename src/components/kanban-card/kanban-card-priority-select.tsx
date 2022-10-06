@@ -2,8 +2,13 @@ import React, { useEffect } from "react";
 
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-const KanbanCardPrioritySelect = (props: any) => {
-  const [ priority, setPriority ] = React.useState('low');
+interface CardPrioritySelectProps {
+  value: string,
+  handleOnPriorityChange: Function
+}
+
+const KanbanCardPrioritySelect = (props: CardPrioritySelectProps) => {
+  const [ priority, setPriority ] = React.useState(props.value);
 
   useEffect(() => {
     setPriority(props.value);

@@ -2,11 +2,17 @@ import React, { useEffect } from "react";
 
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-const KanbanCardStatusSelect = (props: any) => {
-  const [ status, setStatus ] = React.useState(props.value? props.value : 'backlog');
+interface CardStatusSelectProps {
+  value: string,
+  showArchive?: boolean,
+  
+  handleOnSelectChange: Function
+}
+
+const KanbanCardStatusSelect = (props: CardStatusSelectProps) => {
+  const [ status, setStatus ] = React.useState(props.value);
 
   useEffect(() => {
-    console.log(props.value)
     setStatus(props.value);
   }, []);
   

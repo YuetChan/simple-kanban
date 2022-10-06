@@ -1,8 +1,14 @@
 import React, { useMemo, useReducer, createContext, useContext  } from 'react';
-
 import { initialState, ProjectCreateDialogReducer } from '../stores/kanban-project-create-dialog-reducer';
 
-const KanbanProjectCreateDialogContext = createContext();
+interface ProjectCreateDialogContext {
+  state: {
+    show: boolean
+  },
+  Dispatch: any
+}
+
+const KanbanProjectCreateDialogContext = createContext<ProjectCreateDialogContext>();
 
 export function KanbanProjectCreateDialogProvider ({ children }) {
   const [ state, Dispatch ] = useReducer(ProjectCreateDialogReducer, initialState);

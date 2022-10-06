@@ -1,7 +1,15 @@
 import { createContext, useContext, useMemo, useReducer } from 'react';
 import { initialState, UserReducer } from '../stores/kanban-users-reducer';
 
-const KanbanUsersContext = createContext();
+interface UserContext {
+  state: {
+    _loginedUserSecret: string,
+    _loginedUserEmail: string,
+  },
+  Dispatch: any
+}
+
+const KanbanUsersContext = createContext<UserContext>();
 
 export function KanbanUsersProvider ({ children }) {
   const [ state, Dispatch ] = useReducer(UserReducer, initialState);

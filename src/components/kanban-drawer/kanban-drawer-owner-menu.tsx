@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Menu, MenuItem, Stack, TextField } from "@mui/material";
 
 import PersonRemoveAlt1OutlinedIcon from '@mui/icons-material/PersonRemoveAlt1Outlined';
@@ -7,7 +7,13 @@ import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined
 import { getProjectById, updateProjectById } from "../../apis/projects-api";
 import { useKanbanProjectsContext } from "../../providers/kanban-projects";
 
-const KanbanDrawerOwnerMenu = (props: any) => {
+interface DrawerOwnerMenuProps {
+  ownerMenuAnchorEl: any,
+  ownerMenuOpen: boolean,
+  handleOnOwnerMenuClose?: Function
+}
+
+const KanbanDrawerOwnerMenu = (props: DrawerOwnerMenuProps) => {
   const projectsContextState = useKanbanProjectsContext().state;
   const projectsContextDispatch = useKanbanProjectsContext().Dispatch;
 
@@ -19,33 +25,33 @@ const KanbanDrawerOwnerMenu = (props: any) => {
   const collaboratorSecretRef = React.useRef(undefined);
   const collaboratorRemoveRef = React.useRef(undefined);
 
-  const handleOnCollaboratorAddKeyPress = (e) => {
+  const handleOnCollaboratorAddKeyPress = (e: any) => {
     if(e.key === 'Tab') {
       e.stopPropagation();
     }
   }
 
-  const handleOnCollaboratorSecretKeyPress = (e) => {
+  const handleOnCollaboratorSecretKeyPress = (e: any) => {
     if(e.key === 'Tab') {
       e.stopPropagation();
     }
   }
 
-  const handleOnCollaboratorRemoveKeyPress = (e) => { }
+  const handleOnCollaboratorRemoveKeyPress = (e: any) => { }
 
-  const handleOnCollaboratorToAddEmailChange = (e) => {
+  const handleOnCollaboratorToAddEmailChange = (e: any) => {
     setCollaboratorToAddEmail(e.target.value)
   }
 
-  const handleOnCollaboratorToAddSecretChange = (e) => {
+  const handleOnCollaboratorToAddSecretChange = (e: any) => {
     setCollaboratorSecret(e.target.value);
   }
 
-  const handleOnCollaboratorToRemoveEmailChange = (e) => {
+  const handleOnCollaboratorToRemoveEmailChange = (e: any) => {
     setCollaboratorToRemoveEmail(e.target.value)
   }
 
-  const handleOnCollaboratorAddClick = (e) => {
+  const handleOnCollaboratorAddClick = (e: any) => {
     const project = projectsContextState._activeProject;
 
     console.log(projectsContextState._activeProject)
@@ -87,7 +93,7 @@ const KanbanDrawerOwnerMenu = (props: any) => {
     });
   }
 
-  const handleOnCollaboratorRemoveClick = (e) => {
+  const handleOnCollaboratorRemoveClick = (e: any) => {
     const project = projectsContextState._activeProject;
 
     const collaboratorEmails = project.collaboratorList.map(collaborator =>  collaborator.email);
@@ -130,7 +136,11 @@ const KanbanDrawerOwnerMenu = (props: any) => {
     <Menu           
       anchorEl={ props.ownerMenuAnchorEl }
       open={ props.ownerMenuOpen }
-      onClose={ props.handleOnOwnerMenuClose }
+      onClose={ () => {
+        if(props.handleOnOwnerMenuClose) {
+          props.handleOnOwnerMenuClose();
+        }
+      } }
       PaperProps={{ style: { maxHeight: "360px" }}}>
     <Stack 
       direction="column" 

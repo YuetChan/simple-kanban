@@ -6,8 +6,10 @@ import { useKanbanProjectsContext } from "../../providers/kanban-projects";
 import { useKanbanDrawerContext } from "../../providers/kanban-drawer";
 
 const KanbanDrawerUsersFilterMenu = (props: any) => {
+  // ------------------ Project ------------------
   const projectsContextState = useKanbanProjectsContext().state;
 
+  // ------------------ Drawer ------------------
   const drawerContextState = useKanbanDrawerContext().state;
   const drawerContextDispatch = useKanbanDrawerContext().Dispatch;
 
@@ -22,7 +24,7 @@ const KanbanDrawerUsersFilterMenu = (props: any) => {
     setUserCheckMp(checkMap);
   }, [ drawerContextState._activeUserEmails ]);
 
-  const handleOnUserCheck = (e, email) => {
+  const handleOnUserCheck = (e: any, email: string) => {
     if(e.target.checked) {
       drawerContextDispatch({
         type: 'activeUserEmails_add',

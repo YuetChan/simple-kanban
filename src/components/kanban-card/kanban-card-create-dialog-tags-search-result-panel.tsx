@@ -8,18 +8,21 @@ import { searchTagsByProjectIdAndPrefix } from "../../apis/tags-api";
 import { useKanbanProjectsContext } from "../../providers/kanban-projects";
 
 import KanbanTagArea from "../kanban-common/kanban-tags-area";
+import { Tag } from "../../features/Tag";
 
 const KanbanCardTagsSearchResultPanel = (props: any) => {
+  // ------------------ Project ------------------
   const projectsContextState = useKanbanProjectsContext().state;
 
+  // ------------------ Card create dialog ------------------
   const cardCreateContextState = useKanbanCardCreateContext().state;
 
-  const [ tags, setTags ] = React.useState([]);
+  const [ tags, setTags ] = React.useState<Array<Tag>>([]);
 
   const [ page, setPage ] = React.useState(1);
   const [ totalPage, setTotalPage ] = React.useState(1); 
 
-  const fetchTags = (page) => {
+  const fetchTags = (page: number) => {
     const timeout = setTimeout(() => {  
       searchTagsByProjectIdAndPrefix(projectsContextState?._activeProject?.id, 
         cardCreateContextState._tagsEditAreaSearchStr, page).then(res => {
@@ -37,7 +40,7 @@ const KanbanCardTagsSearchResultPanel = (props: any) => {
     fetchTags(0);
   }, [ cardCreateContextState._tagsEditAreaSearchStr]);
 
-  const handleOnPageChange = (e, val) => {
+  const handleOnPageChange = (e: any, val: number) => {
     if(cardCreateContextState._lastFocusedArea === 'tagsEditArea') {
       fetchTags(val - 1);
     }

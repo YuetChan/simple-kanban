@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { useEffect } from 'react';
+import  React, { useEffect } from 'react';
 
-import { Stack, Tooltip, Typography} from '@mui/material';
+import { Stack, Tooltip, Typography } from '@mui/material';
 
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -25,6 +24,7 @@ import { useKanbanProjectsContext } from '../../providers/kanban-projects';
 import { useKanbanUsersContext } from '../../providers/kanban-users';
 import { useKanbanDrawerContext } from '../../providers/kanban-drawer';
 import { useKanbanProjectCreateDialogContext } from '../../providers/kanban-project-create-dialog';
+import { useKanbanProjectDeleteDialogContext } from '../../providers/kanban-project-delete-dialog';
 
 import KanbanTagsEditArea from '../kanban-common/kanban-tags-edit-area';
 import KanbanDrawerCollaboratorMenu from './kanban-drawer-collaborator-menu';
@@ -35,14 +35,14 @@ import KanbanDrawerUsersFilterMenu from './kanban-drawer-users-filter-menu';
 import KanbanDrawerSecretMenu from './kanban-drawer-secret-menu';
 import KanbanDrawerPrioritySelect from './kanban-drawer-priority-select';
 import KanbanDrawerSprintSelect from './kanban-drawer-sprint-select';
-import { useKanbanProjectDeleteDialogContext } from '../../providers/kanban-project-delete-dialog';
+
 
 const KanbanDrawer = () => {
   // -------------- Project --------------
   const projectsContextState = useKanbanProjectsContext().state;
   const projectsContextDispatch = useKanbanProjectsContext().Dispatch;
 
-  const handleOnProjectChange = (e) => {
+  const handleOnProjectChange = (e: any) => {
     const projects = projectsContextState._allProjects.filter(project => {
       return project.id === e.target.value
     });
@@ -98,7 +98,7 @@ const KanbanDrawer = () => {
     setUsersFilterMenuAnchorEl(null);
   }
 
-  const handleOnUserAvatarsClick = (e) => {
+  const handleOnUserAvatarsClick = (e: any) => {
     setUsersFilterMenuAnchorEl(e.currentTarget);
   }
 
@@ -110,7 +110,7 @@ const KanbanDrawer = () => {
     setOwnerMenuAnchorEl(null);
   }
 
-  const openOwnerMenu = (e) => {
+  const openOwnerMenu = (e: any) => {
     setOwnerMenuAnchorEl(e.currentTarget);
   }
 
@@ -132,7 +132,7 @@ const KanbanDrawer = () => {
     setCollaboratorsMenuAnchorEl(null);
   }
 
-  const openCollaboratorsMenu = (e) => {
+  const openCollaboratorsMenu = (e: any) => {
     setCollaboratorsMenuAnchorEl(e.currentTarget);
   }
 
@@ -144,7 +144,7 @@ const KanbanDrawer = () => {
     setSecretMenuAnchorEl(null);
   }
 
-  const openSecretMenu = (e) => {
+  const openSecretMenu = (e: any) => {
     setSecretMenuAnchorEl(e.currentTarget);
   }
 
@@ -161,21 +161,21 @@ const KanbanDrawer = () => {
     });
   }, [ tagsEditAreaRef ]);
 
-  const handleOnTagsChange = (tags) => {
+  const handleOnTagsChange = (tags: Array<string>) => {
     drawerContextDispatch({
       type: 'activeTags_update',
       value: tags
     });
   }
 
-  const handleOnTagsFilterAreaChange = (e) => {
+  const handleOnTagsFilterAreaChange = (e: any) => {
     drawerContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
     });
   }
 
-  const handleOnTagsFilterAreaKeyPress = (e) => {
+  const handleOnTagsFilterAreaKeyPress = (e: any) => {
     if(e.keyCode === 13) {
       drawerContextDispatch({
         type: 'tagsEditAreaSearchStr_update',
@@ -184,7 +184,7 @@ const KanbanDrawer = () => {
     }
   }
 
-  const handleOnTagsFilterAreaFocus = (e) => {
+  const handleOnTagsFilterAreaFocus = (e: any) => {
     drawerContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
@@ -195,7 +195,7 @@ const KanbanDrawer = () => {
     });
   }
 
-  const handleOnTagsFilterAreaBlur = (e) => {
+  const handleOnTagsFilterAreaBlur = (e: any) => {
     drawerContextDispatch({
       type: 'tagsEditArea_blur'
     });
@@ -311,10 +311,10 @@ const KanbanDrawer = () => {
           label="Tags" 
           tags={ drawerContextState._activeTags }
           disabled={ false } 
-          handleTagsChange={ (tags) => handleOnTagsChange(tags) }
-          handleOnTextFieldChange={ (e) => handleOnTagsFilterAreaChange(e) }
-          handleOnKeyPress={ (e) => handleOnTagsFilterAreaKeyPress(e) }
-          handleOnFocus={ (e) => handleOnTagsFilterAreaFocus(e) }
+          handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
+          handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
+          handleOnKeyPress={ (e: any) => handleOnTagsFilterAreaKeyPress(e) }
+          handleOnFocus={ (e: any) => handleOnTagsFilterAreaFocus(e) }
           handleOnBlur={ handleOnTagsFilterAreaBlur } 
           inputRef={ tagsEditAreaRef } /> 
 

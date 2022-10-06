@@ -1,7 +1,14 @@
 import { useMemo, createContext, useReducer, useContext } from "react";
 import { initialState, TagsSearchResultPanelReducer } from "../stores/kanban-tags-search-result-panel-reducer";
 
-const KanbanTagsSearchResultPanelContext = createContext();
+interface TagsSearchResultPanelContext {
+  state: {
+    mouseOver: boolean
+  },
+  Dispatch: any
+}
+
+const KanbanTagsSearchResultPanelContext = createContext<TagsSearchResultPanelContext>();
 
 export function KanbanTagsSearchResultPanelProvider ({ children }) {
   const [ state, Dispatch ] = useReducer(TagsSearchResultPanelReducer, initialState);

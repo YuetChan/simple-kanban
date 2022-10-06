@@ -3,7 +3,15 @@ import { Stack, TextareaAutosize } from "@mui/material";
 
 import theme from "../../theme";
 
-const KanbanAutosizeTextarea = (props: any) => {
+interface AutosizeTextareaProps {
+  value?: string,
+  label?: string,
+  placeholder?: string,
+
+  handleOnTextareaChange?: Function,
+}
+
+const KanbanAutosizeTextarea = (props: AutosizeTextareaProps) => {
   const [ value, setValue ] = React.useState(props.value? props.value: '');
   const [ focused, setFocused ] = React.useState(false);
 
@@ -12,32 +20,32 @@ const KanbanAutosizeTextarea = (props: any) => {
     borderColor: theme.palette.primary.main,
   }
 
-  const handleOnTextareaChange = (e) => {
+  const handleOnTextareaChange = (e: any) => {
     if(props.handleOnTextareaChange) {
-      props.handleOnTextareaChange(e)
+      props.handleOnTextareaChange(e);
     }
 
     setValue(e.target.value);
   }
 
-  const handleOnTextareaFocus = (e) => {
+  const handleOnTextareaFocus = (e: any) => {
     setFocused(true);
   }
 
-  const handleOnTextareaBlur = (e) => {
+  const handleOnTextareaBlur = (e: any) => {
     setFocused(false);
   }
 
   return (
     <section>
       <Stack direction="column" spacing={0.5}>
-        <div style={ focused? focusedStyle : {} } >{ props.label }</div>
+        <div style={ focused? focusedStyle : {} } >{ props.label? props.label : "" }</div>
 
         <TextareaAutosize
           value={ value }
           aria-label="autosize-textarea"
-          minRows={5}
-          placeholder={props.placeholder}
+          minRows={ 5 }
+          placeholder={ props.placeholder? props.placeholder : "" }
           style={
             { 
               ... focused? focusedStyle: {},
@@ -48,7 +56,6 @@ const KanbanAutosizeTextarea = (props: any) => {
           onBlur={ handleOnTextareaBlur }
           onChange={ handleOnTextareaChange }/>
       </Stack>
-
     </section>
   )
 }

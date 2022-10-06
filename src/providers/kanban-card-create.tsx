@@ -1,7 +1,23 @@
 import React, { useMemo, useReducer, createContext, useContext  } from 'react';
+import { Task } from '../features/Task';
 import { initialState, CardCreateReducer } from '../stores/kanban-card-create-reducer';
 
-const KanbanCardCreateContext = createContext();
+interface CardCreateContext {
+  state: {
+    _tagsEditAreaFocused: boolean,
+    _tagsEditAreaSearchStr: string,
+    _activeTags: Array<string>,
+    _tagsEditAreaRef: any,
+  
+    _task: Task,
+  
+    _searchResultPanelMouseOver: boolean,
+    _lastFocusedArea: string
+  },
+  Dispatch: any
+}
+
+const KanbanCardCreateContext = createContext<CardCreateContext>();
 
 export function KanbanCardCreateProvider ({ children }) {
   const [ state, Dispatch ] = useReducer(CardCreateReducer, initialState);

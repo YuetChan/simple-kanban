@@ -18,6 +18,7 @@ import KanbanCardAssignee from "./kanban-card-assignee-select";
 import KanbanCardStatusSelect from "./kanban-card-status-select";
 import KanbanCardTagsSearchResultPanel from './kanban-card-update-dialog-tags-search-result-panel';
 import KanbanCardPrioritySelect from './kanban-card-priority-select';
+import { Tag } from '../../features/Tag';
 
 const KanbanCardUpdateDialog = (props: any) => {
   // ------------------ Project ------------------
@@ -31,12 +32,11 @@ const KanbanCardUpdateDialog = (props: any) => {
 
   const [ task, setTask ] = React.useState(props.task);
 
-  const [ oPriority, ] = React.useState(props.task.priority);
   const [ oStatus, ] = React.useState(props.task.taskNode.status);
   const [ oTaskNode, ] = React.useState(props.task.taskNode);
 
   // ------------------ Values for status and priority selects ------------------
-  const getStatus = (status) => {
+  const getStatus = (status: string): string => {
     if(status === stringToEnum('backlog')) {
       return 'backlog';
     }
@@ -52,9 +52,11 @@ const KanbanCardUpdateDialog = (props: any) => {
     if(status === stringToEnum('done')) {
       return 'done';
     }
+
+    return 'backlog';
   }
 
-  const getPriority = (priority) => {
+  const getPriority = (priority: string): string => {
     if(priority === stringToEnum('low')) {
       return 'low';
     }
@@ -66,10 +68,12 @@ const KanbanCardUpdateDialog = (props: any) => {
     if(priority === stringToEnum('high')) {
       return 'high';
     }
+
+    return 'low'
   }
 
-  const [ status, setStatus ] = React.useState(getStatus(props.task.taskNode.status));
-  const [ priority, setPriority ] = React.useState(getPriority(props.task.priority));
+  const [ status, setStatus ] = React.useState(props.task.taskNode.status?getStatus(props.task.taskNode.status) : 'backlog');
+  const [ priority, setPriority ] = React.useState(props.task.priority? getPriority(props.task.priority): 'low');
 
   useEffect(() => {
     console.log(task)
@@ -127,7 +131,7 @@ const KanbanCardUpdateDialog = (props: any) => {
     });
   }, [ tagsEditAreaRef ]);
 
-  const handleOnTagsChange = (tags) => {
+  const handleOnTagsChange = (tags: Array<string>) => {
     setTask({
       ... task, 
       tagList: tags.map(tag => {
@@ -138,7 +142,7 @@ const KanbanCardUpdateDialog = (props: any) => {
     });
   }
 
-  const handleOnTagsFilterAreaFocus = (e) => {
+  const handleOnTagsFilterAreaFocus = (e: any) => {
     cardUpdateContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
@@ -155,7 +159,7 @@ const KanbanCardUpdateDialog = (props: any) => {
     });
   }
 
-  const handleOnTagsFilterAreaChange = (e) => {
+  const handleOnTagsFilterAreaChange = (e: any) => {
     cardUpdateContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
@@ -163,7 +167,7 @@ const KanbanCardUpdateDialog = (props: any) => {
   }
 
   // ------------------ Title ------------------
-  const handleOnTitleChange = (e) => {
+  const handleOnTitleChange = (e: any) => {
     setTask({
       ... task,
       title: e.target.value
@@ -171,7 +175,7 @@ const KanbanCardUpdateDialog = (props: any) => {
   }
 
   // ------------------ Status ------------------
-  const handleOnStatusChange = (e) => {
+  const handleOnStatusChange = (e: any) => {
     const allTasks = tasksContextState._allTasks;
     const status = e.target.value;
 
@@ -305,7 +309,7 @@ const KanbanCardUpdateDialog = (props: any) => {
   }
 
   // ------------------ Note ------------------
-  const handleOnNoteChange = (e) => {
+  const handleOnNoteChange = (e: any) => {
     setTask({
       ... task,
       note: e.target.value
@@ -313,7 +317,7 @@ const KanbanCardUpdateDialog = (props: any) => {
   }
 
   // ------------------ Description ------------------
-  const handleOnDescriptionChange = (e) => {
+  const handleOnDescriptionChange = (e: any) => {
     setTask({
       ... task,
       description: e.target.value
@@ -321,7 +325,7 @@ const KanbanCardUpdateDialog = (props: any) => {
   }
 
   // ------------------ Priority ------------------
-  const handleOnPriorityChange = (e) => {
+  const handleOnPriorityChange = (e: any) => {
     const priority = e.target.value;
 
     setTask({
@@ -333,7 +337,9 @@ const KanbanCardUpdateDialog = (props: any) => {
   }
 
   // ------------------ Due date ------------------
-  const handleOnDueDateChange = (date) => {
+  const handleOnDueDateChange = (date: Date) => {
+    console.log(date);
+
     setTask({
       ... task,
       dueAt: new Date(date).getTime()
@@ -341,9 +347,9 @@ const KanbanCardUpdateDialog = (props: any) => {
   }
 
   // ------------------ Assignee ------------------
-  const [ allAssignees, setAllAssignees ] = React.useState([]);
+  const [ allAssignees, setAllAssignees ] = React.useState<Array<string>>([]);
 
-  const handleOnAssigneeChange = (e) => {
+  const handleOnAssigneeChange = (e: any) => {
     setTask({
       ... task,
       assigneeEmail: e.target.value
@@ -409,7 +415,7 @@ const KanbanCardUpdateDialog = (props: any) => {
                 <KanbanCardStatusSelect 
                   value={ status }
                   showArchive={ true } 
-                  handleOnSelectChange={ (e) => handleOnStatusChange(e) } />  
+                  handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } />  
   
                 <Stack 
                   direction="column" 
@@ -419,23 +425,23 @@ const KanbanCardUpdateDialog = (props: any) => {
 
                   <DatePicker 
                     selected={ task.dueAt } 
-                    onChange={ (date) => handleOnDueDateChange(date) } />
+                    onChange={ (date: Date) => handleOnDueDateChange(date) } />
                 </Stack>
               </Stack>
   
-              <div style={{ withd: "140px" }}>
+              <div style={{ width: "140px" }}>
                 <KanbanCardPrioritySelect 
                   value={ priority }
-                  handleOnPriorityChange={ (e) => handleOnPriorityChange(e) } />
+                  handleOnPriorityChange={ (e: any) => handleOnPriorityChange(e) } />
               </div>
               
               <KanbanTagsEditArea 
-                tags={ task.tagList.map(tag => tag.name) } 
+                tags={ task.tagList.map((tag: Tag) => tag.name) } 
                 label="Tags"
                 disabled={ false } 
-                handleOnTextFieldChange={ (e) => handleOnTagsFilterAreaChange(e) }
-                handleTagsChange={ (tags) => handleOnTagsChange(tags) } 
-                handleOnFocus={ (e) => handleOnTagsFilterAreaFocus(e) } 
+                handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
+                handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) } 
+                handleOnFocus={ (e: any) => handleOnTagsFilterAreaFocus(e) } 
                 handleOnBlur={ handleOnTagsFilterAreaBlur } 
                 inputRef={ tagsEditAreaRef } />  
 
@@ -471,20 +477,20 @@ const KanbanCardUpdateDialog = (props: any) => {
                   value={ task?.description }
                   label="Description" 
                   placeholder="Enter the description"
-                  handleOnTextareaChange={ (e) => handleOnDescriptionChange(e) } />
+                  handleOnTextareaChange={ (e: any) => handleOnDescriptionChange(e) } />
   
                 <KanbanAutosizeTextarea 
                   value={ task?.note }
                   label="Note" 
                   placeholder="Enter the note" 
-                  handleOnTextareaChange={ (e) => handleOnNoteChange(e) }/> 
+                  handleOnTextareaChange={ (e: any) => handleOnNoteChange(e) }/> 
               </Stack>
   
               <Stack direction="row" justifyContent="start">
                 <KanbanCardAssignee  
                   assignee={ task?.assigneeEmail }
                   allAssignees={ allAssignees }  
-                  handleOnSelectChange={ (e) => handleOnAssigneeChange(e) } />
+                  handleOnSelectChange={ (e: any) => handleOnAssigneeChange(e) } />
               </Stack>
             </Stack>
           </DialogContentText>
