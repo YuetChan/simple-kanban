@@ -13,38 +13,40 @@ interface UserListMenuProps {
 }
 
 const UserListMenu = (props: UserListMenuProps) => {
-  // ------------------ Project ------------------
-  const projectsContextState = useProjectsCacheContext().state;
+  // ------------------ Project cache ------------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
 
-  // ------------------ Drawer ------------------
-  const drawerContextState = useTasksSearchContext().state;
-  const drawerContextDispatch = useTasksSearchContext().Dispatch;
+  // ------------------ Task Search ------------------
+  const tasksSearchContextState = useTasksSearchContext().state;
+  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
 
+  // ------------------ User list menu ------------------
   const [ userCheckMp, setUserCheckMp ] = React.useState(new Map());
 
   useEffect(() => {
     const checkMap = new Map();
-    drawerContextState._activeUserEmails?.forEach(email => {
+    tasksSearchContextState._activeUserEmails?.forEach(email => {
       checkMap.set(email, true);
     });
 
     setUserCheckMp(checkMap);
-  }, [ drawerContextState._activeUserEmails ]);
+  }, [ tasksSearchContextState._activeUserEmails ]);
 
   const handleOnUserCheck = (e: any, email: string) => {
     if(e.target.checked) {
-      drawerContextDispatch({
+      tasksSearchContextDispatch({
         type: 'activeUserEmails_add',
         value: email
       });
     }else {
-      drawerContextDispatch({
+      tasksSearchContextDispatch({
         type: 'activeUserEmails_remove',
         value: email
       });
     }
   }
 
+  // ------------------ Html template ------------------
   return (
     <Menu
       anchorEl={ props.usersFilterMenuAnchorEl }
@@ -56,17 +58,17 @@ const UserListMenu = (props: UserListMenuProps) => {
       } }
       PaperProps={{ style: { maxHeight: "360px" }}}>   
       <MenuItem 
-        key={ projectsContextState._activeProject?.userEmail } 
-        value={ projectsContextState._activeProject?.userEmail }>
+        key={ projectsCacheContextState._activeProject?.userEmail } 
+        value={ projectsCacheContextState._activeProject?.userEmail }>
         <Checkbox 
-          checked={ userCheckMp.get(projectsContextState._activeProject?.userEmail) }
-          onChange={ (e) => handleOnUserCheck(e, projectsContextState._activeProject?.userEmail) } />
+          checked={ userCheckMp.get(projectsCacheContextState._activeProject?.userEmail) }
+          onChange={ (e) => handleOnUserCheck(e, projectsCacheContextState._activeProject?.userEmail) } />
 
-        { projectsContextState._activeProject?.userEmail }
+        { projectsCacheContextState._activeProject?.userEmail }
       </MenuItem>
 
       { 
-        projectsContextState._activeProject?.collaboratorList.map((collaborator) => (
+        projectsCacheContextState._activeProject?.collaboratorList.map((collaborator) => (
         <MenuItem 
           key={ collaborator.email }
           value={ collaborator.email }>

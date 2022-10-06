@@ -15,8 +15,8 @@ interface UserListProps {
 }
 
 const UserList = (props: UserListProps) => {
-  // ------------------ Project ------------------
-  const projectsContextState = useProjectsCacheContext().state;
+  // ------------------ Project cache ------------------
+  const projectsCahceContextState = useProjectsCacheContext().state;
   
   // ------------------ Html template ------------------
   return (
@@ -53,17 +53,17 @@ const UserList = (props: UserListProps) => {
           max={ 5 } 
           sx={{ '& .MuiAvatar-root': { width: 36, height: 36, } }}>
           {
-            projectsContextState._activeProject
+            projectsCahceContextState._activeProject
             ? (
-              <Tooltip title={ projectsContextState._activeProject?.userEmail }>
-                <Avatar>{ textToAvatar(projectsContextState._activeProject?.userEmail) }</Avatar>
+              <Tooltip title={ projectsCahceContextState._activeProject?.userEmail }>
+                <Avatar>{ textToAvatar(projectsCahceContextState._activeProject?.userEmail) }</Avatar>
               </Tooltip>
             )
             : null
           }
 
           {
-            projectsContextState?._activeProject?.collaboratorList.map(collaborator => {
+            projectsCahceContextState?._activeProject?.collaboratorList.map(collaborator => {
               return (
                 <Tooltip title={ collaborator.email }>
                   <Avatar>{ textToAvatar(collaborator.email) }</Avatar>

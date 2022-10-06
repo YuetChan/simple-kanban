@@ -16,7 +16,7 @@ import { ProjectsCacheProvider } from '../src/providers/projects-cache';
 import { TasksCacheProvider } from '../src/providers/tasks-cache';
 import { TagsSearchResultPanelProvider } from '../src/providers/tags-search-result-panel';
 import { UserCacheProvider } from '../src/providers/user-cache';
-import { KanbanDatesProvider } from '../src/providers/dates-cache';
+import { DatesCacheProvider } from '../src/providers/dates-cache';
 import { TasksSearchProvider } from '../src/providers/tasks-search';
 import { TaskCreateProvider } from '../src/providers/task-create';
 import { ProjectCreateDialogProvider } from '../src/providers/project-create-dialog';
@@ -55,7 +55,7 @@ export default function MyApp(props: MyAppProps) {
           <TaskUpdateProvider>
        
           <TasksSearchProvider>
-          <KanbanDatesProvider>
+          <DatesCacheProvider>
           <UserCacheProvider>
           <ProjectsCacheProvider>
             <TasksCacheProvider>
@@ -65,7 +65,7 @@ export default function MyApp(props: MyAppProps) {
             </TasksCacheProvider>
           </ProjectsCacheProvider>
           </UserCacheProvider>
-          </KanbanDatesProvider>
+          </DatesCacheProvider>
           </TasksSearchProvider>
           </TaskUpdateProvider> 
           </TaskCreateProvider>

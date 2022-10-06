@@ -21,7 +21,7 @@ import { getUserByEmail, getUserSecretById } from '../src/features/user/services
 
 import KanbanDrawer from '../src/layouts/kanban-drawer';
 import KanbanTable from '../src/layouts/kanban-table';
-import KanbanTagsResultPanel from '../src/features/task/components/task-search-tags-search-result-panel';
+import TagsSearchResultPanel from '../src/features/task/components/task-search-tags-search-result-panel';
 import TaskAddButton from '../src/features/task/components/task-add-button';
 import TaskCreateDialog from '../src/features/task/components/task-create-dialog';
 import ProjectCreateDialog from '../src/features/project/components/project-create-dialog';
@@ -251,7 +251,7 @@ const Home: NextPage = () => {
         ? "block" 
         : "none" 
         }}>
-        <KanbanTagsResultPanel />
+        <TagsSearchResultPanel />
       </div>
 
       {

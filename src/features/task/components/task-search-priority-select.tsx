@@ -7,16 +7,16 @@ import { useTasksSearchContext } from "../../../providers/tasks-search";
 interface TaskSearchPrioritySelectProps { }
 
 const TaskSearchPrioritySelect = (props: TaskSearchPrioritySelectProps) => {
-  // ------------------ Drawer ------------------
-  const drawerContextDispatch = useTasksSearchContext().Dispatch;
+  // ------------------ Tasks search ------------------
+  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
 
-  // ------------------ Priority ------------------
+  // ------------------ Tasks search priority select ------------------
   const [ priority, setPriority ] = React.useState('all');
 
   const handleOnPriorityChange = (e: any) => {
     setPriority(e.target.value);
 
-    drawerContextDispatch({
+    tasksSearchContextDispatch({
       type: 'activePriority_select',
       value: e.target.value
     })

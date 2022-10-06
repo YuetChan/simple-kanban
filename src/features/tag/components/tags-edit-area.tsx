@@ -17,6 +17,7 @@ interface TagsEditsAreaProps {
 }
 
 const TagsEditArea = (props: TagsEditsAreaProps) => {
+  // ------------------ Tag edit areas ------------------ 
   const [ tags, setTags ] = React.useState<Array<string>>([])
   const [ tagInput, setTagInput ] = React.useState('');
 
@@ -69,6 +70,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
     }
   }
 
+  // ------------------ Html template ------------------  
   return (
     <section>
       <Stack direction="column" alignItems="start" spacing={ 1 }>

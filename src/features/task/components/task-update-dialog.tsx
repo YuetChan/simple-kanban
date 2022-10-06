@@ -34,23 +34,24 @@ interface TaskUpdateDialog {
 }
 
 const TaskUpdateDialog = (props: TaskUpdateDialog) => {
-  // ------------------ Project ------------------
-  const projectsContextState = useProjectsCacheContext().state;
+  // ------------------ Projects cache ------------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
 
-  // ------------------ User ------------------
-  const usersContextState = useUserCacheContext().state;
+  // ------------------ User cache ------------------
+  const userCacheContextState = useUserCacheContext().state;
 
-  // ------------------ Task ------------------
-  const tasksContextState = useTasksCacheContext().state;
+  // ------------------ Tasks cache------------------
+  const tasksCacheContextState = useTasksCacheContext().state;
 
+  // ------------------ Task uppdate------------------
+  const taskUpdateContextState = useTaskUpdateContext().state;
+  const taskUpdateContextDispatch = useTaskUpdateContext().Dispatch;
+
+  // ------------------ Task update dialog ------------------
   const [ task, setTask ] = React.useState(props.task);
 
   const [ oStatus, ] = React.useState(props.task.taskNode.status);
   const [ oTaskNode, ] = React.useState(props.task.taskNode);
-
-  // ------------------ Update dialog ------------------
-  const cardUpdateContextState = useTaskUpdateContext().state;
-  const cardUpdateContextDispatch = useTaskUpdateContext().Dispatch;
 
   const handleOnClose = () => {
     if(props.handleOnClose) {
@@ -70,28 +71,27 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     }
   }
 
-  // ------------------ Search result panel ------------------
   const handleOnMouseEnter = () => {
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'searchResultPanel_mouseEnter'
     });
 
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'lastFocusedArea_update',
       value: 'tagsEditArea'
     })
   }
 
   const handleOnMouseLeave = () => {
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'searchResultPanel_mouseLeave'
     });
 
-    if(cardUpdateContextState._lastFocusedArea === 'tagsEditArea') {
-      cardUpdateContextState._tagsEditAreaRef.current.focus();
+    if(taskUpdateContextState._lastFocusedArea === 'tagsEditArea') {
+      taskUpdateContextState._tagsEditAreaRef.current.focus();
     }
 
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'tagsEditArea_focus'
     });
   }
@@ -100,7 +100,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   const tagsEditAreaRef = React.useRef();
 
   useEffect(() => {
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'tagsEditArea_setRef',
       value: tagsEditAreaRef
     });
@@ -118,24 +118,24 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   }
 
   const handleOnTagsFilterAreaFocus = (e: any) => {
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
     });
 
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'tagsEditArea_focus'
     });
   }
 
   const handleOnTagsFilterAreaBlur = () => {
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'tagsEditArea_blur'
     });
   }
 
   const handleOnTagsFilterAreaChange = (e: any) => {
-    cardUpdateContextDispatch({
+    taskUpdateContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
     });
@@ -176,7 +176,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     : 'backlog');
 
   const handleOnStatusChange = (e: any) => {
-    const allTasks = tasksContextState._allTasks;
+    const allTasks = tasksCacheContextState._allTasks;
     const status = e.target.value;
 
     if(stringToEnum(status) === oStatus) {
@@ -198,8 +198,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
           taskNode: {
             ... task.taskNode,
             status: backlogEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid1,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid2
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid1,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid2
           }
         });
       }else {
@@ -224,8 +224,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
           taskNode: {
             ... task.taskNode,
             status: todoEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid3,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid4
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid3,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid4
           }
         });
       }else {
@@ -250,8 +250,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
           taskNode: {
             ... task.taskNode,
             status: inProgressEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid5,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid6
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid5,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid6
           }
         });
       }else {
@@ -276,8 +276,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
           taskNode: {
             ... task.taskNode,
             status: doneEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid7,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid8
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid7,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid8
           }
         })
       }else {
@@ -359,8 +359,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
 
   // ------------------ Due date ------------------
   const handleOnDueDateChange = (date: Date) => {
-    console.log(date);
-
     setTask({
       ... task,
       dueAt: new Date(date).getTime()
@@ -378,13 +376,13 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   }
 
   useEffect(() => {
-    if(projectsContextState._activeProject) {
+    if(projectsCacheContextState._activeProject) {
       setAllAssignees([
-        ... projectsContextState._activeProject.collaboratorList.map(collaborator => collaborator.email),
-        usersContextState._loginedUserEmail
+        ... projectsCacheContextState._activeProject.collaboratorList.map(collaborator => collaborator.email),
+        userCacheContextState._loginedUserEmail
       ])
     }
-  }, [ projectsContextState._activeProject ]);
+  }, [ projectsCacheContextState._activeProject ]);
 
   // ------------------ Html template ------------------
   return (
@@ -467,8 +465,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
                 inputRef={ tagsEditAreaRef } />  
 
               {
-                cardUpdateContextState._tagsEditAreaFocused 
-                || cardUpdateContextState._searchResultPanelMouseOver
+                taskUpdateContextState._tagsEditAreaFocused 
+                || taskUpdateContextState._searchResultPanelMouseOver
                 ? (
                     <section 
                       style={{
@@ -478,9 +476,9 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
                       onMouseEnter={ handleOnMouseEnter }
                       onMouseLeave={ handleOnMouseLeave }>
                       { 
-                        cardUpdateContextState._tagsEditAreaFocused 
-                        || (cardUpdateContextState._lastFocusedArea === "tagsEditArea" 
-                        && cardUpdateContextState._searchResultPanelMouseOver === true)
+                        taskUpdateContextState._tagsEditAreaFocused 
+                        || (taskUpdateContextState._lastFocusedArea === "tagsEditArea" 
+                        && taskUpdateContextState._searchResultPanelMouseOver === true)
                         ? <TagsSearchResultPanel />
                         : null
                       }

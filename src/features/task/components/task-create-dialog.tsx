@@ -30,15 +30,20 @@ interface TaskCreateDialogProps {
 }
 
 const TaskCreateDialog = (props: TaskCreateDialogProps) => {
-  // ------------------ Project ------------------
-  const projectsContextState = useProjectsCacheContext().state;
+  // ------------------ Projects cache ------------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
 
-  // ------------------ User ------------------
-  const usersContextState = useUserCacheContext().state;
+  // ------------------ User cache ------------------
+  const userCacheContextState = useUserCacheContext().state;
 
-  // ------------------ Task ------------------
-  const tasksContextState = useTasksCacheContext().state;
+  // ------------------ Tasks cache ------------------
+  const tasksCacheContextState = useTasksCacheContext().state;
 
+  // ------------------ Task create ------------------
+  const taskCreateContextState = useTaskCreateContext().state;
+  const taskCreateContextDispatch = useTaskCreateContext().Dispatch;
+
+  // ------------------ Task create dialog ------------------
   const defaultTask = {
     projectId: '',
 
@@ -63,9 +68,9 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   const [ task, setTask ] = React.useState<Task>(defaultTask);
 
   useEffect(() => {
-    const projectUUID = projectsContextState._activeProject?.projectUUID;
+    const projectUUID = projectsCacheContextState._activeProject?.projectUUID;
 
-    const allTasks = tasksContextState._allTasks;
+    const allTasks = tasksCacheContextState._allTasks;
     if(allTasks?.backlog.length > 0) {
       setTask({
         ... task,
@@ -85,14 +90,10 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
         }
       });
     }
-  }, [ tasksContextState._allTasks ]);
-
-  // ------------------ Task create dialog ------------------
-  const cardCreateContextState = useTaskCreateContext().state;
-  const cardCreateContextDispatch = useTaskCreateContext().Dispatch;
+  }, [ tasksCacheContextState._allTasks ]);
 
   const handleOnClose = () => {
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'activeTags_update',
       value: []
     });
@@ -110,12 +111,12 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
         ...task,
         taskNode: {
           ... task.taskNode,
-          projectId: projectsContextState._activeProject?.id
+          projectId: projectsCacheContextState._activeProject?.id
         }
       });
     }
 
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'activeTags_update',
       value: []
     });
@@ -123,28 +124,27 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     setTask(defaultTask);
   }
 
-  // ------------------ Tags search result panel ------------------
   const handleOnMouseEnter = () => {
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'searchResultPanel_mouseEnter'
     });
 
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'lastFocusedArea_update',
       value: 'tagsEditArea'
     })
   }
 
   const handleOnMouseLeave = () => {
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'searchResultPanel_mouseLeave'
     });
 
-    if(cardCreateContextState._lastFocusedArea === 'tagsEditArea') {
-      cardCreateContextState._tagsEditAreaRef.current.focus();
+    if(taskCreateContextState._lastFocusedArea === 'tagsEditArea') {
+      taskCreateContextState._tagsEditAreaRef.current.focus();
     }
 
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'tagsEditArea_focus'
     });
   }
@@ -153,7 +153,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   const tagsEditAreaRef = React.useRef();
 
   useEffect(() => {
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'tagsEditArea_setRef',
       value: tagsEditAreaRef
     });
@@ -169,31 +169,31 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
       })
     })
 
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'activeTags_update',
       value: tags
     });
   }
 
   const handleOnTagsFilterAreaFocus = (e: any) => {
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
     });
 
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'tagsEditArea_focus'
     });
   }
 
   const handleOnTagsFilterAreaBlur = () => {
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'tagsEditArea_blur'
     });
   }
 
   const handleOnTagsFilterAreaChange = (e: any) => {
-    cardCreateContextDispatch({
+    taskCreateContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
     });
@@ -209,7 +209,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
 
   // ------------------ Status ------------------
   const handleOnStatusChange = (e: any) => {
-    const allTasks = tasksContextState._allTasks;
+    const allTasks = tasksCacheContextState._allTasks;
     const status = e.target.value;
 
     if(status === 'backlog') {
@@ -221,8 +221,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
           taskNode: {
             ... task.taskNode,
             status: backlogEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid1,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid2
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid1,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid2
           }
         })
       }else {
@@ -247,8 +247,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
           taskNode: {
             ... task.taskNode,
             status: todoEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid3,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid4
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid3,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid4
           }
         })
       }else {
@@ -273,8 +273,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
           taskNode: {
             ... task.taskNode,
             status: inProgressEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid5,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid6
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid5,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid6
           }
         })
       }else {
@@ -299,8 +299,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
           taskNode: {
             ... task.taskNode,
             status: doneEnum,
-            headUUID: projectsContextState._activeProject.projectUUID.uuid7,
-            tailUUID: projectsContextState._activeProject.projectUUID.uuid8
+            headUUID: projectsCacheContextState._activeProject.projectUUID.uuid7,
+            tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid8
           }
         })
       }else {
@@ -368,13 +368,13 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   }
 
   useEffect(() => {
-    if(projectsContextState._activeProject) {
+    if(projectsCacheContextState._activeProject) {
       setAllAssignees([
-        ... projectsContextState._activeProject.collaboratorList.map(collaborator => collaborator.email),
-        usersContextState._loginedUserEmail
+        ... projectsCacheContextState._activeProject.collaboratorList.map(collaborator => collaborator.email),
+        userCacheContextState._loginedUserEmail
       ])
     }
-  }, [ projectsContextState._activeProject ]);
+  }, [ projectsCacheContextState._activeProject ]);
 
   // ------------------ HTML template ------------------
   return (
@@ -436,7 +436,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
               </div>
               
               <TagsEditArea 
-                tags={ cardCreateContextState._activeTags } 
+                tags={ taskCreateContextState._activeTags } 
                 label="Tags"
                 disabled={ false } 
                 handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
@@ -446,8 +446,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                 inputRef={ tagsEditAreaRef } />  
 
               {
-                cardCreateContextState._tagsEditAreaFocused 
-                || cardCreateContextState._searchResultPanelMouseOver
+                taskCreateContextState._tagsEditAreaFocused 
+                || taskCreateContextState._searchResultPanelMouseOver
                 ? (
                     <section 
                       style={{
@@ -457,9 +457,9 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                       onMouseEnter={ handleOnMouseEnter }
                       onMouseLeave={ handleOnMouseLeave }>
                       { 
-                        cardCreateContextState._tagsEditAreaFocused 
-                        || (cardCreateContextState._lastFocusedArea === "tagsEditArea" 
-                        && cardCreateContextState._searchResultPanelMouseOver === true)
+                        taskCreateContextState._tagsEditAreaFocused 
+                        || (taskCreateContextState._lastFocusedArea === "tagsEditArea" 
+                        && taskCreateContextState._searchResultPanelMouseOver === true)
                         ? <TagsSearchResultPanel />
                         : null
                       }

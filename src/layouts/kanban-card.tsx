@@ -17,8 +17,9 @@ import TagArea from '../features/tag/components/tag-area';
 import { textToAvatar } from '../services/avatar-service';
 import { Task } from '../features/Task';
 
-interface CardProps {
+interface KanbanCardProps {
   task: Task,
+
   category: string,
   highlight?: boolean,
   showDescription?: boolean,
@@ -26,18 +27,17 @@ interface CardProps {
   handleOnCardClick?: Function
 }
 
-const KanbanCard = (props: CardProps) => {
-  // ------------------ Table ------------------
+const KanbanCard = (props: KanbanCardProps) => {
+  // ------------------ Kanban table ------------------
   const tableContextDispatch = useKanbanTableContext().Dispatch;
 
-  // ------------------ Card edit dialog ------------------
+  // ------------------ Kanban card ------------------
   const handleOnCardClick = () => {
     if(props.handleOnCardClick) {
       props.handleOnCardClick(props.task);
     }
   };
 
-  // ------------------ DnD ------------------
   const [ , drag ] = useDrag(() => {
     return {
       type: 'card',
@@ -66,8 +66,7 @@ const KanbanCard = (props: CardProps) => {
     }
   }, [ props.task ]);
 
-  // ------------------ Helper func ------------------
-  const updateTaskAndRefresh = (task: Task) => {
+  const updateTaskAndRefresh = (task: Task): void => {
     updateTask(task).then(res => {
       tableContextDispatch({
         type: 'table_refresh'

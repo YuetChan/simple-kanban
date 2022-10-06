@@ -12,7 +12,7 @@ interface DatesCacheContext {
 
 const DatesCacheContext = createContext<DatesCacheContext>();
 
-export function KanbanDatesProvider ({ children }) {
+export function DatesCacheProvider ({ children }) {
   const [ state, Dispatch ] = useReducer(DatesCacheReducer, initialState);
 
   const contextValue = useMemo(() => {
