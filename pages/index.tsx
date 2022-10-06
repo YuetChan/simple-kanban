@@ -30,28 +30,51 @@ import KanbanDrawerDeleteDialog from '../src/features/project/components/project
 import { getCookie } from 'cookies-next';
 import jwt_decode from "jwt-decode";
 
+import { Project } from '../src/types/Project';
+import { Task } from '../src/types/Task';
+
 const Home: NextPage = () => { 
+  // ------------------ Projects cache ------------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
+
+  // ------------------ Project delete dialog ------------------
+  const projectDeleteDialogState = useProjectDeleteDialogContext().state;
+
+  // ------------------ Project create dialog ------------------
+  const projectCreateDialogState = useProjectCreateDialogContext().state;
+  const projectCreateDialogDispatch = useProjectCreateDialogContext().Dispatch;
+  
+  // ------------------ Tag search result panel ------------------
+  const tagsSearchResultPanelContextState = useTagsSearchResultPanelContext().state;
+
+  // ------------------ Tasks cache------------------
+  const tasksCacheContextState = useTasksCacheContext().state;
+
+  // ------------------ Tasks search ------------------
+  const tasksSearchContextState = useTasksSearchContext().state;
+
+  // ------------------ Task create ------------------
+  const taskCreateContextState = useTaskCreateContext().state;
+
+  // ------------------ User cache ------------------
+  const userCacheContextState = useUserCacheContext().state;
+  const userCacheContextDispatch = useUserCacheContext().Dispatch;
+
+  // ------------------ Table ------------------
+  const tableContextDispatch = useKanbanTableContext().Dispatch;
+  
+  // ------------------ Home ------------------
   // ------------------ Auth ------------------
   const [ authed, setAuthed ] = React.useState(false);
 
-  // ------------------ Project ------------------
-  const projectsContextState = useProjectsCacheContext().state;
-  const projectsContextDispatch = useProjectsCacheContext().Dispatch;
-
-  // ------------------ Task ------------------
-  const tasksContextState = useTasksCacheContext().state;
-
-  // ------------------ User ------------------
-  const usersContextState = useUserCacheContext().state;
-  const usersContextDispatch = useUserCacheContext().Dispatch;
-
   useEffect(() => {
     if(authed) {
-      const loginedUserEmail = usersContextState._loginedUserEmail;
+      const loginedUserEmail = userCacheContextState._loginedUserEmail;
 
       getUserByEmail(loginedUserEmail).then(res => {
         getUserSecretById(res.id).then(res => {
-          usersContextDispatch({
+          userCacheContextDispatch({
             type: 'loginedUserSecret_update',
             value: res
           })
@@ -59,7 +82,7 @@ const Home: NextPage = () => {
       });
 
       searchProjectsByUserEmail(loginedUserEmail, 0).then(res => {
-        projectsContextDispatch({
+        projectsCacheContextDispatch({
           type: 'allProjects_update', 
           value: res.projects
         });
@@ -71,49 +94,20 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     setAuthed(true);
-  }, [ usersContextState._loginedUserEmail ]);
+  }, [ userCacheContextState._loginedUserEmail ]);
 
   useEffect(() => {
     if(getCookie('jwt')) {
       const decoded = jwt_decode(getCookie("jwt").toString());
 
-      usersContextDispatch({
+      userCacheContextDispatch({
         type: 'loginedUserEmail_update',
         value: decoded.email
       });
     }
   }, []);
 
-  // ------------------ Drawer ------------------
-  const drawerContextState = useTasksSearchContext().state;
-
-  // ------------------ Table ------------------
-  const tableContextDispatch = useKanbanTableContext().Dispatch;
-
-  // ------------------ Card create dialog ------------------
-  const cardCreateContextState = useTaskCreateContext().state;
-
-  const [ cardCreateOpen, setCardCreateOpen ] = React.useState(false);
- 
-  const handleOnCardCreateDialogApply = (task) => {
-    createTaskAndRefresh(task);
-    setCardCreateOpen(false);
-  }
-
-  const handleOnCardCreateDialogClose = () => {
-    setCardCreateOpen(false);
-  }
-
-  const createTaskAndRefresh = (task) => {
-    createTask(task).then((task) => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
-    });
-  }
-
   // ------------------ Project delete dialog ------------------ 
-  const projectDeleteDialogState = useProjectDeleteDialogContext().state;
   const [ projectDeleteDialogOpen, setProjectDeleteDialogOpen ] = React.useState(false);
 
   const handleOnProjectDeleteDialogClose = () => {
@@ -121,11 +115,11 @@ const Home: NextPage = () => {
   }
 
   const handleOnProjectDeleteDialogDelete = () => {
-    deleteProject(projectsContextState._activeProject.id).then(res => {
+    deleteProject(projectsCacheContextState._activeProject.id).then(res => {
       setProjectDeleteDialogOpen(false);
 
-      searchProjectsByUserEmail(usersContextState._loginedUserEmail, 0).then(res => {
-        projectsContextDispatch({
+      searchProjectsByUserEmail(userCacheContextState._loginedUserEmail, 0).then(res => {
+        projectsCacheContextDispatch({
           type: 'allProjects_update', 
           value: res.projects
         });
@@ -139,19 +133,14 @@ const Home: NextPage = () => {
     setProjectDeleteDialogOpen(projectDeleteDialogState.show);
   }, [ projectDeleteDialogState ])
 
-  // ------------------ Tag search result panel ------------------
-  const tagsSearchResultPanelContextState = useTagsSearchResultPanelContext().state;
 
   // ------------------ Project create dialog ------------------
-  const projectCreateDialogState = useProjectCreateDialogContext().state;
-  const projectCreateDialogDispatch = useProjectCreateDialogContext().Dispatch;
-
-  const handleOnProjectCreateClick = (project) => {
+  const handleOnProjectCreateClick = (project: Project) => {
     createProject(project).then(res => {
       getProjectById(res.id).then(res => {
-        projectsContextDispatch({
+        projectsCacheContextDispatch({
           type: "allProjects_update",
-          value: [ res, ...projectsContextState._allProjects ]
+          value: [ res, ...projectsCacheContextState._allProjects ]
         });
       });
 
@@ -162,7 +151,7 @@ const Home: NextPage = () => {
   }
 
   const handleOnProjectCreateDialogClose = () => {
-    if(projectsContextState._allProjects.length > 0) {
+    if(projectsCacheContextState._allProjects.length > 0) {
       projectCreateDialogDispatch({
         type: 'dialog_hide'
       });
@@ -170,7 +159,7 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    if(projectsContextState._allProjects.length === 0 && authed) {
+    if(projectsCacheContextState._allProjects.length === 0 && authed) {
       projectCreateDialogDispatch({
         type: 'dialog_show'
       });
@@ -179,42 +168,63 @@ const Home: NextPage = () => {
         type: 'dialog_hide'
       });
     }
-  }, [ projectsContextState._allProjects ]);
+  }, [ projectsCacheContextState._allProjects ]);
   
-  // ------------------- Card create dialog -------------------
+  // ------------------ Task create dialog ------------------ 
+  const [ taskCreateDialogOpen, setTaskCreateDialogOpen ] = React.useState(false);
+ 
+  const handleOnCardCreateDialogApply = (task: Task) => {
+    createTaskAndRefresh(task);
+    setTaskCreateDialogOpen(false);
+  }
+
+  const handleOnCardCreateDialogClose = () => {
+    setTaskCreateDialogOpen(false);
+  }
+
+  const createTaskAndRefresh = (task: Task) => {
+    createTask(task).then((task) => {
+      tableContextDispatch({
+        type: 'table_refresh'
+      });
+    });
+  }
+
   const handleOnTaskAddClick = () => {
-    setCardCreateOpen(true);
+    setTaskCreateDialogOpen(true);
   }
 
   // ------------------- State logger ------------------------
   useEffect(() => {
-    console.log(projectsContextState);
-  }, [ projectsContextState ]);
+    console.log(projectsCacheContextState);
+  }, [ projectsCacheContextState ]);
 
   useEffect(() => {
-    console.log(tasksContextState)
-  }, [ tasksContextState ])
+    console.log(tasksCacheContextState)
+  }, [ tasksCacheContextState ])
 
   useEffect(() => {
-    console.log(tasksContextState._allTask)
-  }, [ tasksContextState._allTask ])
+    console.log(tasksCacheContextState._allTask)
+  }, [ tasksCacheContextState._allTask ])
 
   useEffect(() => {
-    console.log(drawerContextState);
-  }, [ drawerContextState ]);
+    console.log(tasksSearchContextState);
+  }, [ tasksSearchContextState ]);
 
   useEffect(() => {
-    console.log(cardCreateContextState);
-  }, [ cardCreateContextState ]);
+    console.log(taskCreateContextState);
+  }, [ taskCreateContextState ]);
 
   useEffect(() => {
     console.log(tagsSearchResultPanelContextState);
   }, [ tagsSearchResultPanelContextState ]);
 
   useEffect(() => {
-    console.log(usersContextState);
-  }, [ usersContextState ]);
+    console.log(userCacheContextState);
+  }, [ userCacheContextState ]);
 
+
+  // ------------------- Html template ------------------------
   return (
     <div>
       <Head>
@@ -247,7 +257,7 @@ const Home: NextPage = () => {
       </section>
    
       <div style={{ 
-        display: drawerContextState._tagsEditAreaFocused || tagsSearchResultPanelContextState.mouseOver
+        display: tasksSearchContextState._tagsEditAreaFocused || tagsSearchResultPanelContextState.mouseOver
         ? "block" 
         : "none" 
         }}>
@@ -271,8 +281,8 @@ const Home: NextPage = () => {
       <div>
         <TaskCreateDialog 
           label="Create Kanban Card"
-          open={ cardCreateOpen }
-          handleOnApply={ (task) => handleOnCardCreateDialogApply(task) }
+          open={ taskCreateDialogOpen }
+          handleOnApply={ (task: Task) => handleOnCardCreateDialogApply(task) }
           handleOnClose={ handleOnCardCreateDialogClose } />
       </div>    
 
@@ -281,8 +291,8 @@ const Home: NextPage = () => {
           title="Create Project"
           description="Please enter the project name to create your project."
           open={ projectCreateDialogState.show } 
-          showLogout={ projectsContextState._allProjects.length === 0 }
-          handleOnProjectCreateClick = { (project) => handleOnProjectCreateClick(project) } 
+          showLogout={ projectsCacheContextState._allProjects.length === 0 }
+          handleOnProjectCreateClick = { (project: Project) => handleOnProjectCreateClick(project) } 
           handleOnClose={ handleOnProjectCreateDialogClose } 
           handleOnLogout={ () => {} }/>  
       </div>
