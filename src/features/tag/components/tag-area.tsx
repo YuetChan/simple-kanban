@@ -13,6 +13,7 @@ interface TagAreaProps {
 }
 
 const TagArea = (props: TagAreaProps) => {
+  // ------------------ Tag area ------------------ 
   const { tag } = props;
 
   const style = {
@@ -21,6 +22,7 @@ const TagArea = (props: TagAreaProps) => {
     padding: "0px 2px"
   };
 
+  // ------------------ Html template ------------------ 
   return (
     <Stack 
       direction="row" 

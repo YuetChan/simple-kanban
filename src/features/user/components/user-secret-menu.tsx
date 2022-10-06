@@ -16,14 +16,15 @@ interface UserSecretProps {
 }
 
 const UserSecretMenu = (props: UserSecretProps) => {
-  // ------------------ User ------------------
-  const usersContextState = useUserCacheContext().state;
-  const usersContextDispatch = useUserCacheContext().Dispatch;
+  // ------------------ User cache ------------------
+  const userCacheContextState = useUserCacheContext().state;
+  const userCacheContextDispatch = useUserCacheContext().Dispatch;
 
+  // ------------------ User secret menu ------------------
   const handleOnRenewSecretClick = () => {
-    getUserByEmail(usersContextState._loginedUserEmail).then(res => {
+    getUserByEmail(userCacheContextState._loginedUserEmail).then(res => {
       generateUserSecretById(res.id).then(res => {
-        usersContextDispatch({
+        userCacheContextDispatch({
           type: 'loginedUserSecret_update',
           value: res
         });
@@ -47,7 +48,7 @@ const UserSecretMenu = (props: UserSecretProps) => {
         value={ "secret" }
         style={{ margin: "0px 0px 8px 0px" }}>
         <CopyToClipboard 
-          text={ usersContextState._loginedUserSecret }
+          text={ userCacheContextState._loginedUserSecret }
           onCopy={() => { alert('copied') }}
         >
           <Stack 
@@ -55,7 +56,7 @@ const UserSecretMenu = (props: UserSecretProps) => {
             justifyContent="space-between"
             style={{ minWidth: "150px" }}>
             <div>
-              <i>{ usersContextState._loginedUserSecret }</i>
+              <i>{ userCacheContextState._loginedUserSecret }</i>
             </div>
 
             <ContentCopyOutlinedIcon />

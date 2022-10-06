@@ -12,13 +12,16 @@ import { searchTagsByProjectIdAndPrefix } from "../../tag/services/tags-service"
 
 import { Tag } from "../../Tag";
 
-const KanbanTagsResultPanel = (props: any) => {
-  const projectsContextState = useProjectsCacheContext().state;
+const TagsSearchResultPanel = (props: any) => {
+  // ------------------ Projects cache ------------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
 
+  // ------------------ Task search cache ------------------
+  const tasksSearchCacheContextState = useTasksSearchContext().state;
+  const tasksSearchCacheContextDispatch = useTasksSearchContext().Dispatch;
+
+  // ------------------ Tags search result panel ------------------
   const tagsSearchResultPanelDispatch = useTagsSearchResultPanelContext().Dispatch;
-
-  const drawerContextState = useTasksSearchContext().state;
-  const drawerContextDispatch = useTasksSearchContext().Dispatch;
 
   const [ tags, setTags ] = React.useState<Array<Tag>>([]);
 
@@ -27,8 +30,8 @@ const KanbanTagsResultPanel = (props: any) => {
 
   const fetchTags = (page: number) => {
     const timeout = setTimeout(() => {  
-      searchTagsByProjectIdAndPrefix(projectsContextState?._activeProject?.id, 
-        drawerContextState._tagsEditAreaSearchStr, page).then(res => {
+      searchTagsByProjectIdAndPrefix(projectsCacheContextState?._activeProject?.id, 
+        tasksSearchCacheContextState._tagsEditAreaSearchStr, page).then(res => {
           setTags(res.tags);
 
           setPage(res.page + 1);
@@ -40,22 +43,22 @@ const KanbanTagsResultPanel = (props: any) => {
   }
 
   const handlePageChange = (e: any, val: number) => {
-    if(projectsContextState._activeProject) {
+    if(projectsCacheContextState._activeProject) {
       fetchTags(val - 1); 
     }
   } 
 
   useEffect(() => {
-    if(projectsContextState._activeProject) {
+    if(projectsCacheContextState._activeProject) {
       fetchTags(0); 
     }
-  }, [ drawerContextState._tagsEditAreaSearchStr ]);
+  }, [ tasksSearchCacheContextState._tagsEditAreaSearchStr ]);
 
   useEffect(() => {
-    if(projectsContextState._activeProject) {
+    if(projectsCacheContextState._activeProject) {
       fetchTags(0); 
     }
-  }, [ projectsContextState._activeProject ]);
+  }, [ projectsCacheContextState._activeProject ]);
 
   const handleOnMouseEnter = () => {
     tagsSearchResultPanelDispatch({
@@ -68,11 +71,12 @@ const KanbanTagsResultPanel = (props: any) => {
       type: 'mouse_leave'
     });
 
-    drawerContextDispatch({
+    tasksSearchCacheContextDispatch({
       type: 'tagsEditArea_setFocus'
     });
   }
 
+  // ------------------ Html template ------------------
   return (
     <section style={{
       width: "360px",
@@ -125,4 +129,4 @@ const KanbanTagsResultPanel = (props: any) => {
   )
 }
 
-export default KanbanTagsResultPanel;
+export default TagsSearchResultPanel;

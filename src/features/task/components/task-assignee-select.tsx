@@ -12,10 +12,10 @@ interface AssigneeSelectProps {
 }
 
 const AssigneeSelect = (props: AssigneeSelectProps) => {
-  // ------------------ Assignee ------------------
+  // ------------------ Assignee select ------------------
   const [ assignee, setAssignee ] = React.useState(props.assignee? props.assignee : 'none');
 
-  const getAssigneeHTML = (assignee: string) => {
+  const getAssigneeHTML = (assignee: string): any => {
     return (
       <Stack 
         direction="row" 

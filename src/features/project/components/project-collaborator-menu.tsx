@@ -16,17 +16,20 @@ interface ProjectCollaboratorMenuProps {
 }
 
 const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
-  const projectsContextState = useProjectsCacheContext().state;
-  const projectsContextDispatch = useProjectsCacheContext().Dispatch;
+  // ------------------ Projects cache ------------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
 
-  const usersContextState = useUserCacheContext().state;
+  // ------------------ User cache------------------
+  const userCacheContextState = useUserCacheContext().state;
 
+  // ------------------ Project collaborator menu ------------------
   const handleOnQuitProjectClick = () => {
-    const originalProject = projectsContextState._activeProject;
+    const originalProject = projectsCacheContextState._activeProject;
 
     const originalCollaboratorEmails = originalProject.collaboratorList.map(collaborator =>  collaborator.email);
     const updatedCollaboratorEmails = originalCollaboratorEmails.filter(email => {
-      return email !== usersContextState._loginedUserEmail;
+      return email !== userCacheContextState._loginedUserEmail;
     });
 
     const updatedCollaborators = updatedCollaboratorEmails.map(email => {
@@ -42,7 +45,7 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
       alert('You are removed');
 
       getProjectById(originalProject.id).then(res => {
-        projectsContextDispatch({
+        projectsCacheContextDispatch({
           type: 'activeProject_update',
           value: undefined
         });

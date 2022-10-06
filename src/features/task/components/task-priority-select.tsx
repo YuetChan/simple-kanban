@@ -8,7 +8,7 @@ interface TaskPrioritySelectProps {
 }
 
 const TaskPrioritySelect = (props: TaskPrioritySelectProps) => {
-  // ------------------ Priority ------------------
+  // ------------------ Task priority select ------------------
   const [ priority, setPriority ] = React.useState(props.value);
 
   useEffect(() => {

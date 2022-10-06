@@ -11,13 +11,16 @@ import { searchTagsByProjectIdAndPrefix } from "../../tag/services/tags-service"
 
 import { Tag } from "../../Tag";
 
+interface TagsSearchResultPanel { }
+
 const TagsSearchResultPanel = (props: any) => {
-  // ------------------ project ------------------
-  const projectsContextState = useProjectsCacheContext().state;
+  // ------------------ Projects cache ------------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
 
-  // ------------------ Html template ------------------
-  const cardUpdateContextState = useTaskUpdateContext().state;
+  // ------------------ Task update ------------------
+  const taskUpdateContextState = useTaskUpdateContext().state;
 
+  // ------------------ Tags search result panel ------------------
   const [ tags, setTags ] = React.useState<Array<Tag>>([]);
 
   const [ page, setPage ] = React.useState(1);
@@ -25,8 +28,8 @@ const TagsSearchResultPanel = (props: any) => {
 
   const fetchTags = (page: number) => {
     const timeout = setTimeout(() => {  
-      searchTagsByProjectIdAndPrefix(projectsContextState?._activeProject?.id, 
-        cardUpdateContextState._tagsEditAreaSearchStr, page).then(res => {
+      searchTagsByProjectIdAndPrefix(projectsCacheContextState?._activeProject?.id, 
+        taskUpdateContextState._tagsEditAreaSearchStr, page).then(res => {
           setTags(res.tags);
 
           setPage(res.page + 1);
@@ -39,10 +42,10 @@ const TagsSearchResultPanel = (props: any) => {
 
   useEffect(() => {
     fetchTags(0);
-  }, [ cardUpdateContextState._tagsEditAreaSearchStr]);
+  }, [ taskUpdateContextState._tagsEditAreaSearchStr]);
 
   const handleOnPageChange = (e: any, val: number) => {
-    if(cardUpdateContextState._lastFocusedArea === 'tagsEditArea') {
+    if(taskUpdateContextState._lastFocusedArea === 'tagsEditArea') {
       fetchTags(val - 1);
     }
   }

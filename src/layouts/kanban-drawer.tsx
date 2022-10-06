@@ -1,14 +1,6 @@
 import  React, { useEffect } from 'react';
 
-import { Stack, Tooltip, Typography } from '@mui/material';
-
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+import { Stack, Tooltip, Typography, Drawer, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
@@ -36,39 +28,47 @@ import UserSecretMenu from '../features/user/components/user-secret-menu';
 import TaskSearchPrioritySelect from '../features/task/components/task-search-priority-select';
 import TaskSearchkSprintSelect from '../features/task/components/task-search-sprint-select';
 
+interface KanbanDrawerProps { }
 
-const KanbanDrawer = () => {
-  // -------------- Project --------------
-  const projectsContextState = useProjectsCacheContext().state;
-  const projectsContextDispatch = useProjectsCacheContext().Dispatch;
+const KanbanDrawer = (props: KanbanDrawerProps) => {
+  // -------------- Projects cache --------------
+  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
 
-  const handleOnProjectChange = (e: any) => {
-    const projects = projectsContextState._allProjects.filter(project => {
-      return project.id === e.target.value
-    });
+  // -------------- Project create dialog --------------
+  const projectCreateDialogDispatch = useProjectCreateDialogContext().Dispatch;
 
-    projectsContextDispatch({
-      type: 'activeProject_select', 
-      value: projects.length > 0 ? projects[0] : undefined
-    });
-  };
+  // -------------- Project delete dialog --------------
+  const projectDeleteDialogDispatch = useProjectDeleteDialogContext().Dispatch;
 
-  // -------------- Project select --------------
+  // -------------- User cache --------------
+  const userCacheContextState = useUserCacheContext().state;
+
+  // -------------- Tasks search --------------
+  const tasksSearchContextState = useTasksSearchContext().state;
+  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
+
+  // -------------- Kanban drawer --------------
   const [ yourProjectDisabled, setYourProjectDisabled ] = React.useState(true);
 
   useEffect(() => {
-    if(projectsContextState._allProjects.length > 0) {
+    if(projectsCacheContextState._allProjects.length > 0) {
       setYourProjectDisabled(true);
     }else {
       setYourProjectDisabled(false);
     }
-  }, [ projectsContextState._allProjects ]);
+  }, [ projectsCacheContextState._allProjects ]);
 
-  // -------------- User --------------
-  const usersContextState = useUserCacheContext().state;
+  const handleOnProjectChange = (e: any) => {
+    const projects = projectsCacheContextState._allProjects.filter(project => {
+      return project.id === e.target.value
+    });
 
-  // -------------- New project --------------
-  const projectCreateDialogDispatch = useProjectCreateDialogContext().Dispatch;
+    projectsCacheContextDispatch({
+      type: 'activeProject_select', 
+      value: projects.length > 0 ? projects[0] : undefined
+    });
+  };
 
   const handleOnNewProjectClick = () => {
     projectCreateDialogDispatch({
@@ -76,13 +76,9 @@ const KanbanDrawer = () => {
     });
   }
 
-  // -------------- Logout --------------
   const handleOnLogoutClick = () => {
 
-   }
-
-  // -------------- Delete --------------
-  const projectDeleteDialogDispatch = useProjectDeleteDialogContext().Dispatch;
+  }
 
   const handleOnDeleteClick = () => {
     projectDeleteDialogDispatch({
@@ -90,7 +86,7 @@ const KanbanDrawer = () => {
     });
   }
 
-  // -------------- User filter menu --------------
+  // -------------- User list menu --------------
   const [ usersFilterMenuAnchorEl, setUsersFilterMenuAnchorEl ] = React.useState(null);
   const usersFilterMenuOpen = Boolean(usersFilterMenuAnchorEl);
 
@@ -102,7 +98,7 @@ const KanbanDrawer = () => {
     setUsersFilterMenuAnchorEl(e.currentTarget);
   }
 
-  // -------------- Owner menu --------------
+  // -------------- Project owner menu --------------
   const [ ownerMenuAnchorEl, setOwnerMenuAnchorEl ] = React.useState(null);
   const ownerMenuOpen = Boolean(ownerMenuAnchorEl);
 
@@ -117,14 +113,14 @@ const KanbanDrawer = () => {
   const [ isOwner, setIsOwner ] = React.useState(false);
 
   useEffect(() => {
-    if(usersContextState._loginedUserEmail === projectsContextState._activeProject?.userEmail) {
+    if(userCacheContextState._loginedUserEmail === projectsCacheContextState._activeProject?.userEmail) {
       setIsOwner(true);
     }else {
       setIsOwner(false);
     }
-  }, [ usersContextState ]);
+  }, [ userCacheContextState ]);
 
-  // -------------- Collaborators menu --------------
+  // -------------- Project collaborators menu --------------
   const [ collaboratorsMenuAnchorEl, setCollaboratorsMenuAnchorEl ] = React.useState(null);
   const collaboratorsMenuOpen = Boolean(collaboratorsMenuAnchorEl);
 
@@ -136,7 +132,7 @@ const KanbanDrawer = () => {
     setCollaboratorsMenuAnchorEl(e.currentTarget);
   }
 
-  // ------------------ Secret menu ------------------
+  // ------------------ User secret menu ------------------
   const [ secretMenuAnchorEl, setSecretMenuAnchorEl ] = React.useState<null | HTMLElement>(null);
   const secretMenuOpen = Boolean(secretMenuAnchorEl);
 
@@ -148,28 +144,25 @@ const KanbanDrawer = () => {
     setSecretMenuAnchorEl(e.currentTarget);
   }
 
-  // ------------------ Tags edit areas ------------------
-  const drawerContextState = useTasksSearchContext().state;
-  const drawerContextDispatch = useTasksSearchContext().Dispatch;
-
+  // ------------------ Tags filter areas ------------------
   const tagsEditAreaRef = React.useRef(undefined);
 
   useEffect(() => {
-    drawerContextDispatch({
+    tasksSearchContextDispatch({
       type: 'tagsEditArea_setRef',
       value: tagsEditAreaRef
     });
   }, [ tagsEditAreaRef ]);
 
   const handleOnTagsChange = (tags: Array<string>) => {
-    drawerContextDispatch({
+    tasksSearchContextDispatch({
       type: 'activeTags_update',
       value: tags
     });
   }
 
   const handleOnTagsFilterAreaChange = (e: any) => {
-    drawerContextDispatch({
+    tasksSearchContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
     });
@@ -177,7 +170,7 @@ const KanbanDrawer = () => {
 
   const handleOnTagsFilterAreaKeyPress = (e: any) => {
     if(e.keyCode === 13) {
-      drawerContextDispatch({
+      tasksSearchContextDispatch({
         type: 'tagsEditAreaSearchStr_update',
         value: ''
       });
@@ -185,25 +178,25 @@ const KanbanDrawer = () => {
   }
 
   const handleOnTagsFilterAreaFocus = (e: any) => {
-    drawerContextDispatch({
+    tasksSearchContextDispatch({
       type: 'tagsEditAreaSearchStr_update',
       value: e.target.value
     });
 
-    drawerContextDispatch({
+    tasksSearchContextDispatch({
       type: 'tagsEditArea_focus'
     });
   }
 
   const handleOnTagsFilterAreaBlur = (e: any) => {
-    drawerContextDispatch({
+    tasksSearchContextDispatch({
       type: 'tagsEditArea_blur'
     });
   }
 
+  // ------------------ Html template ------------------
   const drawerWidth = 240;
 
-  // ------------ HTML template --------------
   return (
     <Drawer
       sx={{
@@ -309,7 +302,7 @@ const KanbanDrawer = () => {
 
         <TagsEditArea 
           label="Tags" 
-          tags={ drawerContextState._activeTags }
+          tags={ tasksSearchContextState._activeTags }
           disabled={ false } 
           handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
           handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
@@ -342,7 +335,7 @@ const KanbanDrawer = () => {
         </ListItem>
 
         <ListItem 
-          style={{ display: projectsContextState._allProjects.length > 0? "block": "none" }}
+          style={{ display: projectsCacheContextState._allProjects.length > 0? "block": "none" }}
           key={ "Logout" } 
           disablePadding 
           onClick={ handleOnLogoutClick } >

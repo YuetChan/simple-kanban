@@ -10,7 +10,7 @@ interface TaskStatusSelectProps {
 }
 
 const StatusSelect = (props: TaskStatusSelectProps) => {
-  // ------------------ Status ------------------
+  // ------------------ Status select ------------------
   const [ status, setStatus ] = React.useState(props.value);
 
   useEffect(() => {

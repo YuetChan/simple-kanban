@@ -7,14 +7,19 @@ import { useUserCacheContext } from "../../../providers/user-cache";
 import UserSecretMenu from "../../user/components/user-secret-menu";
 
 interface ProjectCreateDialogProps {
+  open?: boolean,
+  title?: string,
+  description?: string,
+  showLogout?: boolean,
+
   handleOnProjectCreateClick?: Function,
   handleOnLogout?: Function,
   handleOnClose?: Function
 }
 
 const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
-  // ------------------ User ------------------
-  const usersContextState = useUserCacheContext().state;
+  // ------------------ User cache ------------------
+  const userCacheContextState = useUserCacheContext().state;
 
   // ------------------ Project create dialog ------------------
   const [ projectName, setProjectName ] = React.useState('');
@@ -27,7 +32,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
     if(props.handleOnProjectCreateClick) {
       props.handleOnProjectCreateClick({
         name: projectName,
-        userEmail: usersContextState._loginedUserEmail
+        userEmail: userCacheContextState._loginedUserEmail
       });
     } 
 
@@ -64,13 +69,13 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
 
   return (
     <Dialog 
-      open={ props.open } 
+      open={ props.open? props.open : false } 
       onClose={ handleOnClose }>
-      <DialogTitle>{ props.title }</DialogTitle>
+      <DialogTitle>{ props.title? props.title : "" }</DialogTitle>
       
       <DialogContent>
         <DialogContentText>
-        { props.description }
+        { props.description? props.description : "" }
         </DialogContentText>
 
         <TextField

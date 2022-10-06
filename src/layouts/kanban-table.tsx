@@ -15,7 +15,9 @@ import KanbanColumn from "./kanban-column";
 import KanbanCard from "./kanban-card";
 import TaskUpdateDialog from "../features/task/components/task-update-dialog";
 
-const KanbanTable = () => {
+interface KanbanTableProps { }
+
+const KanbanTable = (props: KanbanTableProps) => {
   // ------------------ Project ------------------
   const projectsContextState = useProjectsCacheContext().state;
 

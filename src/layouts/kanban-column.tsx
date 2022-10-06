@@ -7,9 +7,10 @@ import { useTasksCacheContext } from "../providers/tasks-cache";
 
 import { stringToEnum } from "../services/backend-enum-service";
 import { updateTask } from "../features/task/services/tasks-service";
+
 import { Task } from "../features/Task";
 
-interface ColumnProps {
+interface KanbanColumnProps {
   category: string,
   meta: {
     headUUID: string,
@@ -19,20 +20,20 @@ interface ColumnProps {
   children: any
 }
 
-const KanbanColumn = (props: ColumnProps) => {
-  // ------------------ Task ------------------
-  const tasksContextState = useTasksCacheContext().state;
-
-  const [ tasks , setTasks ] = React.useState<Array<Task>>([]);
+const KanbanColumn = (props: KanbanColumnProps) => {
+  // ------------------ Tasks cache------------------
+  const tasksCacheContextState = useTasksCacheContext().state;
 
   // ------------------ Table ------------------
   const tableContextDispatch = useKanbanTableContext().Dispatch;
 
-  useEffect(() => {
-    setTasks(tasksContextState._allTasks? tasksContextState._allTasks[ props.category ] : []);
-  }, [ tasksContextState._allTasks ]);
+  // ------------------ Kanban column ------------------
+  const [ tasks , setTasks ] = React.useState<Array<Task>>([]);
 
-  // ------------------ DnD ------------------
+  useEffect(() => {
+    setTasks(tasksCacheContextState._allTasks? tasksCacheContextState._allTasks[ props.category ] : []);
+  }, [ tasksCacheContextState._allTasks ]);
+
   const [ , drop ] = useDrop(() => {
     return { 
       accept: 'card',
@@ -92,7 +93,6 @@ const KanbanColumn = (props: ColumnProps) => {
     }
   }, [ tasks ]);
   
-  // ------------------ Helper func ------------------
   const updateTaskAndRefresh = (task: Task) => {
     updateTask(task).then(res => {
       tableContextDispatch({

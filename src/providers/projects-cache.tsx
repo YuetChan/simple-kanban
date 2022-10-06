@@ -1,5 +1,5 @@
 import React, { useMemo, useReducer, createContext, useContext  } from 'react';
-import { Project } from '../features/Project';
+import { Project } from '../types/Project';
 import { initialState, ProjectsCacheReducer } from '../stores/projects-cache-reducer';
 
 interface ProjectsCacheContext {
