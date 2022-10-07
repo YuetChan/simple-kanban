@@ -1,4 +1,4 @@
-## Cup Kanban abac
+# Cup Kanban abac
 
 Cup Kanban abac is an oauth service of Cup Kanban built in Nest.js.
 
