@@ -14,10 +14,10 @@
     <appender-ref ref="STDOUT" />
   </root>
 
-  <logger name="com.tycorp.cuptodo" level="TRACE" >
+  <logger name="com.tycorp.cupkanban" level="TRACE" >
     <appender-ref ref="STDOUT"/>
   </logger>
-  <logger name="com.tycorp.cuptodo" level="DEBUG" >
+  <logger name="com.tycorp.cupkanban" level="DEBUG" >
     <appender-ref ref="STDOUT"/>
   </logger>
 </configuration>
