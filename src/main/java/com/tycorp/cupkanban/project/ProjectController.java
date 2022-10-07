@@ -39,7 +39,6 @@ public class ProjectController {
    @Autowired
    private UserRepository userRepository;
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getProjectById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getProjectById(id)");
@@ -62,7 +61,6 @@ public class ProjectController {
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
-//   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                            @RequestParam(name = "start") int start) {
@@ -97,7 +95,6 @@ public class ProjectController {
       }
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/share", produces = "application/json")
    public ResponseEntity<String> searchShareProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                                 @RequestParam(name = "start") int start) {
@@ -132,7 +129,6 @@ public class ProjectController {
       }
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createProject(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createProject(reqJsonStr)");
@@ -158,7 +154,6 @@ public class ProjectController {
       return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateProjectById(@PathVariable(name = "id") String id,
                                                    @RequestBody String reqJsonStr) throws JsonProcessingException {
@@ -194,7 +189,6 @@ public class ProjectController {
       }
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @DeleteMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> deleteProjectById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter deleteProjectById(id)");

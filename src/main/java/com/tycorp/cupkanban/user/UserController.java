@@ -27,7 +27,6 @@ public class UserController {
    @Autowired
    private UserSecretRepository userSecretRepository;
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> getUserByEmail(@RequestParam(name = "email") String email) {
       LOGGER.trace("Enter getUserByParams(email)");
@@ -52,7 +51,6 @@ public class UserController {
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/{id}/role", produces = "application/json")
    public ResponseEntity<String> getUserRoleById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserRoleById(id)");
@@ -110,7 +108,6 @@ public class UserController {
       }
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> getUserSecretById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserSecretById(reqJsonStr)");
@@ -134,7 +131,6 @@ public class UserController {
       }
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @PutMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> generateUserSecretById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter generateUserSecretById(reqJsonStr)");

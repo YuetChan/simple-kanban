@@ -45,7 +45,6 @@ public class TaskController {
    @Autowired
    private UserRepository userRepository;
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getTaskById(id)");
@@ -68,7 +67,6 @@ public class TaskController {
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> searchTasks(@RequestParam(name = "start") int start,
                                              @RequestParam(name = "pageSize") int pageSize,
@@ -92,10 +90,8 @@ public class TaskController {
 
       List<Task> taskList = page.getContent();
       for(var task : taskList) {
-//         List<Tag> updatedTagList = new ArrayList();
          for(var tag : task.getTagList()) {
             tag.setProjectId(projectId);
-//            updatedTagList.add(tag);
          }
       }
 
@@ -113,7 +109,6 @@ public class TaskController {
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createTask(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createTask(reqJsonStr)");
@@ -141,7 +136,6 @@ public class TaskController {
       return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateTaskById(@PathVariable(name = "id") String id,
                                                 @RequestBody String reqJsonStr) {
@@ -166,7 +160,6 @@ public class TaskController {
       return new ResponseEntity(HttpStatus.NO_CONTENT);
    }
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @DeleteMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> deleteTaskById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter deleteTaskById(id)");

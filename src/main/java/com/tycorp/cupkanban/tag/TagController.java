@@ -31,7 +31,6 @@ public class TagController {
    @Autowired
    private ProjectRepository projectRepository;
 
-   @CrossOrigin(origins = "http://localhost:3000")
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> searchTagsByProjectIdAndPrefix(@RequestParam(name = "projectId") String projectId,
                                                                 @RequestParam(name = "prefix") String prefix,
