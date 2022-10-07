@@ -7,7 +7,7 @@ Cup Kanban server is an API service of Cup Kanban built in Spring Boot and Java 
 Cup Kanban server provides REST APIs supporting crud operations on Cup Kanban entities.
 
 ## User guide
-Please refer cup-kanban-user-guide to for detail documentation.
+Please refer to [cup-kanban-user-guide](https://github.com/YuetChan/cup-kanban-user-guide "cup-kanban-user-guide") for detail documentation.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
