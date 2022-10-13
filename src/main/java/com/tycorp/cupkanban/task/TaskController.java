@@ -112,7 +112,7 @@ public class TaskController {
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createTask(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createTask(reqJsonStr)");
-      LOGGER.debug("PostMapping createTask with @RequestBody", reqJsonStr);
+      LOGGER.debug("PostMapping createTask with @RequestBody: {}", reqJsonStr);
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 

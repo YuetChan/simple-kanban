@@ -61,8 +61,14 @@ public class TaskService {
       List<Tag> tagList = task.getTagList();
       task.setTagList(new ArrayList<>());
 
+      LOGGER.debug("Temporarily remove task node from task");
+      TaskNode node = task.getTaskNode();
+      task.setTaskNode(new TaskNode());
+
       // Get task with persistent state
       task = taskRepository.save(task);
+
+      task.setTaskNode(node);
 
       if(!insertTaskToLinkedList(task)) {
          LOGGER.debug("Unable to insert task to linkedList");
@@ -509,7 +515,7 @@ public class TaskService {
       Optional<Task> tailTaskMaybe = taskRepository.findById(node.getTailUUID());
 
       if(headTaskMaybe.isPresent() && !tailTaskMaybe.isPresent()) {
-         LOGGER.debug("Check if task node exists while tail node not exists");
+         LOGGER.debug("Head node exists while tail node not exists");
 
          TaskNode headNode = headTaskMaybe.get().getTaskNode();
 
@@ -535,7 +541,7 @@ public class TaskService {
       }
 
       if(!headTaskMaybe.isPresent() && tailTaskMaybe.isPresent()) {
-         LOGGER.debug("Check if task node not exists while tail node exists");
+         LOGGER.debug("Head node not exists while tail node exists");
 
          TaskNode tailNode = tailTaskMaybe.get().getTaskNode();
 
