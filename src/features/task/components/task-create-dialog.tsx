@@ -50,7 +50,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     updateTagsEditAreaSearchStr,
     updateActiveTags, 
     mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
-    focusTagsEditArea, blurTagsEditArea, updateLastFocusedArea, 
+    focusTagsEditArea, blurTagsEditArea, 
+    updateLastFocusedArea, 
     setTagsEditAreaRef,
   } = taskCreateActions;
  

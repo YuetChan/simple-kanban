@@ -9,6 +9,7 @@ interface TagsEditsAreaProps {
   inputRef?: any,
   disabled?: boolean,
   tags?: Array<string>,
+  
   handleOnTagsChange?: Function,
   handleOnTextFieldChange?: Function,
   handleOnKeyPress?: Function,
