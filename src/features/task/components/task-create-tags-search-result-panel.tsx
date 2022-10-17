@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 
-import { Pagination, Stack } from "@mui/material";
+import {  useSelector } from "react-redux";
 
-import { useTaskCreateContext } from "../../../providers/task-create";
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
+import { Pagination, Stack } from "@mui/material";
 
 import { searchTagsByProjectIdAndPrefix } from "../../tag/services/tags-service";
 
@@ -11,12 +10,14 @@ import TagArea from "../../tag/components/tag-area";
 
 import { Tag } from "../../../types/Tag";
 
+import { AppState } from "../../../stores/app-reducers";
+
 const TagsSearchResultPanel = (props: any) => {
   // ------------------ Project cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task create ------------------
-  const taskCreateContextState = useTaskCreateContext().state;
+  const taskCreateContextState = useSelector((state: AppState) => state.TaskCreate);
 
   // ------------------ Tags search result panel ------------------
   const [ tags, setTags ] = React.useState<Array<Tag>>([]);

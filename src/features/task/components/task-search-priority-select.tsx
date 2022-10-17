@@ -1,25 +1,26 @@
 import React from "react";
 
+import { useDispatch } from "react-redux";
+
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-import { useTasksSearchContext } from "../../../providers/tasks-search";
+import { actions as taskSearchActions } from '../../../stores/tasks-search-slice';
 
 interface TaskSearchPrioritySelectProps { }
 
 const TaskSearchPrioritySelect = (props: TaskSearchPrioritySelectProps) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Tasks search ------------------
-  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
+  const { selectActivePriority } = taskSearchActions;
 
   // ------------------ Tasks search priority select ------------------
   const [ priority, setPriority ] = React.useState('all');
 
   const handleOnPriorityChange = (e: any) => {
     setPriority(e.target.value);
-
-    tasksSearchContextDispatch({
-      type: 'activePriority_select',
-      value: e.target.value
-    })
+    dispatch(selectActivePriority(e.target.value));
   }
 
   // ------------------ Html template ------------------

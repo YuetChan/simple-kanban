@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
+
+import { ReactReduxContext, useDispatch, useSelector } from "react-redux";
+
 import { Menu, MenuItem, Stack, TextField } from "@mui/material";
 
 import PersonRemoveAlt1OutlinedIcon from '@mui/icons-material/PersonRemoveAlt1Outlined';
@@ -6,8 +9,11 @@ import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined
 
 import { getProjectById, updateProjectById } from "../services/projects-service";
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
 import { User } from "../../../types/User";
+
+import { AppState } from "../../../stores/app-reducers";
+
+import { actions as ProjectsCahceActions } from "../../../stores/projects-cache-slice";
 
 interface ProjectOwnerMenuProps {
   ownerMenuAnchorEl: any,
@@ -16,9 +22,13 @@ interface ProjectOwnerMenuProps {
 }
 
 const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
-  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
+
+  const { updateActiveProject } = ProjectsCahceActions;
 
   // ------------------ Owner menu ------------------
   const [ collaboratorToAddEmail, setCollaboratorToAddEmail ] = React.useState('');
@@ -84,11 +94,8 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         alert('Collaborator added');
   
         getProjectById(activeProject.id).then(res => {
-          projectsCacheContextDispatch({
-            type: 'activeProject_update',
-            value: res
-          });
-        })
+          dispatch(updateActiveProject(res));
+        });
       }).catch(err => {
         console.log(err);
         alert('Opps, failed to add collaborator')
@@ -124,10 +131,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         alert('Collaborator removed');
   
         getProjectById(activeProject.id).then(res => {
-          projectsCacheContextDispatch({
-            type: 'activeProject_update',
-            value: res
-          });
+          dispatch(updateActiveProject(res));
         })
       }).catch(err => {
         console.log(err);

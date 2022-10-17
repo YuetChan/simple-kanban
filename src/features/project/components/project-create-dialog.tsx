@@ -1,10 +1,12 @@
 import React from "react";
 
+import { useSelector } from "react-redux";
+
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField } from "@mui/material";
 
-import { useUserCacheContext } from "../../../providers/user-cache";
-
 import UserSecretMenu from "../../user/components/user-secret-menu";
+
+import { AppState } from "../../../stores/app-reducers";
 
 interface ProjectCreateDialogProps {
   open?: boolean,
@@ -19,7 +21,7 @@ interface ProjectCreateDialogProps {
 
 const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
+  const userCacheContextState = useSelector((state: AppState) => state.UserCache);;
 
   // ------------------ Project create dialog ------------------
   const [ projectName, setProjectName ] = React.useState('');

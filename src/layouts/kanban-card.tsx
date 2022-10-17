@@ -1,24 +1,24 @@
-import React from 'react';
-
-import Moment from 'react-moment';
+import {  useDispatch } from 'react-redux';
 
 import { Avatar, Card, CardContent, CardActionArea, Stack, Typography } from '@mui/material';
 
 import { useDrag, useDrop } from 'react-dnd';
 import { mergeRefs } from "react-merge-refs";
 
-import { useKanbanTableContext } from '../providers/kanban-table';
+import Moment from 'react-moment';
+
+import { truncate } from '../libs/text-lib';
 
 import { updateTask } from '../features/task/services/tasks-service';
-import { truncate } from '../libs/text-lib';
+
 import { stringToEnum } from '../services/backend-enum-service';
+import { textToAvatar } from '../services/avatar-service';
 
 import TagArea from '../features/tag/components/tag-area';
 
-import Avvvatars from 'avvvatars-react'
-
 import { Task } from '../types/Task';
-import { textToAvatar } from '../services/avatar-service';
+
+import { actions as kanbanTableActions } from '../stores/kanban-table-slice';
 
 interface KanbanCardProps {
   task: Task,
@@ -31,8 +31,11 @@ interface KanbanCardProps {
 }
 
 const KanbanCard = (props: KanbanCardProps) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Kanban table ------------------
-  const tableContextDispatch = useKanbanTableContext().Dispatch;
+  const { refreshTable } = kanbanTableActions;
 
   // ------------------ Kanban card ------------------
   const handleOnCardClick = () => {
@@ -71,9 +74,7 @@ const KanbanCard = (props: KanbanCardProps) => {
 
   const updateTaskAndRefresh = (task: Task): void => {
     updateTask(task).then(res => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
+      dispatch(refreshTable());
     }).catch(err => {
       console.log(err);
     });

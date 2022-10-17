@@ -1,14 +1,17 @@
 import React, { useEffect } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
+
 import { useDrop } from "react-dnd";
 
-import { useKanbanTableContext } from "../providers/kanban-table";
-import { useTasksCacheContext } from "../providers/tasks-cache";
-
-import { stringToEnum } from "../services/backend-enum-service";
 import { updateTask } from "../features/task/services/tasks-service";
+import { stringToEnum } from "../services/backend-enum-service";
 
 import { Task } from "../types/Task";
+
+import { AppState } from "../stores/app-reducers";
+
+import { actions as kanbanTableActions } from "../stores/kanban-table-slice";
 
 interface KanbanColumnProps {
   category: string,
@@ -21,11 +24,14 @@ interface KanbanColumnProps {
 }
 
 const KanbanColumn = (props: KanbanColumnProps) => {
-  // ------------------ Tasks cache ------------------
-  const tasksCacheContextState = useTasksCacheContext().state;
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
 
-  // ------------------ Table ------------------
-  const tableContextDispatch = useKanbanTableContext().Dispatch;
+  // ------------------ Tasks cache ------------------
+  const tasksCacheContextState = useSelector((state: AppState) => state.TasksCache);
+
+  // ------------------ Kanban Table ------------------
+  const { refreshTable } = kanbanTableActions;
 
   // ------------------ Kanban column ------------------
   const [ tasks , setTasks ] = React.useState<Array<Task>>([]);
@@ -101,9 +107,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
   
   const updateTaskAndRefresh = (task: Task) => {
     updateTask(task).then(res => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
+      dispatch(refreshTable());
     }).catch(err => {
       console.log(err);
     });

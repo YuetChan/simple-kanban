@@ -1,11 +1,12 @@
+import { useSelector } from "react-redux";
+
 import { Avatar, AvatarGroup, IconButton, Link, Stack, Tooltip } from "@mui/material";
 
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
 import { textToAvatar } from "../../../services/avatar-service";
 
-
+import { AppState } from "../../../stores/app-reducers";
 
 interface UserListProps {
   isOwner?: boolean,
@@ -17,7 +18,7 @@ interface UserListProps {
 
 const UserList = (props: UserListProps) => {
   // ------------------ Project cache ------------------
-  const projectsCahceContextState = useProjectsCacheContext().state;
+  const projectsCahceContextState = useSelector((state: AppState) => state.ProjectsCache);
   
   // ------------------ Html template ------------------
   return (

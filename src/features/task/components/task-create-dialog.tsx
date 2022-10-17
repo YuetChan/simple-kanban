@@ -1,14 +1,10 @@
 import React, { useEffect } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField } from "@mui/material";
 
 import DatePicker from "react-datepicker";
-
-import { useTaskCreateContext } from '../../../providers/task-create';
-import { useProjectsCacheContext } from '../../../providers/projects-cache';
-import { useUserCacheContext } from '../../../providers/user-cache';
-import { useDatesCacheContext } from '../../../providers/dates-cache';
-import { useTasksCacheContext } from '../../../providers/tasks-cache';
 
 import { stringToEnum } from '../../../services/backend-enum-service';
 
@@ -21,6 +17,11 @@ import TaskPrioritySelect from './task-priority-select';
 
 import { Task } from '../../../types/Task';
 
+import { AppState } from '../../../stores/app-reducers';
+
+import { actions as taskCreateActions } from "../../../stores/task-create-slice";
+import { actions as datesCacheActions } from "../../../stores/dates-cache-slice";
+
 interface TaskCreateDialogProps {
   label?: string,
   open?: boolean,
@@ -30,18 +31,39 @@ interface TaskCreateDialogProps {
 }
 
 const TaskCreateDialog = (props: TaskCreateDialogProps) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
+  const userCacheContextState = useSelector((state: AppState) => state.UserCache);
 
   // ------------------ Tasks cache ------------------
-  const tasksCacheContextState = useTasksCacheContext().state;
+  const tasksCacheContextState = useSelector((state: AppState) => state.TasksCache);
 
   // ------------------ Task create ------------------
-  const taskCreateContextState = useTaskCreateContext().state;
-  const taskCreateContextDispatch = useTaskCreateContext().Dispatch;
+  const taskCreateContextState = useSelector((state: AppState) => state.TaskCreate);
+
+  const { 
+    updateActiveTags, 
+    mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
+
+    updateLastFocusedArea, 
+    
+    focusTagsEditArea,
+    blurTagsEditArea,
+
+    setTagsEditAreaRef,
+
+    updateTagsEditAreaSearchStr
+  } = taskCreateActions;
+ 
+  // ------------------ Dates cache ------------------
+  const datesContextState = useSelector((state: AppState) => state.DatesCache);
+  
+  const { dueDateUpdate } = datesCacheActions;
 
   // ------------------ Task create dialog ------------------
   const defaultTask = {
@@ -73,7 +95,6 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     if(projectsCacheContextState._activeProject) {
       const projectUUID = projectsCacheContextState._activeProject?.projectUUID;
 
-    
       const allTasks = tasksCacheContextState._allTasks;
       if(allTasks?.backlog.length > 0) {
         setTask({
@@ -98,10 +119,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   }, [ tasksCacheContextState._allTasks ]);
 
   const handleOnClose = () => {
-    taskCreateContextDispatch({
-      type: 'activeTags_update',
-      value: []
-    });
+    dispatch(updateActiveTags([]));
 
     setTask(defaultTask);
 
@@ -121,47 +139,32 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
       });
     }
 
-    taskCreateContextDispatch({
-      type: 'activeTags_update',
-      value: []
-    });
-
+    dispatch(updateActiveTags([]));
     setTask(defaultTask);
   }
 
   const handleOnMouseEnter = () => {
-    taskCreateContextDispatch({
-      type: 'searchResultPanel_mouseEnter'
-    });
-
-    taskCreateContextDispatch({
-      type: 'lastFocusedArea_update',
-      value: 'tagsEditArea'
-    })
+    dispatch(mouseEnterSearchResultPanel(undefined));
+    dispatch(updateLastFocusedArea('tagsEditArea'))
   }
 
   const handleOnMouseLeave = () => {
-    taskCreateContextDispatch({
-      type: 'searchResultPanel_mouseLeave'
-    });
+    dispatch(mouseLeaveSearchResultPanel());
 
     if(taskCreateContextState._lastFocusedArea === 'tagsEditArea') {
       taskCreateContextState._tagsEditAreaRef.current.focus();
     }
 
-    taskCreateContextDispatch({
-      type: 'tagsEditArea_focus'
-    });
+    dispatch(focusTagsEditArea());
   }
 
   // ------------------ Tags filter area ------------------
-  const tagsEditAreaRef = React.useRef();
+  const tagsEditAreaRef = React.useRef<HTMLInputElement | undefined>(undefined);
 
   useEffect(() => {
-    taskCreateContextDispatch({
-      type: 'tagsEditArea_setRef',
-      value: tagsEditAreaRef
-    });
+    console.log(tagsEditAreaRef)
+
+    dispatch(setTagsEditAreaRef(tagsEditAreaRef));
   }, [ tagsEditAreaRef ]);
 
   const handleOnTagsChange = (tags: Array<string>) => {
@@ -174,34 +177,20 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
       })
     })
 
-    taskCreateContextDispatch({
-      type: 'activeTags_update',
-      value: tags
-    });
+    dispatch(updateActiveTags(tags));
   }
 
   const handleOnTagsFilterAreaFocus = (e: any) => {
-    taskCreateContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
-
-    taskCreateContextDispatch({
-      type: 'tagsEditArea_focus'
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
+    dispatch(focusTagsEditArea());
   }
 
   const handleOnTagsFilterAreaBlur = () => {
-    taskCreateContextDispatch({
-      type: 'tagsEditArea_blur'
-    });
+    dispatch(blurTagsEditArea());
   }
 
   const handleOnTagsFilterAreaChange = (e: any) => {
-    taskCreateContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
   }
 
   // ------------------ Title ------------------
@@ -349,19 +338,13 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   }
 
   // ------------------ Due date ------------------
-  const datesContextState = useDatesCacheContext().state;
-  const datesContextDispatch = useDatesCacheContext().Dispatch;
-
   const handleOnDueDateChange = (date: any) => {
     setTask({
       ... task,
       dueAt: new Date(date).getTime()
     });
 
-    datesContextDispatch({
-      type: 'dueDate_update',
-      value: new Date(date)
-    })
+    dispatch(dueDateUpdate(new Date(date)));
   }
 
   // ------------------ Assignee ------------------

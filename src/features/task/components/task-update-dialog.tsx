@@ -1,14 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
+
+import { ReactReduxContext, useDispatch, useSelector } from 'react-redux';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField, Tooltip } from "@mui/material";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
-import { useProjectsCacheContext } from '../../../providers/projects-cache';
-import { useUserCacheContext } from '../../../providers/user-cache';
-import { useTasksCacheContext } from '../../../providers/tasks-cache';
-import { useTaskUpdateContext } from '../../../providers/task-update';
 
 import { stringToEnum } from '../../../services/backend-enum-service';
 
@@ -22,6 +19,10 @@ import TaskPrioritySelect from './task-priority-select';
 import { Tag } from '../../../types/Tag';
 import { Task } from '../../../types/Task';
 
+import { AppState } from '../../../stores/app-reducers';
+
+import { actions as taskUpdateActions } from '../../../stores/task-update-slice'; 
+
 interface TaskUpdateDialog {
   open?: boolean,
   label?: string,
@@ -34,18 +35,28 @@ interface TaskUpdateDialog {
 }
 
 const TaskUpdateDialog = (props: TaskUpdateDialog) => {
+  // ------------------ State ------------------
+  const dispatch = useDispatch();
+  
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
+  const userCacheContextState = useSelector((state: AppState) => state.UserCache);
 
   // ------------------ Tasks cache------------------
-  const tasksCacheContextState = useTasksCacheContext().state;
+  const tasksCacheContextState = useSelector((state: AppState) => state.TasksCache);
 
-  // ------------------ Task uppdate------------------
-  const taskUpdateContextState = useTaskUpdateContext().state;
-  const taskUpdateContextDispatch = useTaskUpdateContext().Dispatch;
+  // ------------------ Task update------------------
+  const taskUpdateContextState = useSelector((state: AppState) => state.TaskUpdate);
+
+  const { 
+    mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
+    updateLastFocusedArea, 
+    focusTagsEditArea, blurTagsEditArea,
+    setTagsEditAreaRef,
+    updateTagsEditAreaSearchStr,
+  } = taskUpdateActions;
 
   // ------------------ Task update dialog ------------------
   const [ task, setTask ] = React.useState(props.task);
@@ -73,38 +84,25 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   }
 
   const handleOnMouseEnter = () => {
-    taskUpdateContextDispatch({
-      type: 'searchResultPanel_mouseEnter'
-    });
-
-    taskUpdateContextDispatch({
-      type: 'lastFocusedArea_update',
-      value: 'tagsEditArea'
-    })
+    dispatch(mouseEnterSearchResultPanel(undefined));
+    dispatch(updateLastFocusedArea('tagsEditArea'));
   }
 
   const handleOnMouseLeave = () => {
-    taskUpdateContextDispatch({
-      type: 'searchResultPanel_mouseLeave'
-    });
+    dispatch(mouseLeaveSearchResultPanel());
 
     if(taskUpdateContextState._lastFocusedArea === 'tagsEditArea') {
       taskUpdateContextState._tagsEditAreaRef.current.focus();
     }
 
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_focus'
-    });
+    dispatch(focusTagsEditArea());
   }
 
   // ------------------ Tags filter area ------------------
-  const tagsEditAreaRef = React.useRef();
+  const tagsEditAreaRef = React.useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_setRef',
-      value: tagsEditAreaRef
-    });
+    dispatch(setTagsEditAreaRef(tagsEditAreaRef));
   }, [ tagsEditAreaRef ]);
 
   const handleOnTagsChange = (tags: Array<string>) => {
@@ -119,27 +117,16 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   }
 
   const handleOnTagsFilterAreaFocus = (e: any) => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
-
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_focus'
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
+    dispatch(focusTagsEditArea());
   }
 
   const handleOnTagsFilterAreaBlur = () => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_blur'
-    });
+    dispatch(blurTagsEditArea());
   }
 
   const handleOnTagsFilterAreaChange = (e: any) => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
   }
 
   // ------------------ Title ------------------

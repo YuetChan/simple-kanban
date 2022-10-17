@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 
-import { Stack } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useTasksSearchContext } from "../providers/tasks-search";
-import { useProjectsCacheContext } from "../providers/projects-cache";
-import { useTasksCacheContext } from "../providers/tasks-cache";
-import { useKanbanTableContext } from "../providers/kanban-table";
+import { Stack } from "@mui/material";
 
 import { deleteTask, searchTasksByFilterParams, updateTask } from "../features/task/services/tasks-service";
 import { stringToEnum } from "../services/backend-enum-service";
@@ -16,19 +13,32 @@ import TaskUpdateDialog from "../features/task/components/task-update-dialog";
 
 import { Task } from "../types/Task";
 
+import { AppState } from "../stores/app-reducers";
+
+import { actions as kanbanTableActions } from "../stores/kanban-table-slice";
+import { actions as TasksCacheActions } from "../stores/tasks-cache-slice";
+
 interface KanbanTableProps { }
 
 const KanbanTable = (props: KanbanTableProps) => {
+  // // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Project cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task cache ------------------
-  const tasksContextState = useTasksCacheContext().state;
-  const tasksContextDispatch = useTasksCacheContext().Dispatch;
+  const tasksContextState = useSelector((state: AppState) => state.TasksCache);
+
+  const { allTasksUpdate } = TasksCacheActions;
+
+  // ------------------ Tasks search ------------------
+  const tasksSearchContextState = useSelector((state: AppState) => state.TasksSearch);
 
   // ------------------ Table ------------------
-  const tableContextState = useKanbanTableContext().state;
-  const tableContextDispatch = useKanbanTableContext().Dispatch;
+  const tableContextState = useSelector((state: AppState) => state.KanbanTable);
+
+  const { refreshTable } = kanbanTableActions;
 
   // ------------------ Task update dialog ------------------
   const [ taskToUpdate, setTaskToUpdate ] = React.useState<Task | undefined >(undefined);
@@ -43,9 +53,7 @@ const KanbanTable = (props: KanbanTableProps) => {
 
   const handleOnCardUpdateDialogApply = (task: Task) => {
     updateTask(task).then(res => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
+      dispatch(refreshTable());
     })
 
     setTaskToUpdate(undefined);
@@ -53,16 +61,11 @@ const KanbanTable = (props: KanbanTableProps) => {
 
   const handleOnCardUpdateDialogDelete = (task: Task) => {
     deleteTask(task.id).then(res => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
+      dispatch(refreshTable());
     });
 
     setTaskToUpdate(undefined);
   }
-
-  // ------------------ Tasks search ------------------
-  const tasksSearchContextState = useTasksSearchContext().state;
 
   // ------------------ Meta ------------------
   const [ metaMp, setMetaMp ] = React.useState<Map<string, { headUUID: string, tailUUID: string }> | undefined>(undefined);
@@ -107,7 +110,7 @@ const KanbanTable = (props: KanbanTableProps) => {
         return tasksSearchContextState._activeUserEmails.includes(task.assigneeEmail);
       }
   
-      const isAssigneeEmpty = tasksSearchContextState._activeUserEmails.length === 0;
+      const isAssigneeEmpty = tasksSearchContextState._activeUserEmails.length === 0
       
       const matchAll = (task: Task) => {
         return !(isTagsEmpty && matchPriorityAll() && isAssigneeEmpty) &&  (
@@ -210,15 +213,12 @@ const KanbanTable = (props: KanbanTableProps) => {
           const doneMeta = metaMp?.get('done');
 
           if(backlogMeta && todoMeta && inProgressMeta && doneMeta) {
-            tasksContextDispatch({
-              type: 'allTasks_update',
-              value: {
-                backlog: extractTasksForCategory(tasks, 'backlog', backlogMeta),
-                todo: extractTasksForCategory(tasks, 'todo', todoMeta),
-                inProgress: extractTasksForCategory(tasks, 'inProgress', inProgressMeta),
-                done: extractTasksForCategory(tasks, 'done', doneMeta)
-              }
-            });
+            dispatch(allTasksUpdate({
+              backlog: extractTasksForCategory(tasks, 'backlog', backlogMeta),
+              todo: extractTasksForCategory(tasks, 'todo', todoMeta),
+              inProgress: extractTasksForCategory(tasks, 'inProgress', inProgressMeta),
+              done: extractTasksForCategory(tasks, 'done', doneMeta)
+            }));
           }
         });
       }

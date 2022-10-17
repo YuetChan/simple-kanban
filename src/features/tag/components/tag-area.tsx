@@ -1,4 +1,3 @@
-import React from 'react';
 import { IconButton, Stack } from '@mui/material';
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,7 +29,6 @@ const TagArea = (props: TagAreaProps) => {
       sx={ style }>
       <div>{ tag? tag : "" }</div>
       &nbsp;
-
       {
         (props.showDelete !== undefined? props.showDelete : false)
         ? (

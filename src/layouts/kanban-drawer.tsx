@@ -1,5 +1,7 @@
 import  React, { useEffect } from 'react';
 
+import { useSelector, useDispatch } from "react-redux";
+
 import { Stack, Tooltip, Typography, Drawer, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
@@ -12,12 +14,6 @@ import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-import { useProjectsCacheContext } from '../providers/projects-cache';
-import { useUserCacheContext } from '../providers/user-cache';
-import { useTasksSearchContext } from '../providers/tasks-search';
-import { useProjectCreateDialogContext } from '../providers/project-create-dialog';
-import { useProjectDeleteDialogContext } from '../providers/project-delete-dialog';
-
 import TagsEditArea from '../features/tag/components/tags-edit-area';
 import ProjectCollaboratorMenu from '../features/project/components/project-collaborator-menu';
 import ProjectOwnerMenu from '../features/project/components/project-owner-menu';
@@ -28,25 +24,38 @@ import UserSecretMenu from '../features/user/components/user-secret-menu';
 import TaskSearchPrioritySelect from '../features/task/components/task-search-priority-select';
 import TaskSearchkSprintSelect from '../features/task/components/task-search-sprint-select';
 
+import { AppState } from '../stores/app-reducers';
+
+import { actions as projectsCacheActions } from '../stores/projects-cache-slice';
+import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
+import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
+
 interface KanbanDrawerProps { }
 
 const KanbanDrawer = (props: KanbanDrawerProps) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // -------------- Projects cache --------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
-  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
 
-  // -------------- Project create dialog --------------
-  const projectCreateDialogDispatch = useProjectCreateDialogContext().Dispatch;
+  const { selectActiveProject } = projectsCacheActions;
 
-  // -------------- Project delete dialog --------------
-  const projectDeleteDialogDispatch = useProjectDeleteDialogContext().Dispatch;
+  // -------------- Projects create dialog --------------
+  const { showProjectCreateDialog, hideProjectCreateDialog } = projectCreateDialogActions;
 
   // -------------- User cache --------------
-  const userCacheContextState = useUserCacheContext().state;
+  const userCacheContextState = useSelector((state: AppState) => state.UserCache);
 
   // -------------- Tasks search --------------
-  const tasksSearchContextState = useTasksSearchContext().state;
-  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
+  const tasksSearchContextState = useSelector((state: AppState) => state.TasksSearch);
+
+  const { 
+    updateTagsEditAreaSearchStr, 
+    updateActiveTags, 
+    focusTagsEditArea, blurTagsEditArea,
+    setTagsEditAreaRef, 
+  } = tasksSearchActions;
 
   // -------------- Kanban drawer --------------
   const [ yourProjectDisabled, setYourProjectDisabled ] = React.useState(true);
@@ -64,16 +73,11 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
       return project.id === e.target.value
     });
 
-    projectsCacheContextDispatch({
-      type: 'activeProject_select', 
-      value: projects.length > 0 ? projects[0] : undefined
-    });
+    dispatch(selectActiveProject(projects.length > 0 ? projects[0] : undefined));
   };
 
   const handleOnNewProjectClick = () => {
-    projectCreateDialogDispatch({
-      type: 'dialog_show'
-    });
+    dispatch(showProjectCreateDialog());
   }
 
   const handleOnLogoutClick = () => {
@@ -81,9 +85,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   }
 
   const handleOnDeleteClick = () => {
-    projectDeleteDialogDispatch({
-      type: 'dialog_show'
-    });
+    dispatch(hideProjectCreateDialog());
   }
 
   // -------------- User list menu --------------
@@ -145,53 +147,33 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   }
 
   // ------------------ Tags filter areas ------------------
-  const tagsEditAreaRef = React.useRef(undefined);
+  const tagsEditAreaRef = React.useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    tasksSearchContextDispatch({
-      type: 'tagsEditArea_setRef',
-      value: tagsEditAreaRef
-    });
+   dispatch(setTagsEditAreaRef(tagsEditAreaRef));
   }, [ tagsEditAreaRef ]);
 
   const handleOnTagsChange = (tags: Array<string>) => {
-    tasksSearchContextDispatch({
-      type: 'activeTags_update',
-      value: tags
-    });
+    dispatch(updateActiveTags(tags));
   }
 
   const handleOnTagsFilterAreaChange = (e: any) => {
-    tasksSearchContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
   }
 
   const handleOnTagsFilterAreaKeyPress = (e: any) => {
     if(e.keyCode === 13) {
-      tasksSearchContextDispatch({
-        type: 'tagsEditAreaSearchStr_update',
-        value: ''
-      });
+      dispatch(updateTagsEditAreaSearchStr(e.target.value));
     }
   }
 
   const handleOnTagsFilterAreaFocus = (e: any) => {
-    tasksSearchContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
-
-    tasksSearchContextDispatch({
-      type: 'tagsEditArea_focus'
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
+    dispatch(focusTagsEditArea());
   }
 
   const handleOnTagsFilterAreaBlur = (e: any) => {
-    tasksSearchContextDispatch({
-      type: 'tagsEditArea_blur'
-    });
+    dispatch(blurTagsEditArea());
   }
 
   // ------------------ Html template ------------------

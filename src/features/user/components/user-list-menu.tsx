@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
+
 import { Checkbox, Menu, MenuItem } from "@mui/material";
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
-import { useTasksSearchContext } from "../../../providers/tasks-search";
+import { AppState } from "../../../stores/app-reducers";
+
+import { actions as tasksSearchActions } from "../../../stores/tasks-search-slice";
 
 interface UserListMenuProps {
   usersFilterMenuAnchorEl?: any,
@@ -13,12 +16,16 @@ interface UserListMenuProps {
 }
 
 const UserListMenu = (props: UserListMenuProps) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Project cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task Search ------------------
-  const tasksSearchContextState = useTasksSearchContext().state;
-  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
+  const tasksSearchContextState = useSelector((state: AppState) => state.TasksSearch);
+
+  const { addActiveUserEmail, removeActiveUserEmail } = tasksSearchActions;
 
   // ------------------ User list menu ------------------
   const [ userCheckMp, setUserCheckMp ] = React.useState<Map<string, boolean> | undefined>(undefined);
@@ -50,30 +57,18 @@ const UserListMenu = (props: UserListMenuProps) => {
       const userEmail = activeProject.userEmail;
 
       if(e.target.checked) {
-        tasksSearchContextDispatch({
-          type: 'activeUserEmails_add',
-          value: userEmail
-        });
+        dispatch(addActiveUserEmail(userEmail));
       }else {
-        tasksSearchContextDispatch({
-          type: 'activeUserEmails_remove',
-          value: userEmail
-        });
+        dispatch(removeActiveUserEmail(userEmail));
       }
     }
   }
 
   const handleOnCollaboratorCheck = (e: any, email: string) => {
     if(e.target.checked) {
-      tasksSearchContextDispatch({
-        type: 'activeUserEmails_add',
-        value: email
-      });
+      dispatch(addActiveUserEmail(email));
     }else {
-      tasksSearchContextDispatch({
-        type: 'activeUserEmails_remove',
-        value: email
-      });
+      dispatch(removeActiveUserEmail(email));
     }
   }
 

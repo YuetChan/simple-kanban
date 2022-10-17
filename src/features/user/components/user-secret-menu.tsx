@@ -1,12 +1,16 @@
+import { useDispatch, useSelector } from "react-redux";
+
 import { Menu, MenuItem, Stack, Button } from "@mui/material";
 
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 
-import { useUserCacheContext } from "../../../providers/user-cache";
-
 import { generateUserSecretById, getUserByEmail } from "../services/users-service";
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+
+import { AppState } from "../../../stores/app-reducers";
+
+import { actions as userCacheActions } from "../../../stores/user-cache-slice";
 
 interface UserSecretProps {
   secretMenuAnchorEl?: any,
@@ -16,18 +20,19 @@ interface UserSecretProps {
 }
 
 const UserSecretMenu = (props: UserSecretProps) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
-  const userCacheContextDispatch = useUserCacheContext().Dispatch;
+  const userCacheContextState = useSelector(state => (state as AppState).UserCache);
+
+  const { updateLoginedUserSecret } = userCacheActions;
 
   // ------------------ User secret menu ------------------
   const handleOnRenewSecretClick = () => {
     getUserByEmail(userCacheContextState._loginedUserEmail).then(res => {
       generateUserSecretById(res.id).then(res => {
-        userCacheContextDispatch({
-          type: 'loginedUserSecret_update',
-          value: res
-        });
+        dispatch(updateLoginedUserSecret(res));
       });
     });
   }

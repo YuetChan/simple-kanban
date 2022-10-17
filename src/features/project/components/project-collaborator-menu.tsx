@@ -1,4 +1,4 @@
-import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Menu, MenuItem, Stack } from "@mui/material";
 
@@ -6,23 +6,30 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 import { getProjectById, updateProjectById } from "../services/projects-service";
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
-import { useUserCacheContext } from "../../../providers/user-cache";
 import { User } from "../../../types/User";
+
+import { AppState } from "../../../stores/app-reducers";
+
+import { actions as ProjectsCacheActions } from "../../../stores/projects-cache-slice";
 
 interface ProjectCollaboratorMenuProps {
   collaboratorsMenuAnchorEl: any,
   collaboratorsMenuOpen: boolean,
+
   handleOnCollaboratorsMenuClose?: Function
 }
 
 const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
+  // ------------------ Store ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
-  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
+
+  const { updateActiveProject } = ProjectsCacheActions;
 
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
+  const userCacheContextState = useSelector((state: AppState) => state.UserCache);
 
   // ------------------ Project collaborator menu ------------------
   const handleOnQuitProjectClick = () => {
@@ -47,10 +54,7 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
         alert('You are removed');
   
         getProjectById(activeProject.id).then(res => {
-          projectsCacheContextDispatch({
-            type: 'activeProject_update',
-            value: undefined
-          });
+          dispatch(updateActiveProject(undefined));
         });
       }).catch(err => {
         console.log(err);
@@ -65,7 +69,7 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
       open={ props.collaboratorsMenuOpen }
       onClose={ () => {
         if(props.handleOnCollaboratorsMenuClose){
-          props.handleOnCollaboratorsMenuClose()
+          props.handleOnCollaboratorsMenuClose();
         }
       } }
       PaperProps={{ style: { maxHeight: "360px" }}}>

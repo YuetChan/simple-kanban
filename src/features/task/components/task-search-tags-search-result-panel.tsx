@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 
-import { Pagination, Stack } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
-import { useTagsSearchResultPanelContext } from "../../../providers/tags-search-result-panel";
-import { useTasksSearchContext } from "../../../providers/tasks-search";
+import { Pagination, Stack } from "@mui/material";
 
 import TagArea from "../../tag/components/tag-area";
 
@@ -12,16 +10,25 @@ import { searchTagsByProjectIdAndPrefix } from "../../tag/services/tags-service"
 
 import { Tag } from "../../../types/Tag";
 
+import { actions as tagsSearchResultPanelActions } from "../../../stores/tags-search-result-panel-slice";
+import { actions as tasksSearchActions } from "../../../stores/tasks-search-slice";
+
+import { AppState } from "../../../stores/app-reducers";
+
 const TagsSearchResultPanel = (props: any) => {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch()
+
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task search cache ------------------
-  const tasksSearchCacheContextState = useTasksSearchContext().state;
-  const tasksSearchCacheContextDispatch = useTasksSearchContext().Dispatch;
+  const tasksSearchContextState = useSelector((state: AppState) => state.TasksSearch);
+
+  const { setTagsEditAreaFocused } = tasksSearchActions;
 
   // ------------------ Tags search result panel ------------------
-  const tagsSearchResultPanelDispatch = useTagsSearchResultPanelContext().Dispatch;
+  const { mouseEnter, mouseLeave } = tagsSearchResultPanelActions;
 
   const [ tags, setTags ] = React.useState<Array<Tag>>([]);
 
@@ -31,7 +38,7 @@ const TagsSearchResultPanel = (props: any) => {
   const fetchTags = (projectId: string, page: number) => {
     const timeout = setTimeout(() => {  
       searchTagsByProjectIdAndPrefix(projectId, 
-        tasksSearchCacheContextState._tagsEditAreaSearchStr, page).then(res => {
+        tasksSearchContextState._tagsEditAreaSearchStr, page).then(res => {
           setTags(res.tags);
 
           setPage(res.page + 1);
@@ -47,7 +54,7 @@ const TagsSearchResultPanel = (props: any) => {
     if(activeProject) {
       fetchTags(activeProject.id, 0); 
     }
-  }, [ tasksSearchCacheContextState._tagsEditAreaSearchStr ]);
+  }, [ tasksSearchContextState._tagsEditAreaSearchStr ]);
 
   useEffect(() => {
     const activeProject = projectsCacheContextState._activeProject;
@@ -64,19 +71,12 @@ const TagsSearchResultPanel = (props: any) => {
   } 
 
   const handleOnMouseEnter = () => {
-    tagsSearchResultPanelDispatch({
-      type: 'mouse_enter'
-    });
+    dispatch(mouseEnter());
   }
 
   const handleOnMouseLeave = () => {
-    tagsSearchResultPanelDispatch({
-      type: 'mouse_leave'
-    });
-
-    tasksSearchCacheContextDispatch({
-      type: 'tagsEditArea_setFocus'
-    });
+    dispatch(mouseLeave());
+    dispatch(setTagsEditAreaFocused());
   }
 
   // ------------------ Html template ------------------
