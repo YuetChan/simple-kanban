@@ -20,11 +20,10 @@ const TagsSearchResultPanel = (props: any) => {
   const dispatch = useDispatch()
 
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task search cache ------------------
-  const tasksSearchContextState = useSelector((state: AppState) => state.TasksSearch);
-
+  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
   const { setTagsEditAreaFocused } = tasksSearchActions;
 
   // ------------------ Tags search result panel ------------------
@@ -38,7 +37,7 @@ const TagsSearchResultPanel = (props: any) => {
   const fetchTags = (projectId: string, page: number) => {
     const timeout = setTimeout(() => {  
       searchTagsByProjectIdAndPrefix(projectId, 
-        tasksSearchContextState._tagsEditAreaSearchStr, page).then(res => {
+        tasksSearchState._tagsEditAreaSearchStr, page).then(res => {
           setTags(res.tags);
 
           setPage(res.page + 1);
@@ -50,21 +49,21 @@ const TagsSearchResultPanel = (props: any) => {
   }
 
   useEffect(() => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       fetchTags(activeProject.id, 0); 
     }
-  }, [ tasksSearchContextState._tagsEditAreaSearchStr ]);
+  }, [ tasksSearchState._tagsEditAreaSearchStr ]);
 
   useEffect(() => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       fetchTags(activeProject.id, 0); 
     }
-  }, [ projectsCacheContextState._activeProject ]);
+  }, [ projectsCacheState._activeProject ]);
 
   const handleOnPageChange = (e: any, val: number) => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       fetchTags(activeProject.id, val - 1); 
     }
@@ -105,7 +104,7 @@ const TagsSearchResultPanel = (props: any) => {
           }}>
         <Stack 
           direction="row"
-          spacing={0.5}
+          spacing={ 0.5 }
           style={{  
             flexWrap: "wrap",
             overflowY: "auto",

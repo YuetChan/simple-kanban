@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 
-import { ReactReduxContext, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Menu, MenuItem, Stack, TextField } from "@mui/material";
 
@@ -18,6 +18,7 @@ import { actions as ProjectsCahceActions } from "../../../stores/projects-cache-
 interface ProjectOwnerMenuProps {
   ownerMenuAnchorEl: any,
   ownerMenuOpen: boolean,
+  
   handleOnOwnerMenuClose?: Function
 }
 
@@ -26,11 +27,10 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   const dispatch = useDispatch();
 
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
-
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
   const { updateActiveProject } = ProjectsCahceActions;
 
-  // ------------------ Owner menu ------------------
+  // ------------------ Project owner menu ------------------
   const [ collaboratorToAddEmail, setCollaboratorToAddEmail ] = React.useState('');
   const [ collaboratorSecret, setCollaboratorSecret ] = React.useState('');
   const [ collaboratorToRemoveEmail, setCollaboratorToRemoveEmail ] = React.useState('');
@@ -38,6 +38,12 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   const collaboratorAddRef = React.useRef(undefined);
   const collaboratorSecretRef = React.useRef(undefined);
   const collaboratorRemoveRef = React.useRef(undefined);
+
+  const handleOnClose = (e: any) => {
+    if(props.handleOnOwnerMenuClose) {
+      props.handleOnOwnerMenuClose();
+    }
+  }
 
   const handleOnCollaboratorAddKeyPress = (e: any) => {
     if(e.key === 'Tab') {
@@ -50,8 +56,6 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
       e.stopPropagation();
     }
   }
-
-  const handleOnCollaboratorRemoveKeyPress = (e: any) => { }
 
   const handleOnCollaboratorToAddEmailChange = (e: any) => {
     setCollaboratorToAddEmail(e.target.value)
@@ -66,7 +70,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   }
 
   const handleOnCollaboratorAddClick = (e: any) => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
       if(collaboratorEmails.indexOf(collaboratorToAddEmail) !== -1) {
@@ -104,7 +108,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   }
 
   const handleOnCollaboratorRemoveClick = (e: any) => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
       const updatedCollaboratorEmails = collaboratorEmails.filter(email => {
@@ -145,11 +149,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     <Menu           
       anchorEl={ props.ownerMenuAnchorEl }
       open={ props.ownerMenuOpen }
-      onClose={ () => {
-        if(props.handleOnOwnerMenuClose) {
-          props.handleOnOwnerMenuClose();
-        }
-      } }
+      onClose={ handleOnClose}
       PaperProps={{ style: { maxHeight: "360px" }}}>
     <Stack 
       direction="column" 
@@ -193,7 +193,6 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         variant="standard" 
         placeholder="Email" 
         inputRef={ collaboratorRemoveRef }
-        onKeyDown={ (e) => handleOnCollaboratorRemoveKeyPress(e) }
         onChange={ (e) => handleOnCollaboratorToRemoveEmailChange(e) } />
     </Stack>
 

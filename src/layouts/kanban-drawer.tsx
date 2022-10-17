@@ -2,6 +2,8 @@ import  React, { useEffect } from 'react';
 
 import { useSelector, useDispatch } from "react-redux";
 
+import { useCookies } from 'react-cookie';
+
 import { Stack, Tooltip, Typography, Drawer, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
@@ -29,6 +31,7 @@ import { AppState } from '../stores/app-reducers';
 import { actions as projectsCacheActions } from '../stores/projects-cache-slice';
 import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
+import { redirectToLoginPage } from '../services/auth.services';
 
 interface KanbanDrawerProps { }
 
@@ -36,8 +39,11 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   // ------------------ Dispatch ------------------
   const dispatch = useDispatch();
 
+  // ------------------ Cookies -----------------
+  const [ cookie, removeCookie ] = useCookies(['jwt']);
+
   // -------------- Projects cache --------------
-  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
   const { selectActiveProject } = projectsCacheActions;
 
@@ -45,15 +51,15 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   const { showProjectCreateDialog, hideProjectCreateDialog } = projectCreateDialogActions;
 
   // -------------- User cache --------------
-  const userCacheContextState = useSelector((state: AppState) => state.UserCache);
+  const userCacheState = useSelector((state: AppState) => state.UserCache);
 
   // -------------- Tasks search --------------
-  const tasksSearchContextState = useSelector((state: AppState) => state.TasksSearch);
+  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
 
   const { 
+    focusTagsEditArea, blurTagsEditArea,
     updateTagsEditAreaSearchStr, 
     updateActiveTags, 
-    focusTagsEditArea, blurTagsEditArea,
     setTagsEditAreaRef, 
   } = tasksSearchActions;
 
@@ -61,15 +67,15 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   const [ yourProjectDisabled, setYourProjectDisabled ] = React.useState(true);
 
   useEffect(() => {
-    if(projectsCacheContextState._allProjects.length > 0) {
+    if(projectsCacheState._allProjects.length > 0) {
       setYourProjectDisabled(true);
     }else {
       setYourProjectDisabled(false);
     }
-  }, [ projectsCacheContextState._allProjects ]);
+  }, [ projectsCacheState._allProjects ]);
 
   const handleOnProjectChange = (e: any) => {
-    const projects = projectsCacheContextState._allProjects.filter(project => {
+    const projects = projectsCacheState._allProjects.filter(project => {
       return project.id === e.target.value
     });
 
@@ -81,7 +87,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   }
 
   const handleOnLogoutClick = () => {
-
+    removeCookie('jwt', '/');
+    redirectToLoginPage();
   }
 
   const handleOnDeleteClick = () => {
@@ -115,12 +122,12 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   const [ isOwner, setIsOwner ] = React.useState(false);
 
   useEffect(() => {
-    if(userCacheContextState._loginedUserEmail === projectsCacheContextState._activeProject?.userEmail) {
+    if(userCacheState._loginedUserEmail === projectsCacheState._activeProject?.userEmail) {
       setIsOwner(true);
     }else {
       setIsOwner(false);
     }
-  }, [ userCacheContextState ]);
+  }, [ userCacheState ]);
 
   // -------------- Project collaborators menu --------------
   const [ collaboratorsMenuAnchorEl, setCollaboratorsMenuAnchorEl ] = React.useState(null);
@@ -284,7 +291,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
         <TagsEditArea 
           label="Tags" 
-          tags={ tasksSearchContextState._activeTags }
+          tags={ tasksSearchState._activeTags }
           disabled={ false } 
           handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
           handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
@@ -316,8 +323,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
           </ListItemButton>
         </ListItem>
 
-        <ListItem 
-          style={{ display: projectsCacheContextState._allProjects.length > 0? "block": "none" }}
+        {/* <ListItem 
+          style={{ display: projectsCacheState._allProjects.length > 0? "block": "none" }}
           key={ "Logout" } 
           disablePadding 
           onClick={ handleOnLogoutClick } >
@@ -327,7 +334,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
             </ListItemIcon>
             <ListItemText primary={ "Logout" } />
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
 
         <ListItem key={ "Help" } disablePadding>
           <ListItemButton>

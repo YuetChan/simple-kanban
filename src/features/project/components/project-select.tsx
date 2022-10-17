@@ -13,13 +13,13 @@ interface ProjectSelectProps {
 
 const ProjectSelect = (props: ProjectSelectProps) => {
   // ------------------ Project cache ------------------ 
-  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Html templet ------------------ 
   return (
     <FormControl sx={{ m: 1, minWidth: 120 }}>
       <Select
-        value={ projectsCacheContextState._activeProject?.id ? projectsCacheContextState._activeProject?.id: "-" }
+        value={ projectsCacheState._activeProject?.id ? projectsCacheState._activeProject?.id: "-" }
         onChange={ props.handleOnProjectChange }
         inputProps={{ 'aria-label': 'Without label' }}>
         <MenuItem value="-" disabled={ props.yourProjectDisabled }>
@@ -27,7 +27,7 @@ const ProjectSelect = (props: ProjectSelectProps) => {
         </MenuItem>
 
         {
-          projectsCacheContextState._allProjects.map(project => {
+          projectsCacheState._allProjects.map(project => {
             return (
               <MenuItem key={ project.id } value={ project.id }>
                 <Tooltip style={{

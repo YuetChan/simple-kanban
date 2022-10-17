@@ -28,7 +28,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
   const dispatch = useDispatch();
 
   // ------------------ Tasks cache ------------------
-  const tasksCacheContextState = useSelector((state: AppState) => state.TasksCache);
+  const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
 
   // ------------------ Kanban Table ------------------
   const { refreshTable } = kanbanTableActions;
@@ -37,15 +37,15 @@ const KanbanColumn = (props: KanbanColumnProps) => {
   const [ tasks , setTasks ] = React.useState<Array<Task>>([]);
 
   useEffect(() => {
-    if(tasksCacheContextState._allTasks) {
+    if(tasksCacheState._allTasks) {
       if(props.category === 'backlog' 
       || props.category === 'todo' 
       || props.category === 'inProgress' 
       || props.category === 'done') {
-        setTasks(tasksCacheContextState._allTasks[ props.category ]);
+        setTasks(tasksCacheState._allTasks[ props.category ]);
       }
     }
-  }, [ tasksCacheContextState._allTasks ]);
+  }, [ tasksCacheState._allTasks ]);
 
   const [ , drop ] = useDrop(() => {
     return { 

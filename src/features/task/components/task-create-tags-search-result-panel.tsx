@@ -14,10 +14,10 @@ import { AppState } from "../../../stores/app-reducers";
 
 const TagsSearchResultPanel = (props: any) => {
   // ------------------ Project cache ------------------
-  const projectsCacheContextState = useSelector((state: AppState) => state.ProjectsCache);
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task create ------------------
-  const taskCreateContextState = useSelector((state: AppState) => state.TaskCreate);
+  const taskCreateState = useSelector((state: AppState) => state.TaskCreate);
 
   // ------------------ Tags search result panel ------------------
   const [ tags, setTags ] = React.useState<Array<Tag>>([]);
@@ -28,7 +28,7 @@ const TagsSearchResultPanel = (props: any) => {
   const fetchTags = (projectId: string, page: number) => {
     const timeout = setTimeout(() => {  
       searchTagsByProjectIdAndPrefix(projectId, 
-        taskCreateContextState._tagsEditAreaSearchStr, page).then(res => {
+        taskCreateState._tagsEditAreaSearchStr, page).then(res => {
           setTags(res.tags);
 
           setPage(res.page + 1);
@@ -40,15 +40,15 @@ const TagsSearchResultPanel = (props: any) => {
   }
 
   useEffect(() => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       fetchTags(activeProject.id, 0);
     }
-  }, [ taskCreateContextState._tagsEditAreaSearchStr]);
+  }, [ taskCreateState._tagsEditAreaSearchStr]);
 
   const handleOnPageChange = (e: any, val: number) => {
-    const activeProject = projectsCacheContextState._activeProject;
-    if(activeProject && taskCreateContextState._lastFocusedArea === 'tagsEditArea') {
+    const activeProject = projectsCacheState._activeProject;
+    if(activeProject && taskCreateState._lastFocusedArea === 'tagsEditArea') {
       fetchTags(activeProject.id, val - 1);
     }
   }

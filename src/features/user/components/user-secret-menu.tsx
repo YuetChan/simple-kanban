@@ -24,13 +24,18 @@ const UserSecretMenu = (props: UserSecretProps) => {
   const dispatch = useDispatch();
 
   // ------------------ User cache ------------------
-  const userCacheContextState = useSelector(state => (state as AppState).UserCache);
-
+  const userCacheState = useSelector(state => (state as AppState).UserCache);
   const { updateLoginedUserSecret } = userCacheActions;
 
   // ------------------ User secret menu ------------------
+  const handleOnClose = () => {
+    if(props.handleSecretMenuClose) {
+      props.handleSecretMenuClose();
+    }
+  }
+
   const handleOnRenewSecretClick = () => {
-    getUserByEmail(userCacheContextState._loginedUserEmail).then(res => {
+    getUserByEmail(userCacheState._loginedUserEmail).then(res => {
       generateUserSecretById(res.id).then(res => {
         dispatch(updateLoginedUserSecret(res));
       });
@@ -42,25 +47,21 @@ const UserSecretMenu = (props: UserSecretProps) => {
     <Menu
       anchorEl={ props.secretMenuAnchorEl }
       open={ props.secretMenuOpen }
-      onClose={ () => {
-        if(props.handleSecretMenuClose) {
-          props.handleSecretMenuClose();
-        }
-      } }
+      onClose={ handleOnClose }
       PaperProps={{ style: { maxHeight: "360px" } }}>
       <MenuItem 
         key={ "secret" } 
         value={ "secret" }
         style={{ margin: "0px 0px 8px 0px" }}>
         <CopyToClipboard 
-          text={ userCacheContextState._loginedUserSecret }
+          text={ userCacheState._loginedUserSecret }
           onCopy={() => { alert('copied') }}>
           <Stack 
             direction="row" 
             justifyContent="space-between"
             style={{ minWidth: "150px" }}>
             <div>
-              <i>{ userCacheContextState._loginedUserSecret }</i>
+              <i>{ userCacheState._loginedUserSecret }</i>
             </div>
 
             <ContentCopyOutlinedIcon />
