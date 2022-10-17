@@ -2,9 +2,8 @@ import React from "react";
 
 import { Avatar, FormControl, InputLabel, MenuItem, Select, Stack } from "@mui/material";
 
-import Avvvatars from 'avvvatars-react'
-
 import { truncate } from "../../../libs/text-lib";
+
 import { textToAvatar } from "../../../services/avatar-service";
 
 interface AssigneeSelectProps {
@@ -17,6 +16,11 @@ interface AssigneeSelectProps {
 const AssigneeSelect = (props: AssigneeSelectProps) => {
   // ------------------ Assignee select ------------------
   const [ assignee, setAssignee ] = React.useState(props.assignee? props.assignee : 'none');
+
+  const handlOnAssigneeSelect = (e: any) => {
+    setAssignee(e.target.value)
+    props.handleOnSelectChange(e); 
+  }
 
   const getAssigneeHTML = (assignee: string): any => {
     return (
@@ -50,10 +54,7 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
         <Select
           value={ assignee }
           label="status"
-          onChange={(e) => {
-            setAssignee(e.target.value)
-            props.handleOnSelectChange(e); 
-            }}>
+          onChange={e => handlOnAssigneeSelect(e)}>
 
           <MenuItem 
             value={ "none" }

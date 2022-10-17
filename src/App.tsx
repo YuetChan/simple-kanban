@@ -1,23 +1,18 @@
-import React, { useEffect } from 'react';
+import React, {useEffect } from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Stack } from '@mui/material';
 
-import logo from './logo.svg';
-import './App.css';
+import { useCookies } from 'react-cookie';
 
-import { useProjectsCacheContext } from './providers/projects-cache';
-import { useProjectDeleteDialogContext } from './providers/project-delete-dialog';
-import { useProjectCreateDialogContext } from './providers/project-create-dialog';
-import { useTagsSearchResultPanelContext } from './providers/tags-search-result-panel';
-import { useTasksCacheContext } from './providers/tasks-cache';
-import { useTaskCreateContext } from './providers/task-create';
-import { useUserCacheContext } from './providers/user-cache';
-import { useTasksSearchContext } from './providers/tasks-search';
-import { useKanbanTableContext } from './providers/kanban-table';
+import './App.css';
 
 import { createTask } from './features/task/services/tasks-service';
 import { createProject, deleteProject, getProjectById, searchProjectsByUserEmail } from './features/project/services/projects-service';
 import { getUserByEmail, getUserSecretById } from './features/user/services/users-service';
+
+import { redirectToLoginPage } from './services/auth.services';
 
 import { Project } from './types/Project';
 import { Task } from './types/Task';
@@ -30,59 +25,69 @@ import TaskCreateDialog from './features/task/components/task-create-dialog';
 import ProjectCreateDialog from './features/project/components/project-create-dialog';
 import ProjectDeleteDialog from './features/project/components/project-delete-dialog';
 
-import { useCookies } from 'react-cookie';
 import jwt_decode from "jwt-decode";
 
+import { AppState } from './stores/app-reducers';
+
+import { actions as usersCacheActions } from './stores/user-cache-slice';
+import { actions as projectsCacheActions } from './stores/projects-cache-slice';
+import { actions as projectCreateDialogActions } from './stores/project-create-dialog-slice';
+import { actions as kanbanTableActions } from './stores/kanban-table-slice';
+
 function App() {
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
+  // ------------------ Cookies -----------------
+  const [ cookies, removeCookie ] = useCookies(['jwt']);
+
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
-  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-  // ------------------ Project delete dialog ------------------
-  const projectDeleteDialogState = useProjectDeleteDialogContext().state;
-
-  // ------------------ Project create dialog ------------------
-  const projectCreateDialogState = useProjectCreateDialogContext().state;
-  const projectCreateDialogDispatch = useProjectCreateDialogContext().Dispatch;
-  
-  // ------------------ Tag search result panel ------------------
-  const tagsSearchResultPanelContextState = useTagsSearchResultPanelContext().state;
-
-  // ------------------ Tasks search ------------------
-  const tasksSearchContextState = useTasksSearchContext().state;
+  const { updateAllProjects } = projectsCacheActions;
 
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
-  const userCacheContextDispatch = useUserCacheContext().Dispatch;
-
-  // ------------------ Table ------------------
-  const tableContextDispatch = useKanbanTableContext().Dispatch;
+  const userCacheState = useSelector((state: AppState) => state.UserCache);
   
-  // ------------------ Home ------------------
-  // ------------------ Cookies -----------------
-  const [ cookies ] = useCookies(['jwt']);
+  const { updateLoginedUserEmail, updateLoginedUserSecret } = usersCacheActions;
 
+  // ------------------ Project delete dialog ------------------
+  const projectDeleteDialogState = useSelector((state: AppState) => state.ProjectDeleteDialog);
+
+  // ------------------ Project create dialog ------------------
+  const projectCreateDialogState = useSelector((state: AppState) => state.ProjectCreateDialog);
+
+  const { showProjectCreateDialog, hideProjectCreateDialog } = projectCreateDialogActions;
+
+  const handleOnLogoutClick = () => {
+    removeCookie('jwt', '/');
+  }
+
+  // ------------------ Tag search result panel ------------------
+  const tagsSearchResultPanelState = useSelector((state: AppState) => state.TagsSearchResultPanel);
+
+  // ------------------ Tasks search ------------------
+  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
+
+  // ------------------ Kanban table ------------------
+  const { refreshTable } = kanbanTableActions;
+
+  // ------------------ Home ------------------
   // ------------------ Auth ------------------
   const [ authed, setAuthed ] = React.useState(false);
 
   useEffect(() => {
     if(authed) {
-      const loginedUserEmail = userCacheContextState._loginedUserEmail;
+      const loginedUserEmail = userCacheState._loginedUserEmail;
 
       getUserByEmail(loginedUserEmail).then(res => {
         getUserSecretById(res.id).then(res => {
-          userCacheContextDispatch({
-            type: 'loginedUserSecret_update',
-            value: res
-          })
-        })
+          dispatch(updateLoginedUserSecret(res))
+        });
       });
 
       searchProjectsByUserEmail(loginedUserEmail, 0).then(res => {
-        projectsCacheContextDispatch({
-          type: 'allProjects_update', 
-          value: res.projects
-        });
+        dispatch(updateAllProjects(res.projects));
       }).catch(err => {
         console.log(err);
       });
@@ -90,17 +95,25 @@ function App() {
   }, [ authed ]);
 
   useEffect(() => {
-    setAuthed(true);
-  }, [ userCacheContextState._loginedUserEmail ]);
+    setAuthed(userCacheState._loginedUserEmail !== '');
+  }, [ userCacheState._loginedUserEmail ]);
 
   useEffect(() => {
-    if(cookies.jwt) {
-      const decoded = jwt_decode<{ email: string }>(cookies.jwt.toString());
+    try {
+      if(cookies.jwt) {
+        const decoded = jwt_decode<{ email: string }>(cookies.jwt.toString());
+        if(decoded.email) {
+          dispatch(updateLoginedUserEmail(decoded.email));
+        }else {
+          redirectToLoginPage();
+        }
+      }else {
+        redirectToLoginPage();
+      }
+    }catch {
+      console.log('called')
 
-      userCacheContextDispatch({
-        type: 'loginedUserEmail_update',
-        value: decoded.email
-      });
+      redirectToLoginPage();
     }
   }, []);
 
@@ -112,16 +125,13 @@ function App() {
   }
 
   const handleOnProjectDeleteDialogDelete = () => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       deleteProject(activeProject.id).then(res => {
         setProjectDeleteDialogOpen(false);
   
-        searchProjectsByUserEmail(userCacheContextState._loginedUserEmail, 0).then(res => {
-          projectsCacheContextDispatch({
-            type: 'allProjects_update', 
-            value: res.projects
-          });
+        searchProjectsByUserEmail(userCacheState._loginedUserEmail, 0).then(res => {
+          dispatch(updateAllProjects(res.projects));
         })
       }).catch(err => {
         console.log(err);
@@ -138,37 +148,26 @@ function App() {
   const handleOnProjectCreateClick = (project: Project) => {
     createProject(project).then(res => {
       getProjectById(res.id).then(res => {
-        projectsCacheContextDispatch({
-          type: "allProjects_update",
-          value: [ res, ...projectsCacheContextState._allProjects ]
-        });
+        dispatch(updateAllProjects([ res, ...projectsCacheState._allProjects ]));
       });
 
-      projectCreateDialogDispatch({
-        type: 'dialog_hide'
-      });
+      dispatch(hideProjectCreateDialog());
     })
   }
 
   const handleOnProjectCreateDialogClose = () => {
-    if(projectsCacheContextState._allProjects.length > 0) {
-      projectCreateDialogDispatch({
-        type: 'dialog_hide'
-      });
+    if(projectsCacheState._allProjects.length > 0) {
+      dispatch(hideProjectCreateDialog());
     }
   }
 
   useEffect(() => {
-    if(projectsCacheContextState._allProjects.length === 0 && authed) {
-      projectCreateDialogDispatch({
-        type: 'dialog_show'
-      });
+    if(projectsCacheState._allProjects.length === 0 && authed) {
+      dispatch(showProjectCreateDialog());
     }else {
-      projectCreateDialogDispatch({
-        type: 'dialog_hide'
-      });
+      dispatch(hideProjectCreateDialog());
     }
-  }, [ projectsCacheContextState._allProjects ]);
+  }, [ projectsCacheState._allProjects ]);
   
   // ------------------ Task create dialog ------------------ 
   const [ taskCreateDialogOpen, setTaskCreateDialogOpen ] = React.useState(false);
@@ -184,9 +183,7 @@ function App() {
 
   const createTaskAndRefresh = (task: Task) => {
     createTask(task).then((task) => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
+      dispatch(refreshTable());
     });
   }
 
@@ -220,7 +217,7 @@ function App() {
       </section>
    
       <div style={{ 
-        display: tasksSearchContextState._tagsEditAreaFocused || tagsSearchResultPanelContextState.mouseOver
+        display: tasksSearchState._tagsEditAreaFocused || tagsSearchResultPanelState._mouseOver
         ? "block" 
         : "none" 
         }}>
@@ -254,10 +251,10 @@ function App() {
           title="Create Project"
           description="Please enter the project name to create your project."
           open={ projectCreateDialogState.show } 
-          showLogout={ projectsCacheContextState._allProjects.length === 0 }
+          showLogout={ projectsCacheState._allProjects.length === 0 }
           handleOnProjectCreateClick = { (project: Project) => handleOnProjectCreateClick(project) } 
           handleOnClose={ handleOnProjectCreateDialogClose } 
-          handleOnLogout={ () => {} }/>  
+          handleOnLogout={ handleOnLogoutClick }/>  
       </div>
 
       <div>

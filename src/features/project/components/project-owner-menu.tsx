@@ -1,4 +1,7 @@
 import React from "react";
+
+import { useDispatch, useSelector } from "react-redux";
+
 import { Menu, MenuItem, Stack, TextField } from "@mui/material";
 
 import PersonRemoveAlt1OutlinedIcon from '@mui/icons-material/PersonRemoveAlt1Outlined';
@@ -6,21 +9,28 @@ import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined
 
 import { getProjectById, updateProjectById } from "../services/projects-service";
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
 import { User } from "../../../types/User";
+
+import { AppState } from "../../../stores/app-reducers";
+
+import { actions as ProjectsCahceActions } from "../../../stores/projects-cache-slice";
 
 interface ProjectOwnerMenuProps {
   ownerMenuAnchorEl: any,
   ownerMenuOpen: boolean,
+  
   handleOnOwnerMenuClose?: Function
 }
 
 const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
-  // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
-  const projectsCacheContextDispatch = useProjectsCacheContext().Dispatch;
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
 
-  // ------------------ Owner menu ------------------
+  // ------------------ Projects cache ------------------
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
+  const { updateActiveProject } = ProjectsCahceActions;
+
+  // ------------------ Project owner menu ------------------
   const [ collaboratorToAddEmail, setCollaboratorToAddEmail ] = React.useState('');
   const [ collaboratorSecret, setCollaboratorSecret ] = React.useState('');
   const [ collaboratorToRemoveEmail, setCollaboratorToRemoveEmail ] = React.useState('');
@@ -28,6 +38,12 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   const collaboratorAddRef = React.useRef(undefined);
   const collaboratorSecretRef = React.useRef(undefined);
   const collaboratorRemoveRef = React.useRef(undefined);
+
+  const handleOnClose = (e: any) => {
+    if(props.handleOnOwnerMenuClose) {
+      props.handleOnOwnerMenuClose();
+    }
+  }
 
   const handleOnCollaboratorAddKeyPress = (e: any) => {
     if(e.key === 'Tab') {
@@ -40,8 +56,6 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
       e.stopPropagation();
     }
   }
-
-  const handleOnCollaboratorRemoveKeyPress = (e: any) => { }
 
   const handleOnCollaboratorToAddEmailChange = (e: any) => {
     setCollaboratorToAddEmail(e.target.value)
@@ -56,7 +70,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   }
 
   const handleOnCollaboratorAddClick = (e: any) => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
       if(collaboratorEmails.indexOf(collaboratorToAddEmail) !== -1) {
@@ -84,11 +98,8 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         alert('Collaborator added');
   
         getProjectById(activeProject.id).then(res => {
-          projectsCacheContextDispatch({
-            type: 'activeProject_update',
-            value: res
-          });
-        })
+          dispatch(updateActiveProject(res));
+        });
       }).catch(err => {
         console.log(err);
         alert('Opps, failed to add collaborator')
@@ -97,7 +108,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   }
 
   const handleOnCollaboratorRemoveClick = (e: any) => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
       const updatedCollaboratorEmails = collaboratorEmails.filter(email => {
@@ -124,10 +135,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         alert('Collaborator removed');
   
         getProjectById(activeProject.id).then(res => {
-          projectsCacheContextDispatch({
-            type: 'activeProject_update',
-            value: res
-          });
+          dispatch(updateActiveProject(res));
         })
       }).catch(err => {
         console.log(err);
@@ -141,11 +149,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     <Menu           
       anchorEl={ props.ownerMenuAnchorEl }
       open={ props.ownerMenuOpen }
-      onClose={ () => {
-        if(props.handleOnOwnerMenuClose) {
-          props.handleOnOwnerMenuClose();
-        }
-      } }
+      onClose={ handleOnClose}
       PaperProps={{ style: { maxHeight: "360px" }}}>
     <Stack 
       direction="column" 
@@ -189,7 +193,6 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         variant="standard" 
         placeholder="Email" 
         inputRef={ collaboratorRemoveRef }
-        onKeyDown={ (e) => handleOnCollaboratorRemoveKeyPress(e) }
         onChange={ (e) => handleOnCollaboratorToRemoveEmailChange(e) } />
     </Stack>
 

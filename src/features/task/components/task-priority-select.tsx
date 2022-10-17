@@ -8,8 +8,13 @@ interface TaskPrioritySelectProps {
 }
 
 const TaskPrioritySelect = (props: TaskPrioritySelectProps) => {
-  // ------------------ Task priority select ------------------
+  // ------------------ Priority select ------------------
   const [ priority, setPriority ] = React.useState(props.value);
+
+  const handleOnPrioritySelect = (e: any) =>{
+    setPriority(e.target.value);
+    props.handleOnPriorityChange(e);
+  }
 
   useEffect(() => {
     setPriority(props.value);
@@ -25,10 +30,7 @@ const TaskPrioritySelect = (props: TaskPrioritySelectProps) => {
       <Select
         value={ priority }
         label="Priority"
-        onChange={ e => {
-          setPriority(e.target.value);
-          props.handleOnPriorityChange(e);
-        } }>
+        onChange={ handleOnPrioritySelect }>
         <MenuItem value={ "low" } >Low</MenuItem>
         <MenuItem value={ "medium" }>Medium</MenuItem>
         <MenuItem value={ "high" }>High</MenuItem>

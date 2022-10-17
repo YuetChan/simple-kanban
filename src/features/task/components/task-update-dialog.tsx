@@ -1,14 +1,11 @@
 import React, { useEffect } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField, Tooltip } from "@mui/material";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
-import { useProjectsCacheContext } from '../../../providers/projects-cache';
-import { useUserCacheContext } from '../../../providers/user-cache';
-import { useTasksCacheContext } from '../../../providers/tasks-cache';
-import { useTaskUpdateContext } from '../../../providers/task-update';
 
 import { stringToEnum } from '../../../services/backend-enum-service';
 
@@ -22,6 +19,10 @@ import TaskPrioritySelect from './task-priority-select';
 import { Tag } from '../../../types/Tag';
 import { Task } from '../../../types/Task';
 
+import { AppState } from '../../../stores/app-reducers';
+
+import { actions as taskUpdateActions } from '../../../stores/task-update-slice'; 
+
 interface TaskUpdateDialog {
   open?: boolean,
   label?: string,
@@ -34,22 +35,30 @@ interface TaskUpdateDialog {
 }
 
 const TaskUpdateDialog = (props: TaskUpdateDialog) => {
+  // ------------------ State ------------------
+  const dispatch = useDispatch();
+  
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
+  const userCacheState = useSelector((state: AppState) => state.UserCache);
 
   // ------------------ Tasks cache------------------
-  const tasksCacheContextState = useTasksCacheContext().state;
+  const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
 
-  // ------------------ Task uppdate------------------
-  const taskUpdateContextState = useTaskUpdateContext().state;
-  const taskUpdateContextDispatch = useTaskUpdateContext().Dispatch;
+  // ------------------ Task update------------------
+  const taskUpdateState = useSelector((state: AppState) => state.TaskUpdate);
+
+  const { 
+    mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
+    updateLastFocusedArea, focusTagsEditArea, blurTagsEditArea,
+    setTagsEditAreaRef,
+    updateTagsEditAreaSearchStr,
+  } = taskUpdateActions;
 
   // ------------------ Task update dialog ------------------
   const [ task, setTask ] = React.useState(props.task);
-
 
   const [ oStatus, ] = React.useState(props.task.taskNode.status);
   const [ oTaskNode, ] = React.useState(props.task.taskNode);
@@ -73,38 +82,25 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   }
 
   const handleOnMouseEnter = () => {
-    taskUpdateContextDispatch({
-      type: 'searchResultPanel_mouseEnter'
-    });
-
-    taskUpdateContextDispatch({
-      type: 'lastFocusedArea_update',
-      value: 'tagsEditArea'
-    })
+    dispatch(mouseEnterSearchResultPanel(undefined));
+    dispatch(updateLastFocusedArea('tagsEditArea'));
   }
 
   const handleOnMouseLeave = () => {
-    taskUpdateContextDispatch({
-      type: 'searchResultPanel_mouseLeave'
-    });
+    dispatch(mouseLeaveSearchResultPanel());
 
-    if(taskUpdateContextState._lastFocusedArea === 'tagsEditArea') {
-      taskUpdateContextState._tagsEditAreaRef.current.focus();
+    if(taskUpdateState._lastFocusedArea === 'tagsEditArea') {
+      taskUpdateState._tagsEditAreaRef.current.focus();
     }
 
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_focus'
-    });
+    dispatch(focusTagsEditArea());
   }
 
   // ------------------ Tags filter area ------------------
-  const tagsEditAreaRef = React.useRef();
+  const tagsEditAreaRef = React.useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_setRef',
-      value: tagsEditAreaRef
-    });
+    dispatch(setTagsEditAreaRef(tagsEditAreaRef));
   }, [ tagsEditAreaRef ]);
 
   const handleOnTagsChange = (tags: Array<string>) => {
@@ -119,27 +115,16 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   }
 
   const handleOnTagsFilterAreaFocus = (e: any) => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
-
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_focus'
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
+    dispatch(focusTagsEditArea());
   }
 
   const handleOnTagsFilterAreaBlur = () => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditArea_blur'
-    });
+    dispatch(blurTagsEditArea());
   }
 
   const handleOnTagsFilterAreaChange = (e: any) => {
-    taskUpdateContextDispatch({
-      type: 'tagsEditAreaSearchStr_update',
-      value: e.target.value
-    });
+    dispatch(updateTagsEditAreaSearchStr(e.target.value));
   }
 
   // ------------------ Title ------------------
@@ -177,8 +162,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     : 'backlog');
 
   const handleOnStatusChange = (e: any) => {
-    if(projectsCacheContextState._activeProject) {
-      const allTasks = tasksCacheContextState._allTasks;
+    if(projectsCacheState._activeProject) {
+      const allTasks = tasksCacheState._allTasks;
       const status = e.target.value;
   
       if(stringToEnum(status) === oStatus) {
@@ -200,8 +185,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
             taskNode: {
               ... task.taskNode,
               status: backlogEnum,
-              headUUID: projectsCacheContextState._activeProject.projectUUID.uuid1,
-              tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid2
+              headUUID: projectsCacheState._activeProject.projectUUID.uuid1,
+              tailUUID: projectsCacheState._activeProject.projectUUID.uuid2
             }
           });
         }else {
@@ -226,8 +211,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
             taskNode: {
               ... task.taskNode,
               status: todoEnum,
-              headUUID: projectsCacheContextState._activeProject.projectUUID.uuid3,
-              tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid4
+              headUUID: projectsCacheState._activeProject.projectUUID.uuid3,
+              tailUUID: projectsCacheState._activeProject.projectUUID.uuid4
             }
           });
         }else {
@@ -252,8 +237,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
             taskNode: {
               ... task.taskNode,
               status: inProgressEnum,
-              headUUID: projectsCacheContextState._activeProject.projectUUID.uuid5,
-              tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid6
+              headUUID: projectsCacheState._activeProject.projectUUID.uuid5,
+              tailUUID: projectsCacheState._activeProject.projectUUID.uuid6
             }
           });
         }else {
@@ -278,8 +263,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
             taskNode: {
               ... task.taskNode,
               status: doneEnum,
-              headUUID: projectsCacheContextState._activeProject.projectUUID.uuid7,
-              tailUUID: projectsCacheContextState._activeProject.projectUUID.uuid8
+              headUUID: projectsCacheState._activeProject.projectUUID.uuid7,
+              tailUUID: projectsCacheState._activeProject.projectUUID.uuid8
             }
           })
         }else {
@@ -316,7 +301,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     setTask({
       ... task,
       note: e.target.value
-    })
+    });
   }
 
   // ------------------ Description ------------------
@@ -324,7 +309,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     setTask({
       ... task,
       description: e.target.value
-    })
+    });
   }
 
   // ------------------ Priority ------------------
@@ -383,13 +368,13 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   }
 
   useEffect(() => {
-    if(projectsCacheContextState._activeProject) {
+    if(projectsCacheState._activeProject) {
       setAllAssignees([
-        ... projectsCacheContextState._activeProject.collaboratorList.map(collaborator => collaborator.email),
-        userCacheContextState._loginedUserEmail
+        ... projectsCacheState._activeProject.collaboratorList.map(collaborator => collaborator.email),
+        userCacheState._loginedUserEmail
       ])
     }
-  }, [ projectsCacheContextState._activeProject ]);
+  }, [ projectsCacheState._activeProject ]);
 
   // ------------------ Html template ------------------
   return (
@@ -409,6 +394,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between">
             <div>{ props.label? props.label : "" }</div>
+
             <Tooltip title="Permanently delete task">
               <Button 
                 color="error" 
@@ -417,7 +403,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
                 Delete
               </Button>
             </Tooltip>
-
           </Stack>
         </DialogTitle>
   
@@ -472,8 +457,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
                 inputRef={ tagsEditAreaRef } />  
 
               {
-                taskUpdateContextState._tagsEditAreaFocused 
-                || taskUpdateContextState._searchResultPanelMouseOver
+                taskUpdateState._tagsEditAreaFocused 
+                || taskUpdateState._searchResultPanelMouseOver
                 ? (
                     <section 
                       style={{
@@ -483,9 +468,9 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
                       onMouseEnter={ handleOnMouseEnter }
                       onMouseLeave={ handleOnMouseLeave }>
                       { 
-                        taskUpdateContextState._tagsEditAreaFocused 
-                        || (taskUpdateContextState._lastFocusedArea === "tagsEditArea" 
-                        && taskUpdateContextState._searchResultPanelMouseOver === true)
+                        taskUpdateState._tagsEditAreaFocused 
+                        || (taskUpdateState._lastFocusedArea === "tagsEditArea" 
+                        && taskUpdateState._searchResultPanelMouseOver === true)
                         ? <TagsSearchResultPanel />
                         : null
                       }

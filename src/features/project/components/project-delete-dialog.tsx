@@ -11,6 +11,7 @@ interface ProjectDeleteDialogProps {
 }
 
 const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
+  // ------------------ Project delete dialog ------------------
   const [ enable, setEnable ] = React.useState(false);
   const [ value, setValue ] = React.useState('');
 
@@ -36,7 +37,7 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
     setEnable(value === 'DELETE');
   }, [ value ]);
 
-  // -------------- HTML template --------------
+  // ------------------ Html template ------------------
   return (
     <section>
       <Dialog

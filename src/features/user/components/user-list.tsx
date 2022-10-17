@@ -1,11 +1,12 @@
+import { useSelector } from "react-redux";
+
 import { Avatar, AvatarGroup, IconButton, Link, Stack, Tooltip } from "@mui/material";
 
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
 import { textToAvatar } from "../../../services/avatar-service";
 
-
+import { AppState } from "../../../stores/app-reducers";
 
 interface UserListProps {
   isOwner?: boolean,
@@ -17,8 +18,27 @@ interface UserListProps {
 
 const UserList = (props: UserListProps) => {
   // ------------------ Project cache ------------------
-  const projectsCahceContextState = useProjectsCacheContext().state;
+  const projectsCahceState = useSelector((state: AppState) => state.ProjectsCache);
   
+  // ------------------ User list ------------------
+  const handleOnSettingClick = (e: any) => {
+    if(props.isOwner? props.isOwner : false) {
+      if(props.openOwnerMenu) {
+        props.openOwnerMenu(e);
+      }
+    }else {
+      if(props.openCollaboratorsMenu) {
+        props.openCollaboratorsMenu(e);
+      }
+    }
+  }
+
+  const handleOnUserListClick = (e: any) => {
+    if(props.handleOnUserAvatarsClick) {
+      props.handleOnUserAvatarsClick(e);
+    }
+  }
+
   // ------------------ Html template ------------------
   return (
     <Stack 
@@ -28,40 +48,27 @@ const UserList = (props: UserListProps) => {
       <Tooltip title="Collaborator setting">
         <IconButton 
           style={{ transform: "translateX(-16px)" }} 
-          onClick={ (e) => {
-            if(props.isOwner? props.isOwner : false) {
-              if(props.openOwnerMenu) {
-                props.openOwnerMenu(e);
-              }
-            }else {
-              if(props.openCollaboratorsMenu) {
-                props.openCollaboratorsMenu(e);
-              }
-            }
-          }}>
+          onClick={ (e) => handleOnSettingClick(e) }>
+
           <ManageAccountsOutlinedIcon />
         </IconButton>  
       </Tooltip>
 
       <Link 
         href="javascript:void(0)" 
-        onClick={ (e) => {
-          if(props.handleOnUserAvatarsClick) {
-            props.handleOnUserAvatarsClick(e);
-          }
-        } }>
+        onClick={ (e) => handleOnUserListClick(e) }>
         <AvatarGroup  
           max={ 5 } 
           sx={{ '& .MuiAvatar-root': { width: 36, height: 36, } }}>
           {
-            projectsCahceContextState._activeProject
+            projectsCahceState._activeProject
             ? (
-              <Tooltip title={ projectsCahceContextState._activeProject.userEmail }>
+              <Tooltip title={ projectsCahceState._activeProject.userEmail }>
                 <Avatar style={{
                   width: "30px",
                   height: "30px"
                   }}>
-                    { textToAvatar(projectsCahceContextState._activeProject.userEmail) }
+                    { textToAvatar(projectsCahceState._activeProject.userEmail) }
                 </Avatar>
               </Tooltip>
             )
@@ -69,7 +76,7 @@ const UserList = (props: UserListProps) => {
           }
 
           {
-            projectsCahceContextState?._activeProject?.collaboratorList.map(collaborator => {
+            projectsCahceState?._activeProject?.collaboratorList.map(collaborator => {
               return (
                 <Tooltip title={ collaborator.email }>
                   <Avatar style={{

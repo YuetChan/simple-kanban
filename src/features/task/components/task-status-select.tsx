@@ -13,6 +13,11 @@ const StatusSelect = (props: TaskStatusSelectProps) => {
   // ------------------ Status select ------------------
   const [ status, setStatus ] = React.useState(props.value);
 
+  const handleOnStatusSelect = (e: any) => {
+    setStatus(e.target.value)
+    props.handleOnSelectChange(e); 
+  }
+
   useEffect(() => {
     setStatus(props.value);
   }, []);
@@ -42,11 +47,7 @@ const StatusSelect = (props: TaskStatusSelectProps) => {
         <Select
           value={ status }
           label="status"
-          onChange={
-            (e) => { 
-              setStatus(e.target.value)
-              props.handleOnSelectChange(e); 
-              }}>
+          onChange={ handleOnStatusSelect }>
           {
             statuses.map(status => (
             <MenuItem value={ status }>{ statusMap.get(status) }</MenuItem>
@@ -54,9 +55,7 @@ const StatusSelect = (props: TaskStatusSelectProps) => {
           }
 
           <MenuItem
-            style={{
-              display: props.showArchive? "block": "none"
-            }}
+            style={{ display: props.showArchive? "block": "none" }}
             value={ "archive" } >
             🗳️ Archive
           </MenuItem>

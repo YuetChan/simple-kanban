@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 
-import { Stack } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useTasksSearchContext } from "../providers/tasks-search";
-import { useProjectsCacheContext } from "../providers/projects-cache";
-import { useTasksCacheContext } from "../providers/tasks-cache";
-import { useKanbanTableContext } from "../providers/kanban-table";
+import { Stack } from "@mui/material";
 
 import { deleteTask, searchTasksByFilterParams, updateTask } from "../features/task/services/tasks-service";
 import { stringToEnum } from "../services/backend-enum-service";
@@ -16,19 +13,32 @@ import TaskUpdateDialog from "../features/task/components/task-update-dialog";
 
 import { Task } from "../types/Task";
 
+import { AppState } from "../stores/app-reducers";
+
+import { actions as kanbanTableActions } from "../stores/kanban-table-slice";
+import { actions as TasksCacheActions } from "../stores/tasks-cache-slice";
+
 interface KanbanTableProps { }
 
 const KanbanTable = (props: KanbanTableProps) => {
+  // // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
+
   // ------------------ Project cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task cache ------------------
-  const tasksContextState = useTasksCacheContext().state;
-  const tasksContextDispatch = useTasksCacheContext().Dispatch;
+  const tasksState = useSelector((state: AppState) => state.TasksCache);
+
+  const { allTasksUpdate } = TasksCacheActions;
+
+  // ------------------ Tasks search ------------------
+  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
 
   // ------------------ Table ------------------
-  const tableContextState = useKanbanTableContext().state;
-  const tableContextDispatch = useKanbanTableContext().Dispatch;
+  const tableState = useSelector((state: AppState) => state.KanbanTable);
+
+  const { refreshTable } = kanbanTableActions;
 
   // ------------------ Task update dialog ------------------
   const [ taskToUpdate, setTaskToUpdate ] = React.useState<Task | undefined >(undefined);
@@ -43,9 +53,7 @@ const KanbanTable = (props: KanbanTableProps) => {
 
   const handleOnCardUpdateDialogApply = (task: Task) => {
     updateTask(task).then(res => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
+      dispatch(refreshTable());
     })
 
     setTaskToUpdate(undefined);
@@ -53,16 +61,11 @@ const KanbanTable = (props: KanbanTableProps) => {
 
   const handleOnCardUpdateDialogDelete = (task: Task) => {
     deleteTask(task.id).then(res => {
-      tableContextDispatch({
-        type: 'table_refresh'
-      });
+      dispatch(refreshTable());
     });
 
     setTaskToUpdate(undefined);
   }
-
-  // ------------------ Tasks search ------------------
-  const tasksSearchContextState = useTasksSearchContext().state;
 
   // ------------------ Meta ------------------
   const [ metaMp, setMetaMp ] = React.useState<Map<string, { headUUID: string, tailUUID: string }> | undefined>(undefined);
@@ -71,13 +74,13 @@ const KanbanTable = (props: KanbanTableProps) => {
   const [ columnMp, setColumnMp ] = React.useState<Map<string, any> | undefined>(undefined);
 
   useEffect(() => {
-    const projectId = projectsCacheContextState._activeProject?.id;
+    const projectId = projectsCacheState._activeProject?.id;
     if(projectId && metaMp) {
       fetchTasks(projectId, 0);
     }
   }, [ 
     metaMp, 
-    tableContextState,
+    tableState,
   ]);
 
   useEffect(() => {
@@ -90,24 +93,24 @@ const KanbanTable = (props: KanbanTableProps) => {
       const columnMp = new Map();
 
       const matchPriority = (task: Task) => {
-        return task.priority === stringToEnum(tasksSearchContextState._activePriority);
+        return task.priority === stringToEnum(tasksSearchState._activePriority);
       }
   
       const matchPriorityAll = () => {
-        return tasksSearchContextState._activePriority === 'all';
+        return tasksSearchState._activePriority === 'all';
       }
   
       const matchTags = (task: Task) => {
-        return tasksSearchContextState._activeTags.every(t => task.tagList.map(tag => tag.name).includes(t));
+        return tasksSearchState._activeTags.every(t => task.tagList.map(tag => tag.name).includes(t));
       }
   
-      const isTagsEmpty = tasksSearchContextState._activeTags.length === 0;
+      const isTagsEmpty = tasksSearchState._activeTags.length === 0;
   
       const matchAssignee = (task: Task) => {
-        return tasksSearchContextState._activeUserEmails.includes(task.assigneeEmail);
+        return tasksSearchState._activeUserEmails.includes(task.assigneeEmail);
       }
   
-      const isAssigneeEmpty = tasksSearchContextState._activeUserEmails.length === 0;
+      const isAssigneeEmpty = tasksSearchState._activeUserEmails.length === 0
       
       const matchAll = (task: Task) => {
         return !(isTagsEmpty && matchPriorityAll() && isAssigneeEmpty) &&  (
@@ -117,7 +120,7 @@ const KanbanTable = (props: KanbanTableProps) => {
       }
   
       const backlog = 'backlog';
-      const backlogCardStacks = tasksContextState._allTasks?.backlog.map(task => {
+      const backlogCardStacks = tasksState._allTasks?.backlog.map(task => {
         return getCardStack(<KanbanCard 
           highlight={ matchAll(task) } 
           task={ task } 
@@ -126,7 +129,7 @@ const KanbanTable = (props: KanbanTableProps) => {
       });
   
       const todo = 'todo';  
-      const todoCardStacks = tasksContextState._allTasks?.todo.map(task => {
+      const todoCardStacks = tasksState._allTasks?.todo.map(task => {
         return getCardStack(<KanbanCard 
           highlight={ matchAll(task) } 
           task={ task } 
@@ -135,7 +138,7 @@ const KanbanTable = (props: KanbanTableProps) => {
       });  
   
       const inProgress = 'inProgress';
-      const inProgressCardStacks = tasksContextState._allTasks?.inProgress.map(task => {
+      const inProgressCardStacks = tasksState._allTasks?.inProgress.map(task => {
         return getCardStack(<KanbanCard 
           highlight={ matchAll(task) } 
           task={ task } 
@@ -144,7 +147,7 @@ const KanbanTable = (props: KanbanTableProps) => {
       });
   
       const done = 'done';  
-      const doneCardStacks = tasksContextState._allTasks?.done.map(task => {
+      const doneCardStacks = tasksState._allTasks?.done.map(task => {
         return getCardStack(<KanbanCard 
           highlight={ matchAll(task) } 
           task={ task } 
@@ -160,15 +163,15 @@ const KanbanTable = (props: KanbanTableProps) => {
       setColumnMp(columnMp);
     }
   }, [ 
-    tasksContextState._allTasks, 
-    tasksSearchContextState._activeTags, 
-    tasksSearchContextState._activePriority,
-    tasksSearchContextState._activeUserEmails 
+    tasksState._allTasks, 
+    tasksSearchState._activeTags, 
+    tasksSearchState._activePriority,
+    tasksSearchState._activeUserEmails 
   ]);
   
   useEffect(() => {
-    if(projectsCacheContextState._activeProject) {
-      const projectUUID = projectsCacheContextState._activeProject.projectUUID;
+    if(projectsCacheState._activeProject) {
+      const projectUUID = projectsCacheState._activeProject.projectUUID;
       const metaMp = new Map();
     
       metaMp.set('backlog', {
@@ -193,15 +196,15 @@ const KanbanTable = (props: KanbanTableProps) => {
   
       setMetaMp(metaMp);
     }
-  }, [ projectsCacheContextState._activeProject ]);
+  }, [ projectsCacheState._activeProject ]);
 
   // ------------------ Util func ------------------
   const fetchTasks = (projectId: string, page: number) => {
     const timeout = setTimeout(() => {  
-      if(projectsCacheContextState._activeProject) {
+      if(projectsCacheState._activeProject) {
         searchTasksByFilterParams(page, 5000,
         projectId, 
-        tasksSearchContextState._activeTags).then(res => {
+        tasksSearchState._activeTags).then(res => {
           const tasks = res.tasks;
 
           const backlogMeta = metaMp?.get('backlog');
@@ -210,15 +213,12 @@ const KanbanTable = (props: KanbanTableProps) => {
           const doneMeta = metaMp?.get('done');
 
           if(backlogMeta && todoMeta && inProgressMeta && doneMeta) {
-            tasksContextDispatch({
-              type: 'allTasks_update',
-              value: {
-                backlog: extractTasksForCategory(tasks, 'backlog', backlogMeta),
-                todo: extractTasksForCategory(tasks, 'todo', todoMeta),
-                inProgress: extractTasksForCategory(tasks, 'inProgress', inProgressMeta),
-                done: extractTasksForCategory(tasks, 'done', doneMeta)
-              }
-            });
+            dispatch(allTasksUpdate({
+              backlog: extractTasksForCategory(tasks, 'backlog', backlogMeta),
+              todo: extractTasksForCategory(tasks, 'todo', todoMeta),
+              inProgress: extractTasksForCategory(tasks, 'inProgress', inProgressMeta),
+              done: extractTasksForCategory(tasks, 'done', doneMeta)
+            }));
           }
         });
       }

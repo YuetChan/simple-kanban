@@ -84,7 +84,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
           onBlur={ handleOnBlur }
           value={ tagInput } 
           style={{ width: "150px" }}
-          inputRef={ props.inputRef }/>
+          inputRef={ props.inputRef } />
           {
             tags.length > 0 
             ? (

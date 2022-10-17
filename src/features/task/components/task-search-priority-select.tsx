@@ -1,25 +1,26 @@
 import React from "react";
 
+import { useDispatch } from "react-redux";
+
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-import { useTasksSearchContext } from "../../../providers/tasks-search";
+import { actions as taskSearchActions } from '../../../stores/tasks-search-slice';
 
 interface TaskSearchPrioritySelectProps { }
 
 const TaskSearchPrioritySelect = (props: TaskSearchPrioritySelectProps) => {
-  // ------------------ Tasks search ------------------
-  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
 
-  // ------------------ Tasks search priority select ------------------
+  // ------------------ Tasks search ------------------
+  const { selectActivePriority } = taskSearchActions;
+
+  // ------------------ Priority select ------------------
   const [ priority, setPriority ] = React.useState('all');
 
-  const handleOnPriorityChange = (e: any) => {
+  const handleOnPrioritySelect = (e: any) => {
     setPriority(e.target.value);
-
-    tasksSearchContextDispatch({
-      type: 'activePriority_select',
-      value: e.target.value
-    })
+    dispatch(selectActivePriority(e.target.value));
   }
 
   // ------------------ Html template ------------------
@@ -32,7 +33,7 @@ const TaskSearchPrioritySelect = (props: TaskSearchPrioritySelectProps) => {
       <Select
         value={ priority }
         label="Priority"
-        onChange={ e => handleOnPriorityChange(e) }>
+        onChange={ e => handleOnPrioritySelect(e) }>
         <MenuItem value={ "all" } >All</MenuItem>
         
         <MenuItem value={ "low" } >Low</MenuItem>

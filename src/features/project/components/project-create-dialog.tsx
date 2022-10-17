@@ -1,10 +1,12 @@
 import React from "react";
 
+import { useSelector } from "react-redux";
+
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField } from "@mui/material";
 
-import { useUserCacheContext } from "../../../providers/user-cache";
-
 import UserSecretMenu from "../../user/components/user-secret-menu";
+
+import { AppState } from "../../../stores/app-reducers";
 
 interface ProjectCreateDialogProps {
   open?: boolean,
@@ -19,7 +21,7 @@ interface ProjectCreateDialogProps {
 
 const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
   // ------------------ User cache ------------------
-  const userCacheContextState = useUserCacheContext().state;
+  const userCacheState = useSelector((state: AppState) => state.UserCache);;
 
   // ------------------ Project create dialog ------------------
   const [ projectName, setProjectName ] = React.useState('');
@@ -32,7 +34,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
     if(props.handleOnProjectCreateClick) {
       props.handleOnProjectCreateClick({
         name: projectName,
-        userEmail: userCacheContextState._loginedUserEmail
+        userEmail: userCacheState._loginedUserEmail
       });
     } 
 
@@ -66,7 +68,6 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
   }
 
   // ------------------ Html template ------------------
-
   return (
     <Dialog 
       open={ props.open? props.open : false } 
@@ -96,12 +97,12 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
             width: "100%"
           }}>
           <Stack direction="row" spacing={ 0.5 }>
-            <Button 
+            {/* <Button 
               style={{ display: props.showLogout? "block": "none" }}
               variant="outlined" 
               onClick={ handleOnLogoutClick }>
               Logout
-            </Button>
+            </Button> */}
 
             <Button 
               style={{ display: props.showLogout? "block": "none" }}

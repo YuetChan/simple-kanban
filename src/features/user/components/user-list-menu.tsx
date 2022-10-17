@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
+
 import { Checkbox, Menu, MenuItem } from "@mui/material";
 
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
-import { useTasksSearchContext } from "../../../providers/tasks-search";
+import { AppState } from "../../../stores/app-reducers";
+
+import { actions as tasksSearchActions } from "../../../stores/tasks-search-slice";
 
 interface UserListMenuProps {
   usersFilterMenuAnchorEl?: any,
@@ -13,67 +16,64 @@ interface UserListMenuProps {
 }
 
 const UserListMenu = (props: UserListMenuProps) => {
-  // ------------------ Project cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  // ------------------ Dispatch ------------------
+  const dispatch = useDispatch();
 
-  // ------------------ Task Search ------------------
-  const tasksSearchContextState = useTasksSearchContext().state;
-  const tasksSearchContextDispatch = useTasksSearchContext().Dispatch;
+  // ------------------ Project cache ------------------
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
+
+  // ------------------ Tasks Search ------------------
+  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
+  const { addActiveUserEmail, removeActiveUserEmail } = tasksSearchActions;
 
   // ------------------ User list menu ------------------
   const [ userCheckMp, setUserCheckMp ] = React.useState<Map<string, boolean> | undefined>(undefined);
   
   useEffect(() => {
-    if(projectsCacheContextState._activeProject) {
+    if(projectsCacheState._activeProject) {
       const checkMp = new Map();
-      checkMp.set(projectsCacheContextState._activeProject.userEmail, false);
+      checkMp.set(projectsCacheState._activeProject.userEmail, false);
 
       setUserCheckMp(checkMp);
     }
-  }, [ projectsCacheContextState._activeProject ]);
+  }, [ projectsCacheState._activeProject ]);
 
   useEffect(() => {
-    if(projectsCacheContextState._activeProject) {
-      const userEmail = projectsCacheContextState._activeProject.userEmail;
+    if(projectsCacheState._activeProject) {
+      const userEmail = projectsCacheState._activeProject.userEmail;
 
       const checkMp = new Map();
       checkMp.set(userEmail, checkMp.get(userEmail));
-      tasksSearchContextState._activeUserEmails.forEach(email => checkMp.set(email, true));
+      tasksSearchState._activeUserEmails.forEach(email => checkMp.set(email, true));
 
       setUserCheckMp(checkMp);
     }
-  }, [ tasksSearchContextState._activeUserEmails ])
+  }, [ tasksSearchState._activeUserEmails ]);
+
+  const handleOnClose = (e: any) => {
+    if(props.handleOnUsersFilterMenuClose) {
+      props.handleOnUsersFilterMenuClose();
+    }
+  }
 
   const handleOnOwnerCheck = (e: any) => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       const userEmail = activeProject.userEmail;
 
       if(e.target.checked) {
-        tasksSearchContextDispatch({
-          type: 'activeUserEmails_add',
-          value: userEmail
-        });
+        dispatch(addActiveUserEmail(userEmail));
       }else {
-        tasksSearchContextDispatch({
-          type: 'activeUserEmails_remove',
-          value: userEmail
-        });
+        dispatch(removeActiveUserEmail(userEmail));
       }
     }
   }
 
   const handleOnCollaboratorCheck = (e: any, email: string) => {
     if(e.target.checked) {
-      tasksSearchContextDispatch({
-        type: 'activeUserEmails_add',
-        value: email
-      });
+      dispatch(addActiveUserEmail(email));
     }else {
-      tasksSearchContextDispatch({
-        type: 'activeUserEmails_remove',
-        value: email
-      });
+      dispatch(removeActiveUserEmail(email));
     }
   }
 
@@ -82,32 +82,27 @@ const UserListMenu = (props: UserListMenuProps) => {
     <Menu
       anchorEl={ props.usersFilterMenuAnchorEl }
       open={ props.usersFilterMenuOpen }
-      onClose={ () => {
-        if(props.handleOnUsersFilterMenuClose) {
-          props.handleOnUsersFilterMenuClose();
-        }
-      } }
-      PaperProps={{ style: { maxHeight: "360px" }}}>   
-
+      onClose={ handleOnClose }
+      PaperProps={{ style: { maxHeight: "360px" }}}>
       {
-        (projectsCacheContextState._activeProject && userCheckMp)
+        (projectsCacheState._activeProject && userCheckMp)
         ? (
           <MenuItem 
-            key={ projectsCacheContextState._activeProject.userEmail } 
-            value={ projectsCacheContextState._activeProject.userEmail }>
+            key={ projectsCacheState._activeProject.userEmail } 
+            value={ projectsCacheState._activeProject.userEmail }>
             <Checkbox 
-              checked={ userCheckMp.get(projectsCacheContextState._activeProject.userEmail) }
+              checked={ userCheckMp.get(projectsCacheState._activeProject.userEmail) }
               onChange={ (e) => handleOnOwnerCheck(e) } />
   
-            { projectsCacheContextState._activeProject?.userEmail }
+            { projectsCacheState._activeProject?.userEmail }
           </MenuItem>
         ): null
       }
 
       { 
-        (projectsCacheContextState._activeProject && userCheckMp)
+        (projectsCacheState._activeProject && userCheckMp)
         ? (
-          projectsCacheContextState._activeProject.collaboratorList.map((collaborator) => (
+          projectsCacheState._activeProject.collaboratorList.map((collaborator) => (
             <MenuItem 
               key={ collaborator.email }
               value={ collaborator.email }>

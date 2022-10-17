@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 
-import { Pagination, Stack } from "@mui/material";
+import { useSelector } from "react-redux";
 
-import { useTaskUpdateContext } from "../../../providers/task-update";
-import { useProjectsCacheContext } from "../../../providers/projects-cache";
+import { Pagination, Stack } from "@mui/material";
 
 import TagArea from "../../tag/components/tag-area";
 
@@ -11,14 +10,16 @@ import { searchTagsByProjectIdAndPrefix } from "../../tag/services/tags-service"
 
 import { Tag } from "../../../types/Tag";
 
+import { AppState } from "../../../stores/app-reducers";
+
 interface TagsSearchResultPanel { }
 
 const TagsSearchResultPanel = (props: TagsSearchResultPanel) => {
   // ------------------ Projects cache ------------------
-  const projectsCacheContextState = useProjectsCacheContext().state;
+  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
   // ------------------ Task update ------------------
-  const taskUpdateContextState = useTaskUpdateContext().state;
+  const taskUpdateState = useSelector((state: AppState) => state.TaskUpdate);
 
   // ------------------ Tags search result panel ------------------
   const [ tags, setTags ] = React.useState<Array<Tag>>([]);
@@ -29,7 +30,7 @@ const TagsSearchResultPanel = (props: TagsSearchResultPanel) => {
   const fetchTags = (projectId: string, page: number) => {
     const timeout = setTimeout(() => {  
       searchTagsByProjectIdAndPrefix(projectId, 
-        taskUpdateContextState._tagsEditAreaSearchStr, page).then(res => {
+        taskUpdateState._tagsEditAreaSearchStr, page).then(res => {
           setTags(res.tags);
 
           setPage(res.page + 1);
@@ -41,15 +42,15 @@ const TagsSearchResultPanel = (props: TagsSearchResultPanel) => {
   }
 
   useEffect(() => {
-    const activeProject = projectsCacheContextState._activeProject;
+    const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       fetchTags(activeProject.id, 0);
     }
-  }, [ taskUpdateContextState._tagsEditAreaSearchStr ]);
+  }, [ taskUpdateState._tagsEditAreaSearchStr ]);
 
   const handleOnPageChange = (e: any, val: number) => {
-    const activeProject = projectsCacheContextState._activeProject;
-    if(activeProject && taskUpdateContextState._lastFocusedArea === 'tagsEditArea') {
+    const activeProject = projectsCacheState._activeProject;
+    if(activeProject && taskUpdateState._lastFocusedArea === 'tagsEditArea') {
       fetchTags(activeProject.id, val - 1);
     }
   }
