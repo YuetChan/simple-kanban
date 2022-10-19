@@ -14,7 +14,8 @@ export class JwtAuthService {
 
     if(loginType === LoginType.GOOGLE) {
       try {
-        console.debug('Register or get user')
+        console.debug('Register or get user');
+        
         const registeredUser = await this.registerSvc.register({
           email: user.email,
           name: user.name

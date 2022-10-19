@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, InternalServerErrorException } from "@nestjs/common";
 
 import axios from 'axios';
+import { User } from "src/model/user.model";
 
 @Injectable()
 export class RegisterService {

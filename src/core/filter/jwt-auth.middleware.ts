@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, InternalServerErrorException, NestMiddleware } 
 import { JwtService } from "@nestjs/jwt";
 
 import axios from "axios";
+import { User } from "src/model/user.model";
 
 @Injectable()
 export class JwtAuthMiddleware implements NestMiddleware {
