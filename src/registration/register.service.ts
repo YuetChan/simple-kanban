@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, InternalServerErrorException } from "@nestjs/common";
 
 import axios from 'axios';
+
 import { User } from "src/model/user.model";
 
 @Injectable()
@@ -12,11 +13,10 @@ export class RegisterService {
 
   async register(user: User): Promise<User> {
 		console.trace('Enter register(user)');
-
 		console.debug('Get user by user email');
 
 		return await axios.get(`${this.REST_HOST}/users`, { 
-				params: { email: user.email } 
+			params: { email: user.email } 
 		}).then(async res => {
 			console.debug('Get role by id');
 
