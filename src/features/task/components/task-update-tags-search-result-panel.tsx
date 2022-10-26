@@ -70,7 +70,7 @@ const TagsSearchResultPanel = (props: TagsSearchResultPanel) => {
           spacing={ 0.5 }
           style={{  
             flexWrap: "wrap",
-            overflowY: "auto"}}>
+            overflowY: "auto"}} >
           {
             tags.map(tag => (<TagArea tag={ tag.name } showDelete={ false } />))
           }

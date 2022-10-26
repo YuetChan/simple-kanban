@@ -14,18 +14,25 @@ import { reducer as UserCacheReducers} from "../src/stores/user-cache-slice";
 
 import logger from 'redux-logger'
 
-export const store = configureStore({reducer: {
-  DatesCache: DatesCacheReducers, 
-  KanbanTable: KanbanTableReducers, 
-  ProjectCreateDialog: ProjectCreateDialogReducers, 
-  ProjectDeleteDialog: ProjectDeleteDialogReducers, 
-  ProjectsCache: ProjectsCacheReducers,
-  TagsSearchResultPanel: TagsSearchResultPanelReducers,
-  TaskCreate: TaskCreateReducers,
-  TaskUpdate: TaskUpdateReducers, 
-  TasksSearch: TasksSearchReducers, 
-  TasksCache: TasksCacheReducers,
-  UserCache: UserCacheReducers
-},
-middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger)
+export const store = configureStore({
+  reducer: {
+    DatesCache: DatesCacheReducers, 
+    
+    KanbanTable: KanbanTableReducers, 
+    
+    ProjectCreateDialog: ProjectCreateDialogReducers, 
+    ProjectDeleteDialog: ProjectDeleteDialogReducers, 
+    ProjectsCache: ProjectsCacheReducers,
+    
+    TagsSearchResultPanel: TagsSearchResultPanelReducers,
+    
+    TaskCreate: TaskCreateReducers,
+    TaskUpdate: TaskUpdateReducers, 
+    TasksSearch: TasksSearchReducers, 
+    TasksCache: TasksCacheReducers,
+    
+    UserCache: UserCacheReducers
+  },
+  
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger)
 })

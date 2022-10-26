@@ -6,8 +6,8 @@ const TaskSearchkSprintSelect = (props: TasSearchkSprintSelectProps) => {
   // ------------------ Html template ------------------
   return (
     <FormControl 
-      variant="standard" 
-      sx={{ minWidth: "140px" }}>
+      sx={{ minWidth: "140px" }}
+      variant="standard" >
       <InputLabel>Sprint</InputLabel>
       
       <Select disabled={ true }>

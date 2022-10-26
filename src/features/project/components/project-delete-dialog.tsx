@@ -15,6 +15,10 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
   const [ enable, setEnable ] = React.useState(false);
   const [ value, setValue ] = React.useState('');
 
+  useEffect(() => {
+    setEnable(value === 'DELETE');
+  }, [ value ]);
+
   const handleOnClose = () => {
     if(props.handleOnClose) {
       props.handleOnClose();
@@ -33,16 +37,10 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
     setValue(e.target.value);
   }
 
-  useEffect(() => {
-    setEnable(value === 'DELETE');
-  }, [ value ]);
-
   // ------------------ Html template ------------------
   return (
     <section>
       <Dialog
-        open={ props.open? props.open : false }
-        onClose={ handleOnClose }
         scroll={ "paper" }
         sx={{
           "& .MuiDialog-container": {
@@ -51,7 +49,9 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
               width: "350px"
             },
           },
-        }}>
+        }}
+        open={ props.open? props.open : false }
+        onClose={ handleOnClose }>
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between">
             <div>{ props.label? props.label : "" }</div>
@@ -64,16 +64,19 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
             sx={{ marginBottom:"12px" }}>
             <p>Please enter DELETE to confirm the deletion</p>  
             
-            <TextField placeholder="DELETE" onChange={ handleOnChange } value={ value }/>
+            <TextField 
+              placeholder="DELETE" 
+              value={ value }  
+              onChange={ handleOnChange } />
           </DialogContentText>
         </DialogContent>
   
         <DialogActions>
           <Button onClick={ handleOnClose }>Cancel</Button>
           <Button 
+            color="error"
             disabled={ !enable } 
-            onClick={ handleOnDelete }
-            color="error">
+            onClick={ handleOnDelete }>
               Delete
           </Button>
         </DialogActions>

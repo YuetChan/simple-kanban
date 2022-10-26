@@ -1,15 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-interface ProjectDeleteDialogState {
-  show: boolean
-}
+interface ProjectDeleteDialogState { show: boolean }
 
 const { reducer, actions } = createSlice({
   name: 'ProjectDeleteDialog',
 
-  initialState: {
-    show: false,
-  } as ProjectDeleteDialogState,
+  initialState: { show: false } as ProjectDeleteDialogState,
   
   reducers: {
     showProjectDeleteeDialog: (state, action) => {

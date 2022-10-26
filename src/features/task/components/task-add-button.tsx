@@ -7,15 +7,17 @@ interface TaskAddButtonProps {
 }
 
 const TaskAddButton = (props: TaskAddButtonProps) => {
+  const handleOnClick = () => {
+    if(props.handleOnClick) {
+      props.handleOnClick();
+    }
+  }
+
   // ------------------ Html template ------------------
   return (
     <Fab
       color="primary"
-      onClick={ () => {
-        if(props.handleOnClick) {
-          props.handleOnClick();
-        }
-      } }>
+      onClick={ handleOnClick }>
       { <AddIcon /> }
     </Fab>
   )

@@ -107,21 +107,21 @@ const TagsSearchResultPanel = (props: any) => {
           spacing={ 0.5 }
           style={{  
             flexWrap: "wrap",
-            overflowY: "auto",
+            overflowY: "auto"
             }}>
           { 
             tags.length > 0
-            ? tags.map(tag =>  (<TagArea tag={ tag.name } showDelete={ false } />))
+            ? tags.map(tag =>  (<TagArea showDelete={ false } tag={ tag.name } />))
             : null
           }
         </Stack>
 
         <Pagination 
+          style={{ paddingTop: "4px" }}
           color="primary"
           count={ totalPage } 
           page={ page } 
-          onChange={ handleOnPageChange }
-          style={{ paddingTop: "4px" }}/>
+          onChange={ handleOnPageChange } />
       </Stack>
     </section>
   )

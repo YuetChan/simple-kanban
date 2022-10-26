@@ -6,16 +6,15 @@ import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 
 import { generateUserSecretById, getUserByEmail } from "../services/users-service";
 
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-
 import { AppState } from "../../../stores/app-reducers";
 
 import { actions as userCacheActions } from "../../../stores/user-cache-slice";
 
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+
 interface UserSecretProps {
   secretMenuAnchorEl?: any,
   secretMenuOpen?: any,
-
   handleSecretMenuClose?: Function
 }
 
@@ -41,21 +40,25 @@ const UserSecretMenu = (props: UserSecretProps) => {
       });
     });
   }
+
+  const handleOnCopyClick = () => {
+    alert('copied');
+  }
   
   // ------------------ Html template ------------------
   return (
     <Menu
+      PaperProps={{ style: { maxHeight: "360px" } }}
       anchorEl={ props.secretMenuAnchorEl }
       open={ props.secretMenuOpen }
-      onClose={ handleOnClose }
-      PaperProps={{ style: { maxHeight: "360px" } }}>
+      onClose={ handleOnClose } >
       <MenuItem 
         key={ "secret" } 
         value={ "secret" }
         style={{ margin: "0px 0px 8px 0px" }}>
         <CopyToClipboard 
           text={ userCacheState._loginedUserSecret }
-          onCopy={() => { alert('copied') }}>
+          onCopy={ handleOnCopyClick }>
           <Stack 
             direction="row" 
             justifyContent="space-between"

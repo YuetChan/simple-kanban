@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { Pagination, Stack } from "@mui/material";
 
@@ -68,18 +68,19 @@ const TagsSearchResultPanel = (props: any) => {
           spacing={ 0.5 }
           style={{  
             flexWrap: "wrap",
-            overflowY: "auto"}}>
+            overflowY: "auto"
+            }} >
           {
-            tags.map(tag =>  (<TagArea tag={ tag.name } showDelete={ false } />))
+            tags.map(tag =>  (<TagArea showDelete={ false } tag={ tag.name } />))
           }
         </Stack>
 
         <Pagination 
+          style={{ paddingTop: "4px" }}
           color="primary"
           count={ totalPage } 
           page={ page } 
-          onChange={ handleOnPageChange }
-          style={{ paddingTop: "4px" }} />
+          onChange={ handleOnPageChange } />
       </Stack>
     </section>
   )

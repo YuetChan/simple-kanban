@@ -29,7 +29,6 @@ const KanbanTable = (props: KanbanTableProps) => {
 
   // ------------------ Task cache ------------------
   const tasksState = useSelector((state: AppState) => state.TasksCache);
-
   const { allTasksUpdate } = TasksCacheActions;
 
   // ------------------ Tasks search ------------------
@@ -37,7 +36,6 @@ const KanbanTable = (props: KanbanTableProps) => {
 
   // ------------------ Table ------------------
   const tableState = useSelector((state: AppState) => state.KanbanTable);
-
   const { refreshTable } = kanbanTableActions;
 
   // ------------------ Task update dialog ------------------
@@ -70,7 +68,7 @@ const KanbanTable = (props: KanbanTableProps) => {
   // ------------------ Meta ------------------
   const [ metaMp, setMetaMp ] = React.useState<Map<string, { headUUID: string, tailUUID: string }> | undefined>(undefined);
 
-  // ------------------ HTML ------------------
+  // ------------------ Html util ------------------
   const [ columnMp, setColumnMp ] = React.useState<Map<string, any> | undefined>(undefined);
 
   useEffect(() => {
@@ -92,24 +90,13 @@ const KanbanTable = (props: KanbanTableProps) => {
     if(backlogMeta && todoMeta && inProgressMeta && doneMeta) {
       const columnMp = new Map();
 
-      const matchPriority = (task: Task) => {
-        return task.priority === stringToEnum(tasksSearchState._activePriority);
-      }
+      const matchPriority = (task: Task) => { return task.priority === stringToEnum(tasksSearchState._activePriority); }
+      const matchPriorityAll = () => { return tasksSearchState._activePriority === 'all'; }
   
-      const matchPriorityAll = () => {
-        return tasksSearchState._activePriority === 'all';
-      }
-  
-      const matchTags = (task: Task) => {
-        return tasksSearchState._activeTags.every(t => task.tagList.map(tag => tag.name).includes(t));
-      }
-  
+      const matchTags = (task: Task) => { return tasksSearchState._activeTags.every(t => task.tagList.map(tag => tag.name).includes(t)); }
       const isTagsEmpty = tasksSearchState._activeTags.length === 0;
   
-      const matchAssignee = (task: Task) => {
-        return tasksSearchState._activeUserEmails.includes(task.assigneeEmail);
-      }
-  
+      const matchAssignee = (task: Task) => { return tasksSearchState._activeUserEmails.includes(task.assigneeEmail); }
       const isAssigneeEmpty = tasksSearchState._activeUserEmails.length === 0
       
       const matchAll = (task: Task) => {
@@ -198,7 +185,7 @@ const KanbanTable = (props: KanbanTableProps) => {
     }
   }, [ projectsCacheState._activeProject ]);
 
-  // ------------------ Util func ------------------
+  // ------------------ Task utils ------------------
   const fetchTasks = (projectId: string, page: number) => {
     const timeout = setTimeout(() => {  
       if(projectsCacheState._activeProject) {

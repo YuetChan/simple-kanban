@@ -1,15 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-interface ProjectCreateDialogState {
-  show: boolean
-}
+interface ProjectCreateDialogState { show: boolean }
 
 const { reducer, actions } = createSlice({
   name: 'ProjectCreateDialog',
 
-  initialState: {
-    show: false,
-  } as ProjectCreateDialogState,
+  initialState: { show: false } as ProjectCreateDialogState,
   
   reducers: {
     showProjectCreateDialog: (state) => {

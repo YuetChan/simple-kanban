@@ -116,11 +116,11 @@ const KanbanColumn = (props: KanbanColumnProps) => {
   // ------------------ HTML template ------------------
   return (
     <div 
-      ref={ drop }
       style={{
         width: "100%",
         height: "100%"
-      }}>
+      }}
+      ref={ drop } >
       { props.children }
     </div>
   )

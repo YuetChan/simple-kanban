@@ -31,6 +31,7 @@ import { AppState } from '../stores/app-reducers';
 import { actions as projectsCacheActions } from '../stores/projects-cache-slice';
 import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
+
 import { redirectToLoginPage } from '../services/auth.services';
 
 interface KanbanDrawerProps { }
@@ -323,7 +324,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
           </ListItemButton>
         </ListItem>
 
-        {/* <ListItem 
+        <ListItem 
           style={{ display: projectsCacheState._allProjects.length > 0? "block": "none" }}
           key={ "Logout" } 
           disablePadding 
@@ -334,7 +335,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
             </ListItemIcon>
             <ListItemText primary={ "Logout" } />
           </ListItemButton>
-        </ListItem> */}
+        </ListItem>
 
         <ListItem key={ "Help" } disablePadding>
           <ListItemButton>

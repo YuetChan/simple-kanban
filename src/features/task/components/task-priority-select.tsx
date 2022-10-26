@@ -23,13 +23,13 @@ const TaskPrioritySelect = (props: TaskPrioritySelectProps) => {
   // ------------------ Html template ------------------
   return (
     <FormControl 
-      variant="standard" 
-      sx={{ minWidth: "140px" }}>
+      sx={{ minWidth: "140px" }}
+      variant="standard" >
       <InputLabel>Priority</InputLabel>
       
       <Select
-        value={ priority }
         label="Priority"
+        value={ priority }
         onChange={ handleOnPrioritySelect }>
         <MenuItem value={ "low" } >Low</MenuItem>
         <MenuItem value={ "medium" }>Medium</MenuItem>

@@ -1,11 +1,6 @@
-import {  useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { Avatar, Card, CardContent, CardActionArea, Stack, Typography } from '@mui/material';
-
-import { useDrag, useDrop } from 'react-dnd';
-import { mergeRefs } from "react-merge-refs";
-
-import Moment from 'react-moment';
 
 import { truncate } from '../libs/text-lib';
 
@@ -20,12 +15,16 @@ import { Task } from '../types/Task';
 
 import { actions as kanbanTableActions } from '../stores/kanban-table-slice';
 
-interface KanbanCardProps {
-  task: Task,
+import { useDrag, useDrop } from 'react-dnd';
+import { mergeRefs } from "react-merge-refs";
+import Moment from 'react-moment';
 
+interface KanbanCardProps {
   category: string,
   highlight?: boolean,
   showDescription?: boolean,
+
+  task: Task,
 
   handleOnCardClick?: Function
 }
@@ -84,7 +83,7 @@ const KanbanCard = (props: KanbanCardProps) => {
   const getAvatarHTML = (value: string) => {
     return <Avatar style={{
       width: "24px",
-      height: "24px"}}>
+      height: "24px"}} >
         { textToAvatar(value) }
       </Avatar>
   }
@@ -98,7 +97,7 @@ const KanbanCard = (props: KanbanCardProps) => {
             fontSize: "11px",
             color: "green"
           }} 
-          variant="body2">
+          variant="body2" >
           Low
         </Typography>
       )
@@ -142,20 +141,18 @@ const KanbanCard = (props: KanbanCardProps) => {
         }} 
         variant="body2">
         Due at: &nbsp; 
-        <Moment format="YYYY/MM/DD">
-          { dueAt }
-        </Moment>
+        <Moment format="YYYY/MM/DD">{ dueAt }</Moment>
       </Typography>
     )
   }
 
   return (
       <Card 
-        ref={ mergeRefs([ drag, drop ]) }
-        sx={{ width: "100%", background: props.highlight? "#FFA59B": null }}>
+        sx={{ width: "100%", background: props.highlight? "#FFA59B": null }}
+        ref={ mergeRefs([ drag, drop ]) } >
         <CardActionArea 
           href="javascript:void(0)" 
-          onClick={ handleOnCardClick }>
+          onClick={ handleOnCardClick } >
           <CardContent sx={{ 
             padding: "5px",    
             "&:last-child": { paddingBottom: "5px" }}
@@ -172,13 +169,13 @@ const KanbanCard = (props: KanbanCardProps) => {
 
             <div>
               <Typography 
-                variant="body1" 
                 style={{
                     wordBreak: "break-all",
                     whiteSpace: "normal",
                     fontWeight: "bold",
                     fontSize: "16px" 
-                    }}>
+                    }}
+                variant="body1" >
                 { props.task?.title } 
               </Typography>
 
@@ -198,9 +195,7 @@ const KanbanCard = (props: KanbanCardProps) => {
                 justifyContent="space-between" 
                 alignItems="end">
                 { getAvatarHTML(props.task.assigneeEmail) }
-
                 { getPriorityHTML(props.task.priority) }
-
                 { getDueAtHTML(props.task.dueAt) }    
               </Stack>
             </div>

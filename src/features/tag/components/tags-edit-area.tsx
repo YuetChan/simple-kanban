@@ -6,8 +6,8 @@ import TagArea from "./tag-area";
 
 interface TagsEditsAreaProps {
   label?: string,
-  inputRef?: any,
   disabled?: boolean,
+  inputRef?: any,
   tags?: Array<string>,
   
   handleOnTagsChange?: Function,
@@ -45,9 +45,8 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
   }
 
   const handleOnKeyPress = (e: any) => {
-    const newTag = e.target.value;
-
     if(e.keyCode === 13) {
+      const newTag = e.target.value;
       if(tags.filter(tag => tag === newTag).length <= 0) {
         setTags([... tags, newTag]);
         setTagInput('');
@@ -76,23 +75,23 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
     <section>
       <Stack direction="column" alignItems="start" spacing={ 1 }>
         <TextField 
+          style={{ width: "150px" }}
           label={ props.label? props.label : ""  } 
           disabled={ props.disabled !== undefined ? props.disabled : true }
           variant="standard" 
+          inputRef={ props.inputRef } 
+          value={ tagInput } 
           onChange={ (e) => handleOnTextFieldChange(e) }
           onKeyDown={ handleOnKeyPress }
           onFocus= { (e) => handleOnFocus(e) }
-          onBlur={ handleOnBlur }
-          value={ tagInput } 
-          style={{ width: "150px" }}
-          inputRef={ props.inputRef } />
+          onBlur={ handleOnBlur } />
           {
             tags.length > 0 
             ? (
                 <Stack 
                   direction="row" 
                   spacing={ 0.5 } 
-                  style={{ flexWrap: "wrap" }}>
+                  style={{ flexWrap: "wrap" }} >
                   {
                     tags.map(tag => {
                       return (

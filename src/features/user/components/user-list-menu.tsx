@@ -11,7 +11,6 @@ import { actions as tasksSearchActions } from "../../../stores/tasks-search-slic
 interface UserListMenuProps {
   usersFilterMenuAnchorEl?: any,
   usersFilterMenuOpen?: any,
-
   handleOnUsersFilterMenuClose?: Function
 }
 
@@ -44,6 +43,7 @@ const UserListMenu = (props: UserListMenuProps) => {
 
       const checkMp = new Map();
       checkMp.set(userEmail, checkMp.get(userEmail));
+
       tasksSearchState._activeUserEmails.forEach(email => checkMp.set(email, true));
 
       setUserCheckMp(checkMp);
@@ -81,15 +81,15 @@ const UserListMenu = (props: UserListMenuProps) => {
   return (
     <Menu
       anchorEl={ props.usersFilterMenuAnchorEl }
+      PaperProps={{ style: { maxHeight: "360px" }}}
       open={ props.usersFilterMenuOpen }
-      onClose={ handleOnClose }
-      PaperProps={{ style: { maxHeight: "360px" }}}>
+      onClose={ handleOnClose } >
       {
-        (projectsCacheState._activeProject && userCheckMp)
+        projectsCacheState._activeProject && userCheckMp
         ? (
           <MenuItem 
-            key={ projectsCacheState._activeProject.userEmail } 
-            value={ projectsCacheState._activeProject.userEmail }>
+            key={ "owner_" + projectsCacheState._activeProject.userEmail } 
+            value={ "owner_" + projectsCacheState._activeProject.userEmail }>
             <Checkbox 
               checked={ userCheckMp.get(projectsCacheState._activeProject.userEmail) }
               onChange={ (e) => handleOnOwnerCheck(e) } />
@@ -100,12 +100,12 @@ const UserListMenu = (props: UserListMenuProps) => {
       }
 
       { 
-        (projectsCacheState._activeProject && userCheckMp)
+        projectsCacheState._activeProject && userCheckMp
         ? (
           projectsCacheState._activeProject.collaboratorList.map((collaborator) => (
             <MenuItem 
-              key={ collaborator.email }
-              value={ collaborator.email }>
+              key={ "collbarator_" + collaborator.email }
+              value={ "collbarator_" + collaborator.email }>
               <Checkbox 
                 checked={ userCheckMp.get(collaborator.email) }
                 onChange={ (e) => handleOnCollaboratorCheck(e, collaborator.email) } />

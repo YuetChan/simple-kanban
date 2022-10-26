@@ -93,16 +93,14 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
         <Stack 
           direction="row" 
           justifyContent="space-between" 
-          style={{
-            width: "100%"
-          }}>
+          style={{ width: "100%" }}>
           <Stack direction="row" spacing={ 0.5 }>
-            {/* <Button 
+            <Button 
               style={{ display: props.showLogout? "block": "none" }}
               variant="outlined" 
               onClick={ handleOnLogoutClick }>
               Logout
-            </Button> */}
+            </Button>
 
             <Button 
               style={{ display: props.showLogout? "block": "none" }}

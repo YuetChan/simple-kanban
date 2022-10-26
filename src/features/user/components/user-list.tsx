@@ -10,9 +10,9 @@ import { AppState } from "../../../stores/app-reducers";
 
 interface UserListProps {
   isOwner?: boolean,
-
   openOwnerMenu?: Function,
   openCollaboratorsMenu?: Function,
+
   handleOnUserAvatarsClick?: Function
 }
 
@@ -44,11 +44,11 @@ const UserList = (props: UserListProps) => {
     <Stack 
       direction="row" 
       alignItems="center"
-      style={{ margin: "0px 0px 16px 0px" }}>
-      <Tooltip title="Collaborator setting">
+      style={{ margin: "0px 0px 16px 0px" }} >
+      <Tooltip title="Collaborator setting" >
         <IconButton 
           style={{ transform: "translateX(-16px)" }} 
-          onClick={ (e) => handleOnSettingClick(e) }>
+          onClick={ (e) => handleOnSettingClick(e) } >
 
           <ManageAccountsOutlinedIcon />
         </IconButton>  
@@ -58,15 +58,15 @@ const UserList = (props: UserListProps) => {
         href="javascript:void(0)" 
         onClick={ (e) => handleOnUserListClick(e) }>
         <AvatarGroup  
-          max={ 5 } 
-          sx={{ '& .MuiAvatar-root': { width: 36, height: 36, } }}>
+          sx={{ '& .MuiAvatar-root': { height: 36, width: 36 } }}
+          max={ 5 } >
           {
             projectsCahceState._activeProject
             ? (
               <Tooltip title={ projectsCahceState._activeProject.userEmail }>
                 <Avatar style={{
-                  width: "30px",
-                  height: "30px"
+                  height: "30px",
+                  width: "30px"
                   }}>
                     { textToAvatar(projectsCahceState._activeProject.userEmail) }
                 </Avatar>
@@ -80,9 +80,9 @@ const UserList = (props: UserListProps) => {
               return (
                 <Tooltip title={ collaborator.email }>
                   <Avatar style={{
-                  width: "30px",
-                  height: "30px"
-                  }}>
+                    height: "30px",
+                    width: "30px"
+                    }} >
                     { textToAvatar(collaborator.email) }
                   </Avatar>
                 </Tooltip>

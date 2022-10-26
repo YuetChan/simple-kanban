@@ -24,22 +24,15 @@ export interface AppState {
 
   KanbanTable: { },
 
-  ProjectCreateDialog: {
-    show: boolean
-  },
-
-  ProjectDeleteDialog: {
-    show: boolean
-  },
+  ProjectCreateDialog: { show: boolean },
+  ProjectDeleteDialog: { show: boolean },
 
   ProjectsCache: {
     _activeProject: Project | undefined,
     _allProjects: Array<Project>
   },
   
-  TagsSearchResultPanel: {
-    _mouseOver: boolean
-  },
+  TagsSearchResultPanel: { _mouseOver: boolean },
 
   TaskCreate: {
     _tagsEditAreaFocused: boolean,

@@ -16,7 +16,7 @@ const TaskSearchPrioritySelect = (props: TaskSearchPrioritySelectProps) => {
   const { selectActivePriority } = taskSearchActions;
 
   // ------------------ Priority select ------------------
-  const [ priority, setPriority ] = React.useState('all');
+  const [ priority, setPriority ] = React.useState<String>('all');
 
   const handleOnPrioritySelect = (e: any) => {
     setPriority(e.target.value);

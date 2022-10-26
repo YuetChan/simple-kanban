@@ -5,13 +5,12 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 interface TaskStatusSelectProps {
   value: string,
   showArchive?: boolean,
-  
   handleOnSelectChange: Function
 }
 
 const StatusSelect = (props: TaskStatusSelectProps) => {
   // ------------------ Status select ------------------
-  const [ status, setStatus ] = React.useState(props.value);
+  const [ status, setStatus ] = React.useState<string>(props.value);
 
   const handleOnStatusSelect = (e: any) => {
     setStatus(e.target.value)
@@ -45,9 +44,9 @@ const StatusSelect = (props: TaskStatusSelectProps) => {
         <InputLabel>Status</InputLabel>
 
         <Select
-          value={ status }
           label="status"
-          onChange={ handleOnStatusSelect }>
+          value={ status }
+          onChange={ (e) => handleOnStatusSelect(e) }>
           {
             statuses.map(status => (
             <MenuItem value={ status }>{ statusMap.get(status) }</MenuItem>

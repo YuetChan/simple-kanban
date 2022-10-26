@@ -8,10 +8,10 @@ import DatePicker from "react-datepicker";
 
 import { stringToEnum } from '../../../services/backend-enum-service';
 
-import KanbanAutosizeTextarea from "../../../components/kanban-autosize-textarea"
-import TagsEditArea from "../../tag/components/tags-edit-area"
-import KanbanCardAssignee from "./task-assignee-select"
-import StatusSelect from "./task-status-select"
+import KanbanAutosizeTextarea from "../../../components/kanban-autosize-textarea";
+import TagsEditArea from "../../tag/components/tags-edit-area";
+import KanbanCardAssignee from "./task-assignee-select";
+import StatusSelect from "./task-status-select";
 import TagsSearchResultPanel from './task-create-tags-search-result-panel';
 import TaskPrioritySelect from './task-priority-select';
 
@@ -47,8 +47,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   const taskCreateState = useSelector((state: AppState) => state.TaskCreate);
 
   const { 
-    updateTagsEditAreaSearchStr,
-    updateActiveTags, 
+    updateTagsEditAreaSearchStr, updateActiveTags, 
     mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
     focusTagsEditArea, blurTagsEditArea, 
     updateLastFocusedArea, 
@@ -57,7 +56,6 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
  
   // ------------------ Dates cache ------------------
   const datesState = useSelector((state: AppState) => state.DatesCache);
-  
   const { dueDateUpdate } = datesCacheActions;
 
   // ------------------ Task create dialog ------------------
@@ -115,7 +113,6 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
 
   const handleOnClose = () => {
     dispatch(updateActiveTags([]));
-
     setTask(defaultTask);
 
     if(props.handleOnClose) {
@@ -164,9 +161,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     setTask({
       ... task, 
       tagList: tags.map(tag => {
-        return {
-          name: tag
-        }
+        return { name: tag }
       })
     });
 
@@ -363,39 +358,39 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   return (
     <section>
       <Dialog
-        open={ props.open? props.open : false }
-        onClose={ handleOnClose }
-        scroll={ "paper" }
         sx={{
           "& .MuiDialog-container": {
-            "& .MuiPaper-root": {
-              minWidth: "300px",
-              width: "100%"
-            },
+             "& .MuiPaper-root": {
+                minWidth: "300px",
+                width: "100%"
+              },
           },
-        }}>
+        }}
+        scroll={ "paper" }
+        open={ props.open? props.open : false }
+        onClose={ handleOnClose } >
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between">
             <div>{ props.label? props.label : ""  }</div>
           </Stack>
         </DialogTitle>
   
-        <DialogContent dividers={ true }>
+        <DialogContent dividers={ true } >
           <DialogContentText
             tabIndex={ -1 }
             sx={{ marginBottom:"12px" }}>
             <Stack 
               direction="column" 
-              spacing={ 1.5 }>
+              spacing={ 1.5 } >
               <TextField 
+                sx={{ marginBottom: "12px" }}
                 label="Title" 
                 variant="standard" 
-                sx={{ marginBottom: "12px" }}
                 onChange={ (e: any) => handleOnTitleChange(e) } />
   
               <Stack 
                 direction="row" 
-                spacing={ 6 }>
+                spacing={ 6 } >
                 <StatusSelect 
                   value={ 'backlog' }
                   handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } />  
@@ -419,18 +414,17 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
               </div>
               
               <TagsEditArea 
-                tags={ taskCreateState._activeTags } 
                 label="Tags"
                 disabled={ false } 
+                inputRef={ tagsEditAreaRef }
+                tags={ taskCreateState._activeTags } 
                 handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
                 handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) } 
                 handleOnFocus={ (e: any) => handleOnTagsFilterAreaFocus(e) } 
-                handleOnBlur={ handleOnTagsFilterAreaBlur } 
-                inputRef={ tagsEditAreaRef } />  
+                handleOnBlur={ handleOnTagsFilterAreaBlur } />  
 
               {
-                taskCreateState._tagsEditAreaFocused 
-                || taskCreateState._searchResultPanelMouseOver
+                taskCreateState._tagsEditAreaFocused || taskCreateState._searchResultPanelMouseOver
                 ? (
                     <section 
                       style={{
@@ -455,7 +449,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
 
               <Stack 
                 direction="column" 
-                spacing={ 0.5 }>
+                spacing={ 0.5 } >
                 <KanbanAutosizeTextarea 
                   label="Description" 
                   placeholder="Enter the description"
@@ -465,7 +459,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                 <KanbanAutosizeTextarea 
                   label="Note" 
                   placeholder="Enter the note" 
-                  handleOnTextareaChange={ (e: any) => handleOnNoteChange(e) }/> 
+                  handleOnTextareaChange={ (e: any) => handleOnNoteChange(e) } /> 
               </Stack>
   
               <Stack direction="row" justifyContent="start">

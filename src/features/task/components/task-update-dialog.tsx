@@ -4,9 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField, Tooltip } from "@mui/material";
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
 import { stringToEnum } from '../../../services/backend-enum-service';
 
 import KanbanAutosizeTextarea from "../../../components/kanban-autosize-textarea";
@@ -22,6 +19,9 @@ import { Task } from '../../../types/Task';
 import { AppState } from '../../../stores/app-reducers';
 
 import { actions as taskUpdateActions } from '../../../stores/task-update-slice'; 
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface TaskUpdateDialog {
   open?: boolean,
@@ -51,10 +51,10 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   const taskUpdateState = useSelector((state: AppState) => state.TaskUpdate);
 
   const { 
-    mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
-    updateLastFocusedArea, focusTagsEditArea, blurTagsEditArea,
-    setTagsEditAreaRef,
     updateTagsEditAreaSearchStr,
+    mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
+    focusTagsEditArea, blurTagsEditArea,
+    updateLastFocusedArea, setTagsEditAreaRef
   } = taskUpdateActions;
 
   // ------------------ Task update dialog ------------------
@@ -107,9 +107,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     setTask({
       ... task, 
       tagList: tags.map(tag => {
-        return {
-          name: tag
-        }
+        return { name: tag }
       })
     });
   }
@@ -314,17 +312,9 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
 
   // ------------------ Priority ------------------
   const getPriority = (priority: string): string => {
-    if(priority === stringToEnum('low')) {
-      return 'low';
-    }
-
-    if(priority === stringToEnum('medium')) {
-      return 'medium';
-    }
-
-    if(priority === stringToEnum('high')) {
-      return 'high';
-    }
+    if(priority === stringToEnum('low')) { return 'low'; }
+    if(priority === stringToEnum('medium')) { return 'medium'; }
+    if(priority === stringToEnum('high')) { return 'high'; }
 
     return 'low';
   }
@@ -380,9 +370,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
   return (
     <section>
       <Dialog
-        open={ props.open? props.open : false }
-        onClose={ handleOnClose }
-        scroll={ "paper" }
         sx={{
           "& .MuiDialog-container": {
             "& .MuiPaper-root": {
@@ -390,7 +377,10 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
               width: "100%"
             },
           },
-        }}>
+        }}
+        open={ props.open? props.open : false }
+        scroll={ "paper" } 
+        onClose={ handleOnClose } >
         <DialogTitle>
           <Stack direction="row" justifyContent="space-between">
             <div>{ props.label? props.label : "" }</div>
@@ -406,26 +396,26 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
           </Stack>
         </DialogTitle>
   
-        <DialogContent dividers={ true }>
+        <DialogContent dividers={ true } >
           <DialogContentText
             tabIndex={ -1 }
-            sx={{ marginBottom:"12px" }}>
+            sx={{ marginBottom:"12px" }} >
             <Stack 
               direction="column" 
-              spacing={ 1.5 }>
+              spacing={ 1.5 } >
               <TextField 
+                sx={{ marginBottom: "12px" }}
                 label="Title" 
                 variant="standard"
                 value={ task?.title } 
-                sx={{ marginBottom: "12px" }}
                 onChange={ (e) => handleOnTitleChange(e) } />
   
               <Stack 
                 direction="row" 
                 spacing={6}>
                 <StatusSelect 
-                  value={ status }
                   showArchive={ true } 
+                  value={ status }
                   handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } />  
   
                 <Stack 
@@ -447,18 +437,17 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
               </div>
               
               <TagsEditArea 
-                tags={ task.tagList.map((tag: Tag) => tag.name) } 
                 label="Tags"
                 disabled={ false } 
+                inputRef={ tagsEditAreaRef } 
+                tags={ task.tagList.map((tag: Tag) => tag.name) } 
                 handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
                 handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) } 
                 handleOnFocus={ (e: any) => handleOnTagsFilterAreaFocus(e) } 
-                handleOnBlur={ handleOnTagsFilterAreaBlur } 
-                inputRef={ tagsEditAreaRef } />  
+                handleOnBlur={ handleOnTagsFilterAreaBlur } />  
 
               {
-                taskUpdateState._tagsEditAreaFocused 
-                || taskUpdateState._searchResultPanelMouseOver
+                taskUpdateState._tagsEditAreaFocused || taskUpdateState._searchResultPanelMouseOver
                 ? (
                     <section 
                       style={{
@@ -483,7 +472,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
 
               <Stack 
                 direction="column" 
-                spacing={ 0.5 }>
+                spacing={ 0.5 } >
                 <KanbanAutosizeTextarea 
                   value={ task?.description }
                   label="Description" 
@@ -494,10 +483,10 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
                   value={ task?.note }
                   label="Note" 
                   placeholder="Enter the note" 
-                  handleOnTextareaChange={ (e: any) => handleOnNoteChange(e) }/> 
+                  handleOnTextareaChange={ (e: any) => handleOnNoteChange(e) } /> 
               </Stack>
   
-              <Stack direction="row" justifyContent="start">
+              <Stack direction="row" justifyContent="start" >
                 <KanbanCardAssignee  
                   assignee={ task?.assigneeEmail }
                   allAssignees={ allAssignees }  
@@ -508,8 +497,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
         </DialogContent>
   
         <DialogActions>
-          <Button onClick={ handleOnClose }>Cancel</Button>
-          <Button onClick={ handleOnApply }>Apply</Button>
+          <Button onClick={ handleOnClose } >Cancel</Button>
+          <Button onClick={ handleOnApply } >Apply</Button>
         </DialogActions>
       </Dialog>
     </section>

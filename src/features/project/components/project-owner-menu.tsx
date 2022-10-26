@@ -18,7 +18,6 @@ import { actions as ProjectsCahceActions } from "../../../stores/projects-cache-
 interface ProjectOwnerMenuProps {
   ownerMenuAnchorEl: any,
   ownerMenuOpen: boolean,
-  
   handleOnOwnerMenuClose?: Function
 }
 
@@ -74,15 +73,13 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     if(activeProject) {
       const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
       if(collaboratorEmails.indexOf(collaboratorToAddEmail) !== -1) {
-        alert('Collaborator already added to the project')
+        alert('Collaborator already added to the project');
         return;
       }
   
       const updatedCollaboratorEmails = [ ...collaboratorEmails, collaboratorToAddEmail];
       const updatedCollaborators = updatedCollaboratorEmails.map(email => {
-        return {
-          email: email
-        } as User;
+        return { email: email } as User;
       })
   
       const updatedProject = {
@@ -121,9 +118,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
       }
   
       const updatedCollaborators = updatedCollaboratorEmails.map(email => {
-        return {
-          email: email
-        } as User;
+        return { email: email } as User;
       })
   
       const updatedProject = {
@@ -146,14 +141,14 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   
   // ------------------ Html template ------------------
   return (
-    <Menu           
+    <Menu      
+      PaperProps={{ style: { maxHeight: "360px" }}}     
       anchorEl={ props.ownerMenuAnchorEl }
       open={ props.ownerMenuOpen }
-      onClose={ handleOnClose}
-      PaperProps={{ style: { maxHeight: "360px" }}}>
+      onClose={ handleOnClose} >
     <Stack 
       direction="column" 
-      style={{ padding: "4px 16px" }}>
+      style={{ padding: "4px 16px" }} >
       <TextField 
         label={ "Email" } 
         variant="standard" 
@@ -172,9 +167,9 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     </Stack>  
     
     <MenuItem 
-      key="add_collaborator" 
-      value="add_collaborator"
-      onClick={ handleOnCollaboratorAddClick }>
+      key="collaborator_add" 
+      value="collaborator_add"
+      onClick={ handleOnCollaboratorAddClick } >
       <Stack 
         direction="row" 
         justifyContent="center" 
@@ -187,7 +182,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
 
     <Stack 
       direction="column" 
-      style={{ padding: "4px 16px" }}>
+      style={{ padding: "4px 16px" }} >
       <TextField 
         label={ "Email" } 
         variant="standard" 
@@ -197,9 +192,9 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     </Stack>
 
     <MenuItem 
-      key="remove_collaborator" 
-      value="remove_collaborator"
-      onClick={ handleOnCollaboratorRemoveClick }>
+      key="collaborator_remove" 
+      value="collaborator_remove"
+      onClick={ handleOnCollaboratorRemoveClick } >
       <Stack 
         direction="row" 
         justifyContent="center" 

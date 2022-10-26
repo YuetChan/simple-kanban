@@ -20,7 +20,7 @@ interface ProjectCollaboratorMenuProps {
 }
 
 const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
-  // ------------------ Store ------------------
+  // ------------------ Dispatch ------------------
   const dispatch = useDispatch();
 
   // ------------------ Projects cache ------------------
@@ -41,7 +41,7 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
     const activeProject = projectsCacheState._activeProject;
     if(activeProject) {
       const activeCollaboratorEmails = activeProject.collaboratorList.map(collaborator => collaborator.email);
-
+      
       const updatedCollaboratorEmails = activeCollaboratorEmails.filter(email => 
         email !== userCacheState._loginedUserEmail);
       const updatedCollaborators = updatedCollaboratorEmails.map(email => {
@@ -72,8 +72,8 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
       onClose={ handleOnClose }
       PaperProps={{ style: { maxHeight: "360px" }}}>
       <MenuItem 
-        key="remove_self" 
-        value="remove_self"
+        key="quit_project" 
+        value="quit_project"
         onClick={ handleOnQuitProjectClick }>
         <Stack 
           direction="row" 

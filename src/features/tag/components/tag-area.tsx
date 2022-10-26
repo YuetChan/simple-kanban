@@ -7,7 +7,6 @@ import toMaterialStyle from 'material-color-hash';
 interface TagAreaProps {
   tag: string,
   showDelete?: boolean,
-
   handleOnDeleteClick?: Function
 }
 
@@ -21,25 +20,26 @@ const TagArea = (props: TagAreaProps) => {
     padding: "0px 2px"
   };
 
+  const handleOnCloseClick = (e: any) => {
+    if(props.handleOnDeleteClick) {
+      props.handleOnDeleteClick(e, tag)
+    }
+  }
+
   // ------------------ Html template ------------------ 
   return (
     <Stack 
       direction="row" 
       alignItems="center" 
-      sx={ style }>
+      sx={ style } >
       <div>{ tag? tag : "" }</div>
       &nbsp;
       {
         (props.showDelete !== undefined? props.showDelete : false)
         ? (
           <IconButton 
-            aria-label="delete"
             sx={{ padding: "0px" }}
-            onClick={ (e: any) => {
-              if(props.handleOnDeleteClick) {
-                props.handleOnDeleteClick(e, tag)
-              }
-            } }>
+            onClick={ e => handleOnCloseClick(e) }>
             <CloseIcon fontSize='small' />
           </ IconButton>
           )
