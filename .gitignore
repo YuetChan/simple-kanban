@@ -1,8 +1,14 @@
+## Other ###
 HELP.md
+
+### Maven build ###
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Properties ###
+*.properties
 
 ### STS ###
 .apt_generated
