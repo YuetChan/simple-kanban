@@ -21,7 +21,7 @@
 /oauth/npm-debug.log*
 /oauth/yarn-debug.log*
 /oauth/yarn-error.log*
-=======
+
 /ui/.build
 
 # compiled output
@@ -62,3 +62,43 @@
 
 # env
 /ui/.env
+
+## Other ###
+/apiserver/HELP.md
+
+### Maven build ###
+/apiserver/target/
+/apiserver/!.mvn/wrapper/maven-wrapper.jar
+/apiserver/!**/src/main/**/target/
+/apiserver/!**/src/test/**/target/
+
+### Properties ###
+/apiserver/*.properties
+
+### STS ###
+/apiserver/.apt_generated
+/apiserver/.classpath
+/apiserver/.factorypath
+/apiserver/.project
+/apiserver/.settings
+/apiserver/.springBeans
+/apiserver/.sts4-cache
+
+### IntelliJ IDEA ###
+/apiserver/.idea
+/apiserver/*.iws
+/apiserver/*.iml
+/apiserver/*.ipr
+
+### NetBeans ###
+/apiserver/nbproject/private/
+/apiserver/nbbuild/
+/apiserver/dist/
+/apiserver/nbdist/
+/apiserver/.nb-gradle/
+/apiserver/build/
+/apiserver/!**/src/main/**/build/
+/apiserver/!**/src/test/**/build/
+
+### VS Code ###
+/apiserver/.vscode/
