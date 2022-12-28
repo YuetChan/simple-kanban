@@ -1,25 +1,64 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-/.env*
+/oauth/.env*
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+/oauth/node_modules
+/oauth/.pnp
+/oauth.pnp.js
 
 # testing
-/coverage
+/oauth/coverage
 
 # production
-/build
+/oauth/build
 
 # misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+/oauth/.DS_Store
+/oauth/.env.local
+/oauth/.env.development.local
+/oauth/.env.test.local
+/oauth/.env.production.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+/oauth/npm-debug.log*
+/oauth/yarn-debug.log*
+/oauth/yarn-error.log*
+=======
+/ui/.build
+
+# compiled output
+/ui/dist
+/ui/node_modules
+
+# Logs
+/ui/logs
+/ui/*.log
+/ui/npm-debug.log*
+/ui/pnpm-debug.log*
+/ui/yarn-debug.log*
+/ui/yarn-error.log*
+/ui/lerna-debug.log*
+
+# OS
+/ui/.DS_Store
+
+# Tests
+/ui/coverage
+/ui/.nyc_output
+
+# IDEs and editors
+/ui/.idea
+/ui/.project
+/ui/.classpath
+/ui/.c9/
+/ui/*.launch
+/ui/.settings/
+/ui/*.sublime-workspace
+
+# IDE - VSCode
+/ui/.vscode/*
+/ui/!.vscode/settings.json
+/ui/!.vscode/tasks.json
+/ui/!.vscode/launch.json
+/ui/!.vscode/extensions.json
+
+# env
+/ui/.env
