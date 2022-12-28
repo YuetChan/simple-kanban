@@ -1,4 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+
 import { JwtService } from '@nestjs/jwt';
 import { RegisterService } from '../../../registration/register.service';
 
@@ -37,7 +38,7 @@ export class JwtAuthService {
     }
 
     return this.jwtSvc.sign({ 
-      provider: 'cup_kanban',
+      provider: 'simple_kanban',
 
       id: user.id,
       email: user.email,

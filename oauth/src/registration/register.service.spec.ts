@@ -1,12 +1,21 @@
+import { DeepMocked } from "@golevelup/ts-jest";
+import { Test, TestingModule } from "@nestjs/testing";
+
 import { RegisterService } from "./register.service";
 
 describe('RegistrationService', () => {
-  let svc: RegisterService;
+  let module: TestingModule;
+  let registerService: DeepMocked<RegisterService>;
 
-  beforeEach(async () => { });
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      providers: [ RegisterService ],
+    }).compile();
 
-  it('should be defined', () => {
-    expect(svc).toBeDefined();
+    registerService = module.get(RegisterService);
   });
 
+  it('should be defined', () => {
+    expect(registerService).toBeDefined();
+  });
 });

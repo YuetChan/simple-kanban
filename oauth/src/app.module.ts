@@ -19,10 +19,8 @@ import { FilterModule } from './core/filter/filter.module';
 
     RegistrationModule
   ],
-  controllers: [
-    AppController,
-  ],
-  providers: [AppService],
+  controllers: [ AppController ],
+  providers: [ AppService ],
 })
 export class AppModule implements NestModule {
   
