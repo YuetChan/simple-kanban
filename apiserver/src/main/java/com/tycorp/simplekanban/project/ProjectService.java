@@ -45,6 +45,7 @@ public class ProjectService {
 
       attachUserToProject(project);
       attachCollaboratorListToProject(project);
+
       LOGGER.debug("User and collaborator list attached");
 
       project = projectRepository.save(project);
@@ -74,7 +75,6 @@ public class ProjectService {
       // Update project properties
       originalProject.setName(updatedProject.getName());
       originalProject.setDescription(updatedProject.getDescription());
-      LOGGER.debug("Project properties updated");
 
       updateCollaboratorListForProject(originalProject, updatedProject, collaboratorEmailSecretMap);
       LOGGER.debug("Collaborator list updated ");
@@ -85,9 +85,7 @@ public class ProjectService {
    }
 
    public void delete(Project project) {
-      LOGGER.debug("Project set to inactive");
       project.setActive(false);
-
       projectRepository.save(project);
 
       LOGGER.debug("Project deleted successfully");

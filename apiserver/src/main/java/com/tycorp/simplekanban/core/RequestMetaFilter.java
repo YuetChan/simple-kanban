@@ -23,6 +23,8 @@ public class RequestMetaFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         LOGGER.trace("doFilterInternal(request, response, filterChain)");
 
+        LOGGER.info("Generating requestId");
+
         String correlationId = request.getHeader("correlationId");
         String requestId = correlationId != null ? correlationId : UUID.randomUUID().toString();
 

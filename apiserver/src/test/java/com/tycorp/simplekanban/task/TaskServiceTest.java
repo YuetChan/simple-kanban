@@ -64,8 +64,7 @@ public class TaskServiceTest {
       doNothing().when(taskService).attachTaskToProject(Mockito.any());
 
       when(taskRepository.save(Mockito.any())).thenReturn(task);
-      when(tagService.addTagListToProjectAndTask(Mockito.any(), Mockito.any(), Mockito.any()))
-              .thenReturn(tagList);
+      when(tagService.addTagListToProjectAndTask(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tagList);
 
       Task createdTask = taskService.create(task);
       List<Tag> actualTagList = createdTask.getTagList();
@@ -110,9 +109,7 @@ public class TaskServiceTest {
       doReturn(true).when(taskService).checkIfSubTaskListCountValid(Mockito.any());
       doReturn(false).when(taskService).checkIfProjectForTaskExists(Mockito.any());
 
-      assertThrows(ResponseStatusException.class, () -> {
-         Task createdTask = taskService.create(task);
-      });
+      assertThrows(ResponseStatusException.class, () -> taskService.create(task));
    }
 
    @Test
@@ -153,8 +150,7 @@ public class TaskServiceTest {
               Mockito.any(), Mockito.any(), Mockito.any());
 
       when(taskRepository.save(Mockito.any())).thenReturn(updatedTask);
-      when(tagService.addTagListToProjectAndTask(Mockito.any(), Mockito.any(), Mockito.any()))
-              .thenReturn(updatedTagList);
+      when(tagService.addTagListToProjectAndTask(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(updatedTagList);
 
       List<Tag> actualTagList = taskService.update(originalTask, updatedTask).getTagList();
 

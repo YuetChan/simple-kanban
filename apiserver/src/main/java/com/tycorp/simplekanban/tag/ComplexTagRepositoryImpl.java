@@ -33,8 +33,7 @@ public class ComplexTagRepositoryImpl implements ComplexTagRepository {
       Join<Tag, Project> tags_project_join = rTag.join(Tag_.project, JoinType.LEFT);
       Predicate matchProjectId = cBuilder.equal(tags_project_join.get(Project_.id), projectId);
 
-      cqTag.select(rTag)
-              .where(cBuilder.and(matchNameLike, matchProjectId));
+      cqTag.select(rTag).where(cBuilder.and(matchNameLike, matchProjectId));
 
       int totalElements = em.createQuery(cqTag).getResultList().size();
 
@@ -66,8 +65,7 @@ public class ComplexTagRepositoryImpl implements ComplexTagRepository {
       Join<Tag, Project> tags_project_join = rTag.join(Tag_.project, JoinType.LEFT);
       Predicate matchProjectId = cBuilder.equal(tags_project_join.get(Project_.id), projectId);
 
-      cqTag.select(rTag)
-              .where(cBuilder.and(matchedNameIn, matchProjectId));
+      cqTag.select(rTag).where(cBuilder.and(matchedNameIn, matchProjectId));
 
       int totalElements = em.createQuery(cqTag).getResultList().size();
 

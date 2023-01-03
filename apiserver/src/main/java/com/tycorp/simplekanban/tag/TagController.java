@@ -41,18 +41,16 @@ public class TagController {
 
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(!projectMaybe.isPresent()) {
-         LOGGER.debug("Project not found by id: {}", projectId);
+         LOGGER.debug("Project: [{}] not found", projectId);
          return NOT_FOUND_RES;
       }
 
-      LOGGER.debug("Finding tags by project id: {} and name like: {}", projectId, prefix);
       Page<Tag> page = tagRepository.findByProjectIdAndNameLike(projectId,
               prefix + "%", PageRequest.of(start, 20, Sort.by("createdAt").descending()));
 
       List<Tag> tagList = page.getContent();
       LOGGER.debug("Found total of {} tags", tagList.size());
 
-      LOGGER.debug("Setting project id: {} for each tags", projectId);
       for(var tag : tagList) {
          tag.setProjectId(projectId);
       }
@@ -60,9 +58,8 @@ public class TagController {
       Type tagListType = new TypeToken<ArrayList<Tag>>() {}.getType();
 
       JsonObject dataJson = new JsonObject();
-      dataJson.add(
-              "tags",
-              GsonHelper.getExposeSensitiveGson().toJsonTree(tagList, tagListType));
+      dataJson.add("tags", GsonHelper.getExposeSensitiveGson().toJsonTree(tagList, tagListType));
+
       dataJson.addProperty("page", start);
       dataJson.addProperty("totalPage", page.getTotalPages());
 

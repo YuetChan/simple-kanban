@@ -53,13 +53,12 @@ public class TaskController {
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
-         LOGGER.debug("Task not found by id", id);
+         LOGGER.debug("Task: [{}] not found", id);
          return NOT_FOUND_RES;
       }
 
       JsonObject dataJson = new JsonObject();
-      dataJson.add("task",
-              GsonHelper.getExposeSensitiveGson().toJsonTree(taskMaybe.get(), Task.class));
+      dataJson.add("task", GsonHelper.getExposeSensitiveGson().toJsonTree(taskMaybe.get(), Task.class));
 
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
@@ -80,7 +79,7 @@ public class TaskController {
 
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(!projectMaybe.isPresent()) {
-         LOGGER.debug("Project not found by id", projectId);
+         LOGGER.debug("Project: [{}] not found", projectId);
          return NOT_FOUND_RES;
       }
 
@@ -93,7 +92,6 @@ public class TaskController {
       List<Task> taskList = page.getContent();
       LOGGER.debug("Found total of {} tasks", taskList.size());
 
-      LOGGER.debug("Setting project id for each tasks");
       for(var task : taskList) {
          for(var tag : task.getTagList()) {
             tag.setProjectId(projectId);
@@ -104,8 +102,7 @@ public class TaskController {
 
       JsonObject dataJson = new JsonObject();
 
-      dataJson.add("tasks",
-              GsonHelper.getExposeSensitiveGson().toJsonTree(taskList, taskListType));
+      dataJson.add("tasks", GsonHelper.getExposeSensitiveGson().toJsonTree(taskList, taskListType));
       dataJson.addProperty("totalPage", page.getTotalPages());
 
       JsonObject resJson = new JsonObject();
@@ -156,7 +153,7 @@ public class TaskController {
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
-         LOGGER.debug("Task not found by id: {}", id);
+         LOGGER.debug("Task: [{}] not found", id);
          return NOT_FOUND_RES;
       }
 
@@ -176,7 +173,7 @@ public class TaskController {
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
-         LOGGER.debug("Task not found by id: {}", id);
+         LOGGER.debug("Task: [{}] not found", id);
          return NOT_FOUND_RES;
       }
 

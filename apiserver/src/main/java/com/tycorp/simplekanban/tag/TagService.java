@@ -34,8 +34,12 @@ public class TagService {
 
       LOGGER.debug("Finding tags by project id: {} and name in: {}", project.getId(), getNameList(tagList));
       List<String> tagNameList = getNameList(tagList);
-      Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(), tagNameList,
+
+      Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(),
+              tagNameList,
               PageRequest.of(0, 3000));
+
+      LOGGER.debug("Found total of {} tags", page.getTotalElements());
 
       if(page.getTotalElements() > 3000) {
          LOGGER.debug("Tags count exceeds 3000");

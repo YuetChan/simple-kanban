@@ -47,13 +47,12 @@ public class ProjectController {
 
       Optional<Project> projectMaybe = projectRepository.findById(id);
       if(!projectMaybe.isPresent()) {
-         LOGGER.debug("Project not found");
+         LOGGER.debug("Project: [{}] not found", id);
          return NOT_FOUND_RES;
       }
 
       JsonObject dataJson = new JsonObject();
-      dataJson.add("project",
-              GsonHelper.getExposeSensitiveGson().toJsonTree(projectMaybe.get(), Project.class));
+      dataJson.add("project", GsonHelper.getExposeSensitiveGson().toJsonTree(projectMaybe.get(), Project.class));
 
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
@@ -117,8 +116,7 @@ public class ProjectController {
          Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
 
          JsonObject dataJson = new JsonObject();
-         dataJson.add("projects",
-                 GsonHelper.getExposeSensitiveGson().toJsonTree(projectList, projectListType));
+         dataJson.add("projects", GsonHelper.getExposeSensitiveGson().toJsonTree(projectList, projectListType));
 
          dataJson.addProperty("page", start);
          dataJson.addProperty("totalPage", page.getTotalPages());
@@ -131,7 +129,7 @@ public class ProjectController {
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
          LOGGER.debug("User not found");
-         return new ResponseEntity("userEmail is invalid", HttpStatus.BAD_REQUEST);
+         return new ResponseEntity("User email is invalid", HttpStatus.BAD_REQUEST);
       }
    }
 
@@ -152,11 +150,7 @@ public class ProjectController {
       var projectJsonBuilder = Json.createObjectBuilder().add("id", project.getId());
       var dataJsonBuilder = Json.createObjectBuilder().add("data", projectJsonBuilder);
 
-      javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
-              .add("data", dataJsonBuilder)
-              .build();
-
-      LOGGER.debug("Response json built");
+      javax.json.JsonObject resJavaxJson = Json.createObjectBuilder().add("data", dataJsonBuilder).build();
 
       LOGGER.info("Project creation done");
 
@@ -180,11 +174,9 @@ public class ProjectController {
          Map<String, String> collaboratorEmailSecretMap = new ObjectMapper()
                  .readValue(collaboratorEmailSecretMapJson.toString(), HashMap.class);
 
-         LOGGER.debug("Converted collaboratorEmailSecretMap json to map");
-
          Optional<Project> projectMaybe = projectRepository.findById(id);
          if(!projectMaybe.isPresent()) {
-            LOGGER.debug("Project not found");
+            LOGGER.debug("Project: [{}] not found", id);
             return NOT_FOUND_RES;
          }
 
@@ -221,7 +213,7 @@ public class ProjectController {
 
          return new ResponseEntity(HttpStatus.OK);
       }else {
-         LOGGER.debug("Project not found");
+         LOGGER.debug("Project: [{}] not found", id);
          return NOT_FOUND_RES;
       }
    }

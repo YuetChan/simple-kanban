@@ -40,9 +40,7 @@ public class UserController {
       }
 
       JsonObject dataJson = new JsonObject();
-      dataJson.add(
-              "user",
-              GsonHelper.getExposeSensitiveGson().toJsonTree(userMaybe.get(), User.class));
+      dataJson.add("user", GsonHelper.getExposeSensitiveGson().toJsonTree(userMaybe.get(), User.class));
 
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
@@ -94,14 +92,11 @@ public class UserController {
          user = userRepository.save(user);
 
          userSecretRepository.save(userSecretRepository.save(generateUserSecret(user)));
-         LOGGER.debug("User secret created");
 
          var userJsonBuilder = Json.createObjectBuilder().add("id", user.getId());
          var dataJsonBuilder = Json.createObjectBuilder().add("user", userJsonBuilder);
 
-         javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
-                 .add("data", dataJsonBuilder)
-                 .build();
+         javax.json.JsonObject resJavaxJson = Json.createObjectBuilder().add("data", dataJsonBuilder).build();
 
          LOGGER.info("User creation done");
 
@@ -152,7 +147,6 @@ public class UserController {
          userSecret.setSecret(generateUserSecretStr());
 
          userSecret = userSecretRepository.save(userSecret);
-         LOGGER.debug("User secret generated");
 
          JsonObject dataJson = new JsonObject();
          dataJson.addProperty("secret", userSecret.getSecret());
@@ -181,7 +175,7 @@ public class UserController {
       LOGGER.trace("Enter generateUserSecretStr()");
 
       String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      StringBuilder sb = new StringBuilder();
+      StringBuilder stringBuilder = new StringBuilder();
 
       Random random = new Random();
 
@@ -189,10 +183,10 @@ public class UserController {
          int index = random.nextInt(alphabet.length());
          char randomChar = alphabet.charAt(index);
 
-         sb.append(randomChar);
+         stringBuilder.append(randomChar);
       }
 
-      return sb.toString();
+      return stringBuilder.toString();
    }
 
 }

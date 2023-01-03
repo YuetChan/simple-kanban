@@ -42,7 +42,7 @@ public class TaskService {
 
    @Transactional
    public Task create(Task task) {
-//      LOGGER.trace("Enter create(task)");
+      LOGGER.trace("Enter create(task)");
 
       if(!checkIfTagListCountValid(task) || !checkIfSubTaskListCountValid(task)) {
          LOGGER.debug("Tag list or sub task list count exceed maximum");
@@ -57,17 +57,17 @@ public class TaskService {
 
       attachTaskToProject(task);
 
-      LOGGER.debug("Tag list is temporarily removed from task");
+      LOGGER.debug("Tag list temporarily removed from task");
       List<Tag> tagList = task.getTagList();
       task.setTagList(new ArrayList<>());
 
-      LOGGER.debug("Task node is temporarily removed from task");
+      LOGGER.debug("Task node temporarily removed from task");
       TaskNode node = task.getTaskNode();
       task.setTaskNode(new TaskNode());
 
       // Get task with persistent state
       task = taskRepository.save(task);
-      LOGGER.debug("Task created Successfully");
+      LOGGER.debug("Task created successfully");
 
       task.setTaskNode(node);
 
@@ -86,7 +86,7 @@ public class TaskService {
    // Original task need to be in persistent state
    @Transactional
    public Task update(Task originalTask, Task updatedTask) {
-//      LOGGER.trace("Enter update(originalTask, updatedTask)");
+      LOGGER.trace("Enter update(originalTask, updatedTask)");
 
       if(!checkIfTagListCountValid(originalTask) || !checkIfSubTaskListCountValid(originalTask)) {
          LOGGER.debug("Tag list or sub task list count exceed maximum");
@@ -105,8 +105,6 @@ public class TaskService {
       originalTask.setPriority(updatedTask.getPriority());
 
       originalTask.setSubTaskList(updatedTask.getSubTaskList());
-
-      LOGGER.debug("Task properties updated");
 
       // Detach task node from and attach task node to linkedList
       if(detachTaskNodeFromLinkedList(originalTask)) {
@@ -171,12 +169,10 @@ public class TaskService {
       // Delete task
       task.setActive(false);
       taskRepository.save(task);
-      LOGGER.debug("Task set to inactive");
 
       // Detach task from linkedlist
       // It should always return true
       detachTaskNodeFromLinkedList(task);
-      LOGGER.debug("Task node detached from linkedlist");
 
       LOGGER.debug("Task deleted successfully");
    }
@@ -235,7 +231,8 @@ public class TaskService {
 
       // When zero node with given project id and status
       if(taskNodeRepository.countByProjectIdAndStatus(projectId, status) == 0) {
-         LOGGER.debug("Task node count is to 0");
+         LOGGER.debug("Task node count is 0");
+
          node.setHeadUUID(headUUID);
          node.setTailUUID(tailUUID);
 
@@ -343,12 +340,11 @@ public class TaskService {
          LOGGER.debug("Head task is present while tail task is not present");
 
          TaskNode headNode = headTaskMaybe.get().getTaskNode();
-
          boolean areHeadAndTailNodesConsecutive = headNode.getTailUUID().equals(node.getTailUUID());
 
          // Validate node against head node and util uuid
-         if(checkIfTaskNodeValid(node, headNode) && checkIfTailUUIDAnUtilUUID(node)
-                 && areHeadAndTailNodesConsecutive) {
+         if(checkIfTaskNodeValid(node, headNode) && checkIfTailUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
+            LOGGER.debug("Validate head node and tail UUID  is an util UUID");
 
             // Update head node
             headNode.setTailUUID(task.getId());
@@ -369,12 +365,12 @@ public class TaskService {
          LOGGER.debug("Head task is not present while tail task is present");
 
          TaskNode tailNode = tailTaskMaybe.get().getTaskNode();
-
          boolean areHeadAndTailNodesConsecutive = tailNode.getHeadUUID().equals(node.getHeadUUID());
 
          // Validate node against tail node and util uuid
-         if(checkIfTaskNodeValid(node, tailNode) && checkIfHeadUUIDAnUtilUUID(node)
-                 && areHeadAndTailNodesConsecutive) {
+         if(checkIfTaskNodeValid(node, tailNode) && checkIfHeadUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
+            LOGGER.debug("Validate tail node and head UUID is an util UUID");
+
             // Update tail node
             tailNode.setHeadUUID(task.getId());
             taskNodeRepository.save(tailNode);
@@ -406,6 +402,8 @@ public class TaskService {
 
          // Validate node against head node and check the consecutiveness
          if(checkIfTaskNodeValid(node, headNode) && areHeadAndTailNodesConsecutive) {
+            LOGGER.debug("Validate head node");
+
             // Update head and tail task nodes
             headNode.setTailUUID(task.getId());
             tailNode.setHeadUUID(task.getId());
@@ -530,12 +528,10 @@ public class TaskService {
          LOGGER.debug("Head node is present while tail node is not present");
 
          TaskNode headNode = headTaskMaybe.get().getTaskNode();
-
          boolean areHeadAndTailNodesConsecutive = headNode.getTailUUID().equals(node.getTailUUID());
 
          // Validate new node against head node and util uuid
-         if(checkIfNewTaskNodeValid(node, headNode) && checkIfTailUUIDAnUtilUUID(node)
-                 && areHeadAndTailNodesConsecutive) {
+         if(checkIfNewTaskNodeValid(node, headNode) && checkIfTailUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
             // Update new node
             node.setProject(task.getProject());
             node.setTask(task);
@@ -556,12 +552,10 @@ public class TaskService {
          LOGGER.debug("Head node is not present while tail node is present");
 
          TaskNode tailNode = tailTaskMaybe.get().getTaskNode();
-
          boolean areHeadAndTailNodesConsecutive = tailNode.getHeadUUID().equals(node.getHeadUUID());
 
          // Validate new node against tail node and util uuid
-         if(checkIfNewTaskNodeValid(node, tailNode) && checkIfHeadUUIDAnUtilUUID(node)
-                 && areHeadAndTailNodesConsecutive) {
+         if(checkIfNewTaskNodeValid(node, tailNode) && checkIfHeadUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
             // Update node
             node.setProject(task.getProject());
             node.setTask(task);
@@ -589,8 +583,7 @@ public class TaskService {
          TaskNode tailNode = tailTask.getTaskNode();
 
          // Get the consecutiveness of head and tail nodes
-         boolean areHeadAndTailNodesConsecutive = headTask.getId().equals(tailNode.getHeadUUID())
-                 && headNode.getTailUUID().equals(tailTask.getId());
+         boolean areHeadAndTailNodesConsecutive = headTask.getId().equals(tailNode.getHeadUUID()) && headNode.getTailUUID().equals(tailTask.getId());
 
          // Validate new node against head node and check the consecutiveness
          if(checkIfNewTaskNodeValid(node, headNode) && areHeadAndTailNodesConsecutive) {
