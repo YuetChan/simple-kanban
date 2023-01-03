@@ -30,6 +30,7 @@ public class UserController {
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> getUserByEmail(@RequestParam(name = "email") String email) {
       LOGGER.trace("Enter getUserByParams(email)");
+
       LOGGER.info("Getting user");
       
       Optional<User> userMaybe = userRepository.findByEmail(email);
@@ -46,8 +47,6 @@ public class UserController {
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
-      LOGGER.debug("Response json built");
-
       LOGGER.info("User obtained");
 
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
@@ -56,6 +55,7 @@ public class UserController {
    @GetMapping(value = "/{id}/role", produces = "application/json")
    public ResponseEntity<String> getUserRoleById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserRoleById(id)");
+
       LOGGER.info("Getting user role");
 
       Optional<User> userMaybe = userRepository.findById(id);
@@ -70,8 +70,6 @@ public class UserController {
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
-      LOGGER.debug("Response json built", resJson);
-
       LOGGER.info("User role obtained");
 
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
@@ -80,6 +78,7 @@ public class UserController {
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createUser(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createUser(reqJsonStr)");
+
       LOGGER.info("Creating user");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
@@ -92,23 +91,17 @@ public class UserController {
          LOGGER.debug("User not found");
 
          User user = new User(email, role);
-         LOGGER.debug("User properties set");
-
          user = userRepository.save(user);
 
          userSecretRepository.save(userSecretRepository.save(generateUserSecret(user)));
          LOGGER.debug("User secret created");
 
-         javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
-                 .add("data",
-                         Json.createObjectBuilder()
-                                 .add("user",
-                                         Json.createObjectBuilder()
-                                                 .add("id",
-                                                         user.getId())))
-                 .build();
+         var userJsonBuilder = Json.createObjectBuilder().add("id", user.getId());
+         var dataJsonBuilder = Json.createObjectBuilder().add("user", userJsonBuilder);
 
-         LOGGER.debug("Response json built", resJavaxJson.toString());
+         javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
+                 .add("data", dataJsonBuilder)
+                 .build();
 
          LOGGER.info("User creation done");
 
@@ -121,6 +114,7 @@ public class UserController {
    @GetMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> getUserSecretById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserSecretById(reqJsonStr)");
+
       LOGGER.info("Getting user secret");
       
       Optional<User> userMaybe = userRepository.findById(id);
@@ -132,8 +126,6 @@ public class UserController {
 
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
-
-         LOGGER.debug("Response json built");
 
          LOGGER.info("User secret obtained");
 
@@ -147,6 +139,7 @@ public class UserController {
    @PutMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> generateUserSecretById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter generateUserSecretById(reqJsonStr)");
+
       LOGGER.info("Generating secret");
       
       Optional<User> userMaybe = userRepository.findById(id);
@@ -159,7 +152,6 @@ public class UserController {
          userSecret.setSecret(generateUserSecretStr());
 
          userSecret = userSecretRepository.save(userSecret);
-
          LOGGER.debug("User secret generated");
 
          JsonObject dataJson = new JsonObject();
@@ -167,8 +159,6 @@ public class UserController {
 
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
-
-         LOGGER.debug("Response json built");
 
          LOGGER.info("Secret generation done");
 

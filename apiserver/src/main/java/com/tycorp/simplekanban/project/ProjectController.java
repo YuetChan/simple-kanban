@@ -42,6 +42,7 @@ public class ProjectController {
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getProjectById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getProjectById(id)");
+
       LOGGER.info("Getting project");
 
       Optional<Project> projectMaybe = projectRepository.findById(id);
@@ -57,8 +58,6 @@ public class ProjectController {
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
-      LOGGER.debug("Response json built: {}", resJson.toString());
-
       LOGGER.info("Project obtained");
 
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
@@ -68,11 +67,12 @@ public class ProjectController {
    public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                            @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchProjectsByUserEmail(userEmail, start)");
+
       LOGGER.info("Searching for project");
 
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {
-         LOGGER.debug("User exists");
+         LOGGER.debug("User is present");
 
          Page<Project> page = projectRepository.findByUserEmail(userEmail,
                  PageRequest.of(start, 20, Sort.by("createdAt").descending()));
@@ -90,8 +90,6 @@ public class ProjectController {
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
 
-         LOGGER.debug("Response json built: {}", resJson);
-
          LOGGER.info("Project search done");
 
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
@@ -105,11 +103,12 @@ public class ProjectController {
    public ResponseEntity<String> searchShareProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                                 @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchShareProjectsByUserEmail(userEmail, start)");
+
       LOGGER.info("Searching for share projects");
 
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {
-         LOGGER.debug("User exists");
+         LOGGER.debug("User is present");
 
          Page<Project> page = projectRepository.findProjectListByCollaborator(userMaybe.get(),
                  PageRequest.of(start, 20, Sort.by("createdAt").descending()));
@@ -127,8 +126,6 @@ public class ProjectController {
          JsonObject resJson = new JsonObject();
          resJson.add("data", dataJson);
 
-         LOGGER.debug("Response json built: {}", resJson);
-
          LOGGER.info("Share project search done");
 
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
@@ -141,6 +138,7 @@ public class ProjectController {
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createProject(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createProject(reqJsonStr)");
+
       LOGGER.info("Creating project");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
@@ -149,14 +147,13 @@ public class ProjectController {
       Project project = GsonHelper.getExposeSensitiveGson().fromJson(projectJson, Project.class);
 
       project = projectService.create(project);
-      LOGGER.debug("Project created");
+      LOGGER.debug("Project created successfully");
+
+      var projectJsonBuilder = Json.createObjectBuilder().add("id", project.getId());
+      var dataJsonBuilder = Json.createObjectBuilder().add("data", projectJsonBuilder);
 
       javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
-              .add("data",
-                      Json.createObjectBuilder()
-                              .add("project",
-                                      Json.createObjectBuilder()
-                                              .add("id", project.getId())))
+              .add("data", dataJsonBuilder)
               .build();
 
       LOGGER.debug("Response json built");
@@ -170,6 +167,7 @@ public class ProjectController {
    public ResponseEntity<String> updateProjectById(@PathVariable(name = "id") String id,
                                                    @RequestBody String reqJsonStr) throws JsonProcessingException {
       LOGGER.trace("Enter updateProjectById(id, reqJsonStr)");
+
       LOGGER.info("Updating project");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
@@ -179,9 +177,10 @@ public class ProjectController {
 
       JsonObject collaboratorEmailSecretMapJson = dataJson.get("collaboratorEmailSecretMap").getAsJsonObject();
       try {
-         LOGGER.debug("Convert collaboratorEmailSecretMap json to map");
          Map<String, String> collaboratorEmailSecretMap = new ObjectMapper()
                  .readValue(collaboratorEmailSecretMapJson.toString(), HashMap.class);
+
+         LOGGER.debug("Converted collaboratorEmailSecretMap json to map");
 
          Optional<Project> projectMaybe = projectRepository.findById(id);
          if(!projectMaybe.isPresent()) {
@@ -190,9 +189,9 @@ public class ProjectController {
          }
 
          Project project = projectMaybe.get();
-         projectService.update(project, updatedProject, collaboratorEmailSecretMap);
 
-         LOGGER.debug("Project updated");
+         projectService.update(project, updatedProject, collaboratorEmailSecretMap);
+         LOGGER.debug("Project updated successfully");
 
          LOGGER.info("Project update done");
 
@@ -206,6 +205,7 @@ public class ProjectController {
    @DeleteMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> deleteProjectById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter deleteProjectById(id)");
+
       LOGGER.info("Deleting project");
 
       Optional<Project> projectMaybe = projectRepository.findById(id);
@@ -215,7 +215,7 @@ public class ProjectController {
          Project project = projectMaybe.get();
 
          projectService.delete(project);
-         LOGGER.debug("Project deleted");
+         LOGGER.debug("Project deleted successfully");
 
          LOGGER.info("Project deletion done");
 

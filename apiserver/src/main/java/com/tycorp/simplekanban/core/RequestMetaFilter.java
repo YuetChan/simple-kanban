@@ -1,6 +1,5 @@
 package com.tycorp.simplekanban.core;
 
-import com.tycorp.simplekanban.project.ProjectController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -15,9 +14,10 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Component
-public class MDCRequestmetaFilter extends OncePerRequestFilter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MDCRequestmetaFilter.class);
+public class RequestMetaFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestMetaFilter.class);
 
+    // Insert request id to log message
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {

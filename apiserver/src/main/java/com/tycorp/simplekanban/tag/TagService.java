@@ -32,13 +32,13 @@ public class TagService {
    public List<Tag> addTagListToProjectAndTask(List<Tag> tagList, Project project, Task task) {
       LOGGER.trace("addTagListToProjectAndTask(tagList, project, task)");
 
-      LOGGER.debug("Find tag by project id: {} and name in: {}", project.getId(), getNameList(tagList));
+      LOGGER.debug("Finding tags by project id: {} and name in: {}", project.getId(), getNameList(tagList));
       List<String> tagNameList = getNameList(tagList);
       Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(), tagNameList,
               PageRequest.of(0, 3000));
 
       if(page.getTotalElements() > 3000) {
-         LOGGER.debug("Tags count exceed 3000");
+         LOGGER.debug("Tags count exceeds 3000");
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tag count exceed 3000");
       }
 
@@ -51,10 +51,12 @@ public class TagService {
               .stream()
               .filter(tag -> !currentTagNameList.contains(tag.getName()))
               .collect(Collectors.toList());
+
       attachTagListToProject(tagToAddList, project);
       attachTagListToTask(tagToAddList, task);
 
       List<Tag> updatedTagList = new ArrayList<>();
+
       updatedTagList.addAll(tagToAddList);
       updatedTagList.addAll(currentTagList);
 

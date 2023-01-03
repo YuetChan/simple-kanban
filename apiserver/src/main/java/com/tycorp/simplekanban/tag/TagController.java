@@ -36,6 +36,7 @@ public class TagController {
                                                                 @RequestParam(name = "prefix") String prefix,
                                                                 @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchTagsByProjectIdAndPrefix(projectId, prefix, start)");
+
       LOGGER.info("Searching for tags");
 
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
@@ -67,8 +68,6 @@ public class TagController {
 
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
-
-      LOGGER.debug("Response json built");
 
       LOGGER.info("Tags search done");
 

@@ -47,6 +47,8 @@ public class TaskController {
 
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
+      LOGGER.trace("Enter getTaskById(id)");
+
       LOGGER.info("Getting task");
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
@@ -62,8 +64,6 @@ public class TaskController {
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
 
-      LOGGER.debug("Response json built");
-
       LOGGER.info("Task obtained");
 
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
@@ -74,6 +74,8 @@ public class TaskController {
                                              @RequestParam(name = "pageSize") int pageSize,
                                              @RequestParam(name = "projectId") String projectId,
                                              @RequestParam(name = "tags") Optional<List<String>> tagListMaybe) {
+      LOGGER.trace("Enter searchTasks(start, pageSize, projectId, tagListMaybe)");
+
       LOGGER.info("Searching for tasks");
 
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
@@ -82,7 +84,7 @@ public class TaskController {
          return NOT_FOUND_RES;
       }
 
-      LOGGER.debug("Find task by project id: {}, archived: {}, start: {}, pageSize: {}", projectId, false, start, pageSize);
+      LOGGER.debug("Finding task by project id: {}, archived: {}, start: {}, pageSize: {}", projectId, false, start, pageSize);
       Page<Task> page = taskRepository.findByParams(projectId,
               false,
               tagListMaybe.orElse(new ArrayList<>()),
@@ -101,14 +103,13 @@ public class TaskController {
       Type taskListType = new TypeToken<ArrayList<Task>>() {}.getType();
 
       JsonObject dataJson = new JsonObject();
+
       dataJson.add("tasks",
               GsonHelper.getExposeSensitiveGson().toJsonTree(taskList, taskListType));
       dataJson.addProperty("totalPage", page.getTotalPages());
 
       JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
-
-      LOGGER.debug("Response json built successfully");
 
       LOGGER.info("Tasks search done");
 
@@ -117,6 +118,8 @@ public class TaskController {
 
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createTask(@RequestBody String reqJsonStr) {
+      LOGGER.trace("Enter createTask(reqJsonStr)");
+
       LOGGER.info("Creating task");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
@@ -125,18 +128,14 @@ public class TaskController {
       Task task = GsonHelper.getExposeSensitiveGson().fromJson(taskJson, Task.class);
 
       task = taskService.create(task);
-      LOGGER.debug("Task successfully created");
+      LOGGER.debug("Task created successfully");
+
+      var taskJsonBuilder = Json.createObjectBuilder().add("id", task.getId());
+      var dataJsonBuilder = Json.createObjectBuilder().add("task", taskJsonBuilder);
 
       javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
-              .add("data",
-                      Json.createObjectBuilder()
-                              .add("task",
-                                      Json.createObjectBuilder()
-                                              .add("id", task.getId()))
-              )
+              .add("data", dataJsonBuilder)
               .build();
-
-      LOGGER.debug("Response json built");
 
       LOGGER.info("Task creation done");
 
@@ -146,13 +145,14 @@ public class TaskController {
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateTaskById(@PathVariable(name = "id") String id,
                                                 @RequestBody String reqJsonStr) {
+      LOGGER.trace("Enter updateTaskById(id, reqJsonStr)");
+
       LOGGER.info("Updating task");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
 
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
-      Task updatedTask = GsonHelper.getExposeSensitiveGson()
-              .fromJson(taskJson, Task.class);
+      Task updatedTask = GsonHelper.getExposeSensitiveGson().fromJson(taskJson, Task.class);
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
@@ -170,6 +170,8 @@ public class TaskController {
 
    @DeleteMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> deleteTaskById(@PathVariable(name = "id") String id) {
+      LOGGER.trace("Enter deleteTaskById(id)");
+
       LOGGER.info("Deleting task");
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
