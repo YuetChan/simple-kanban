@@ -74,7 +74,7 @@ public class TaskController {
                                              @RequestParam(name = "pageSize") int pageSize,
                                              @RequestParam(name = "projectId") String projectId,
                                              @RequestParam(name = "tags") Optional<List<String>> tagListMaybe) {
-      LOGGER.info("Searching tasks");
+      LOGGER.info("Searching for tasks");
 
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(!projectMaybe.isPresent()) {

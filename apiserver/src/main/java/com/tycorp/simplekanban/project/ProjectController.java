@@ -68,7 +68,7 @@ public class ProjectController {
    public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                            @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchProjectsByUserEmail(userEmail, start)");
-      LOGGER.info("Searching project");
+      LOGGER.info("Searching for project");
 
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {
@@ -105,7 +105,7 @@ public class ProjectController {
    public ResponseEntity<String> searchShareProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                                 @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchShareProjectsByUserEmail(userEmail, start)");
-      LOGGER.info("Searching share project");
+      LOGGER.info("Searching for share projects");
 
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
       if(userMaybe.isPresent()) {

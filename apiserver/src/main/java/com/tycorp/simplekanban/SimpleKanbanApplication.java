@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CupKanbanApplication {
+public class SimpleKanbanApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(CupKanbanApplication.class, args);
+		SpringApplication.run(SimpleKanbanApplication.class, args);
 	}
 }

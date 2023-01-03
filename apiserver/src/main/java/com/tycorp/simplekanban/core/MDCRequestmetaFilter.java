@@ -1,5 +1,8 @@
 package com.tycorp.simplekanban.core;
 
+import com.tycorp.simplekanban.project.ProjectController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -12,16 +15,20 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Component
-public class MDCFilter extends OncePerRequestFilter {
+public class MDCRequestmetaFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MDCRequestmetaFilter.class);
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        LOGGER.trace("doFilterInternal(request, response, filterChain)");
 
-        String originId = request.getHeader("correlationId");
-        String requestId = originId != null ? originId : UUID.randomUUID().toString();
+        String correlationId = request.getHeader("correlationId");
+        String requestId = correlationId != null ? correlationId : UUID.randomUUID().toString();
 
         MDC.put("requestId", requestId);
 
+        LOGGER.info("Request id generation done");
         try {
             filterChain.doFilter(request, response);
         } finally {

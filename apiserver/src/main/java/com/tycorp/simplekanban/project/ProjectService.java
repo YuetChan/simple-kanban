@@ -192,8 +192,8 @@ public class ProjectService {
       }
 
       originalProject.getCollaboratorList().addAll(collaboratorToAddList);
-
       projectRepository.save(originalProject);
+
       LOGGER.debug("Share projects added to each target collaborators");
    }
 
