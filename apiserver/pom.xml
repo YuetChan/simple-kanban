@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>tycorp</groupId>
-	<artifactId>cup-kanban</artifactId>
+	<artifactId>simple-kanban</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>cup-kanban</name>
-	<description>Cup Kanban Project</description>
+	<name>simple-kanban</name>
+	<description>Simple Kanban Project</description>
 
 	<properties>
 		<java.version>11</java.version>
