@@ -20,10 +20,10 @@ import java.util.Random;
 @RequestMapping(value = "/users")
 public class UserController {
    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-   private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
    private UserRepository userRepository;
+
    @Autowired
    private UserSecretRepository userSecretRepository;
 
@@ -31,18 +31,18 @@ public class UserController {
    public ResponseEntity<String> getUserByEmail(@RequestParam(name = "email") String email) {
       LOGGER.trace("Enter getUserByParams(email)");
 
-      LOGGER.info("Getting user");
+      LOGGER.info("Obtaining user");
       
       Optional<User> userMaybe = userRepository.findByEmail(email);
       if(!userMaybe.isPresent()) {
          LOGGER.debug("User not found");
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       JsonObject dataJson = new JsonObject();
-      dataJson.add("user", GsonHelper.getExposeSensitiveGson().toJsonTree(userMaybe.get(), User.class));
-
       JsonObject resJson = new JsonObject();
+
+      dataJson.add("user", GsonHelper.getExposeSensitiveGson().toJsonTree(userMaybe.get(), User.class));
       resJson.add("data", dataJson);
 
       LOGGER.info("User obtained");
@@ -54,18 +54,18 @@ public class UserController {
    public ResponseEntity<String> getUserRoleById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserRoleById(id)");
 
-      LOGGER.info("Getting user role");
+      LOGGER.info("Obtaining user role");
 
       Optional<User> userMaybe = userRepository.findById(id);
       if(!userMaybe.isPresent()) {
          LOGGER.debug("User not found");
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       JsonObject dataJson = new JsonObject();
-      dataJson.addProperty("role", userMaybe.get().getRole());
-
       JsonObject resJson = new JsonObject();
+
+      dataJson.addProperty("role", userMaybe.get().getRole());
       resJson.add("data", dataJson);
 
       LOGGER.info("User role obtained");
@@ -110,16 +110,16 @@ public class UserController {
    public ResponseEntity<String> getUserSecretById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserSecretById(reqJsonStr)");
 
-      LOGGER.info("Getting user secret");
+      LOGGER.info("Obtaining user secret");
       
       Optional<User> userMaybe = userRepository.findById(id);
       if(userMaybe.isPresent()) {
          LOGGER.debug("User is present");
 
          JsonObject dataJson = new JsonObject();
-         dataJson.addProperty("secret", userMaybe.get().getUserSecret().getSecret());
-
          JsonObject resJson = new JsonObject();
+
+         dataJson.addProperty("secret", userMaybe.get().getUserSecret().getSecret());
          resJson.add("data", dataJson);
 
          LOGGER.info("User secret obtained");
@@ -127,7 +127,7 @@ public class UserController {
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
          LOGGER.debug("User not found");
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
    }
 
@@ -149,9 +149,9 @@ public class UserController {
          userSecret = userSecretRepository.save(userSecret);
 
          JsonObject dataJson = new JsonObject();
-         dataJson.addProperty("secret", userSecret.getSecret());
-
          JsonObject resJson = new JsonObject();
+
+         dataJson.addProperty("secret", userSecret.getSecret());
          resJson.add("data", dataJson);
 
          LOGGER.info("Secret generation done");
@@ -159,7 +159,7 @@ public class UserController {
          return new ResponseEntity(resJson.toString(), HttpStatus.CREATED);
       }else {
          LOGGER.debug("User not found");
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
    }
 
@@ -168,6 +168,7 @@ public class UserController {
 
       UserSecret userSecret = new UserSecret(generateUserSecretStr());
       userSecret.setUser(user);
+
       return userSecret;
    }
 

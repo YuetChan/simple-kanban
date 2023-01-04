@@ -26,7 +26,6 @@ import java.util.*;
 @RequestMapping(value = "/projects")
 public class ProjectController {
    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
-   private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
    private ProjectService projectService;
@@ -35,20 +34,18 @@ public class ProjectController {
    private ProjectRepository projectRepository;
 
    @Autowired
-   private TaskRepository taskRepository;
-   @Autowired
    private UserRepository userRepository;
 
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getProjectById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getProjectById(id)");
 
-      LOGGER.info("Getting project");
+      LOGGER.info("Obtaining project");
 
       Optional<Project> projectMaybe = projectRepository.findById(id);
       if(!projectMaybe.isPresent()) {
          LOGGER.debug("Project: [{}] not found", id);
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       JsonObject dataJson = new JsonObject();
@@ -94,7 +91,7 @@ public class ProjectController {
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
          LOGGER.debug("User not found");
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
    }
 
@@ -145,7 +142,6 @@ public class ProjectController {
       Project project = GsonHelper.getExposeSensitiveGson().fromJson(projectJson, Project.class);
 
       project = projectService.create(project);
-      LOGGER.debug("Project created successfully");
 
       var projectJsonBuilder = Json.createObjectBuilder().add("id", project.getId());
       var dataJsonBuilder = Json.createObjectBuilder().add("data", projectJsonBuilder);
@@ -176,20 +172,18 @@ public class ProjectController {
 
          Optional<Project> projectMaybe = projectRepository.findById(id);
          if(!projectMaybe.isPresent()) {
-            LOGGER.debug("Project: [{}] not found", id);
-            return NOT_FOUND_RES;
+            LOGGER.debug("Project: [{}] is not found", id);
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
          }
 
          Project project = projectMaybe.get();
-
          projectService.update(project, updatedProject, collaboratorEmailSecretMap);
-         LOGGER.debug("Project updated successfully");
 
          LOGGER.info("Project update done");
 
          return new ResponseEntity(HttpStatus.NO_CONTENT);
       }catch(JsonProcessingException e) {
-         LOGGER.debug("CollaboratorEmailSecretMap json to map conversion failed", e);
+         LOGGER.debug("Failed to convert collaboratorEmailSecretMap from json to map", e);
          return new ResponseEntity(HttpStatus.BAD_REQUEST);
       }
    }
@@ -205,16 +199,14 @@ public class ProjectController {
          LOGGER.debug("Project is present");
 
          Project project = projectMaybe.get();
-
          projectService.delete(project);
-         LOGGER.debug("Project deleted successfully");
 
          LOGGER.info("Project deletion done");
 
          return new ResponseEntity(HttpStatus.OK);
       }else {
-         LOGGER.debug("Project: [{}] not found", id);
-         return NOT_FOUND_RES;
+         LOGGER.debug("Project: [{}] is not found", id);
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
    }
 

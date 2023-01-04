@@ -24,10 +24,10 @@ import java.util.Optional;
 @RequestMapping(value = "/tags")
 public class TagController {
    private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
-   private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
    private TagRepository tagRepository;
+
    @Autowired
    private ProjectRepository projectRepository;
 
@@ -42,13 +42,13 @@ public class TagController {
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(!projectMaybe.isPresent()) {
          LOGGER.debug("Project: [{}] not found", projectId);
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       Page<Tag> page = tagRepository.findByProjectIdAndNameLike(projectId,
               prefix + "%", PageRequest.of(start, 20, Sort.by("createdAt").descending()));
-
       List<Tag> tagList = page.getContent();
+
       LOGGER.debug("Found total of {} tags", tagList.size());
 
       for(var tag : tagList) {

@@ -27,40 +27,32 @@ import java.util.Optional;
 @RequestMapping(value = "/tasks")
 public class TaskController {
    private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
-   private ResponseEntity NOT_FOUND_RES = new ResponseEntity(HttpStatus.NOT_FOUND);
 
    @Autowired
    private TaskService taskService;
-
-   @Autowired
-   private TagService tagService;
 
    @Autowired
    private TaskRepository taskRepository;
 
    @Autowired
    private ProjectRepository projectRepository;
-   @Autowired
-   private TagRepository tagRepository;
-   @Autowired
-   private UserRepository userRepository;
 
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getTaskById(id)");
 
-      LOGGER.info("Getting task");
+      LOGGER.info("Obtaining task");
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
          LOGGER.debug("Task: [{}] not found", id);
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       JsonObject dataJson = new JsonObject();
-      dataJson.add("task", GsonHelper.getExposeSensitiveGson().toJsonTree(taskMaybe.get(), Task.class));
-
       JsonObject resJson = new JsonObject();
+
+      dataJson.add("task", GsonHelper.getExposeSensitiveGson().toJsonTree(taskMaybe.get(), Task.class));
       resJson.add("data", dataJson);
 
       LOGGER.info("Task obtained");
@@ -80,16 +72,13 @@ public class TaskController {
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
       if(!projectMaybe.isPresent()) {
          LOGGER.debug("Project: [{}] not found", projectId);
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
-      LOGGER.debug("Finding task by project id: {}, archived: {}, start: {}, pageSize: {}", projectId, false, start, pageSize);
-      Page<Task> page = taskRepository.findByParams(projectId,
-              false,
-              tagListMaybe.orElse(new ArrayList<>()),
+      Page<Task> page = taskRepository.findByParams(projectId, false, tagListMaybe.orElse(new ArrayList<>()),
               PageRequest.of(start, pageSize));
-
       List<Task> taskList = page.getContent();
+
       LOGGER.debug("Found total of {} tasks", taskList.size());
 
       for(var task : taskList) {
@@ -120,19 +109,16 @@ public class TaskController {
       LOGGER.info("Creating task");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
-
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
+
       Task task = GsonHelper.getExposeSensitiveGson().fromJson(taskJson, Task.class);
 
       task = taskService.create(task);
-      LOGGER.debug("Task created successfully");
 
       var taskJsonBuilder = Json.createObjectBuilder().add("id", task.getId());
       var dataJsonBuilder = Json.createObjectBuilder().add("task", taskJsonBuilder);
 
-      javax.json.JsonObject resJavaxJson = Json.createObjectBuilder()
-              .add("data", dataJsonBuilder)
-              .build();
+      javax.json.JsonObject resJavaxJson = Json.createObjectBuilder().add("data", dataJsonBuilder).build();
 
       LOGGER.info("Task creation done");
 
@@ -147,18 +133,17 @@ public class TaskController {
       LOGGER.info("Updating task");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
-
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
+
       Task updatedTask = GsonHelper.getExposeSensitiveGson().fromJson(taskJson, Task.class);
 
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
          LOGGER.debug("Task: [{}] not found", id);
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       taskService.update(taskMaybe.get(), updatedTask);
-      LOGGER.debug("Task updated successfully");
 
       LOGGER.info("Task update done");
 
@@ -174,11 +159,10 @@ public class TaskController {
       Optional<Task> taskMaybe = taskRepository.findById(id);
       if(!taskMaybe.isPresent()) {
          LOGGER.debug("Task: [{}] not found", id);
-         return NOT_FOUND_RES;
+         return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       taskService.delete(taskMaybe.get());
-      LOGGER.debug("Task deleted successfully");
 
       LOGGER.info("Task deletion done");
 

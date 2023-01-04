@@ -26,24 +26,22 @@ public class TagService {
 
    @Autowired
    private TaskRepository taskRepository;
+
    @Autowired
    private UserRepository userRepository;
 
    public List<Tag> addTagListToProjectAndTask(List<Tag> tagList, Project project, Task task) {
       LOGGER.trace("addTagListToProjectAndTask(tagList, project, task)");
 
-      LOGGER.debug("Finding tags by project id: {} and name in: {}", project.getId(), getNameList(tagList));
       List<String> tagNameList = getNameList(tagList);
-
-      Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(),
-              tagNameList,
+      Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(), tagNameList,
               PageRequest.of(0, 3000));
 
       LOGGER.debug("Found total of {} tags", page.getTotalElements());
 
       if(page.getTotalElements() > 3000) {
          LOGGER.debug("Tags count exceeds 3000");
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tag count exceed 3000");
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tag count exceeds 3000");
       }
 
       List<Tag> currentTagList = page.getContent();
@@ -51,8 +49,7 @@ public class TagService {
 
       List<String> currentTagNameList = getNameList(currentTagList);
 
-      List<Tag> tagToAddList = tagList
-              .stream()
+      List<Tag> tagToAddList = tagList.stream()
               .filter(tag -> !currentTagNameList.contains(tag.getName()))
               .collect(Collectors.toList());
 

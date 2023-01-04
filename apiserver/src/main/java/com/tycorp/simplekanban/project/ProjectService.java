@@ -22,6 +22,7 @@ public class ProjectService {
 
    @Autowired
    private ProjectUUIDRepository projectUUIDRepository;
+
    @Autowired
    private UserRepository userRepository;
 
@@ -29,8 +30,8 @@ public class ProjectService {
       LOGGER.trace("Enter create(project)");
 
       if(!checkIfUserForEmailExists(project.getUserEmail())) {
-         LOGGER.debug("User not found by email: {}", project.getUserEmail());
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User invalid");
+         LOGGER.debug("User is not found by email: {}", project.getUserEmail());
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not found");
       }
 
       if(!checkIfCollaboratorListCountValid(project)) {
@@ -40,26 +41,20 @@ public class ProjectService {
 
       if(!checkIfCollaboratorListValid(project)) {
          LOGGER.debug("Some of the collaborators are invalid");
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Collaboratorlist invalid");
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some of the collaborators are invalid");
       }
 
       attachUserToProject(project);
       attachCollaboratorListToProject(project);
 
-      LOGGER.debug("User and collaborator list attached");
-
       project = projectRepository.save(project);
 
       attachNewProjectUUIDToProject(project);
-      LOGGER.debug("User, collaborator list and UUID attached");
-
-      LOGGER.debug("Project created successfully");
 
       return project;
    }
 
-   public Project update(Project originalProject, Project updatedProject,
-                         Map<String, String> collaboratorEmailSecretMap) {
+   public Project update(Project originalProject, Project updatedProject, Map<String, String> collaboratorEmailSecretMap) {
       LOGGER.trace("Enter update(originalProject, updatedProject, collaboratorSecretMap)");
 
       if(!checkIfCollaboratorListCountValid(updatedProject)) {
@@ -69,7 +64,7 @@ public class ProjectService {
 
       if(!checkIfCollaboratorListValid(updatedProject)) {
          LOGGER.debug("Some of the collaborators are invalid");
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CollaboratorList invalid");
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Some of the collaborators are invalid");
       }
 
       // Update project properties
@@ -77,9 +72,6 @@ public class ProjectService {
       originalProject.setDescription(updatedProject.getDescription());
 
       updateCollaboratorListForProject(originalProject, updatedProject, collaboratorEmailSecretMap);
-      LOGGER.debug("Collaborator list updated ");
-
-      LOGGER.debug("Project updated successfully");
 
       return originalProject;
    }
@@ -87,8 +79,6 @@ public class ProjectService {
    public void delete(Project project) {
       project.setActive(false);
       projectRepository.save(project);
-
-      LOGGER.debug("Project deleted successfully");
    }
 
    public boolean checkIfUserForEmailExists(String email) {
@@ -132,10 +122,7 @@ public class ProjectService {
 
    private List<String> getCollaboratorEmailList(List<User> collaboratorList) {
       LOGGER.trace("Enter getCollaboratorEmailList(collaboratorList)");
-      return collaboratorList
-              .stream()
-              .map(collaborator -> collaborator.getEmail())
-              .collect(Collectors.toList());
+      return collaboratorList.stream().map(collaborator -> collaborator.getEmail()).collect(Collectors.toList());
    }
 
    public void updateCollaboratorListForProject(Project originalProject, Project updatedProject,
@@ -150,12 +137,11 @@ public class ProjectService {
       // Remove share project from each collaborators
       List<User> originalCollaboratorList = originalProject.getCollaboratorList();
 
-      List<User> collaboratorToRemoveList = originalCollaboratorList
-              .stream()
+      List<User> collaboratorToRemoveList = originalCollaboratorList.stream()
               .filter(collaborator -> !updatedCollaboratorEmailList.contains(collaborator.getEmail()))
               .collect(Collectors.toList());
-      List<String> collaboratorToRemoveEmailList = collaboratorToRemoveList
-              .stream()
+
+      List<String> collaboratorToRemoveEmailList = collaboratorToRemoveList.stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
@@ -168,13 +154,11 @@ public class ProjectService {
       LOGGER.debug("Share projects removed from each target collaborators");
 
       // Add share project to each collaborators
-      List<String> originalCollaboratorEmailList = originalCollaboratorList
-              .stream()
+      List<String> originalCollaboratorEmailList = originalCollaboratorList.stream()
               .map(collaborator -> collaborator.getEmail())
               .collect(Collectors.toList());
 
-      List<String> collaboratorToAddEmailList = updatedCollaboratorList
-              .stream()
+      List<String> collaboratorToAddEmailList = updatedCollaboratorList.stream()
               .map(collaborator -> collaborator.getEmail())
               .filter(collaboratorEmail -> !originalCollaboratorEmailList.contains(collaboratorEmail)
 
@@ -190,19 +174,16 @@ public class ProjectService {
       }
 
       originalProject.getCollaboratorList().addAll(collaboratorToAddList);
-      projectRepository.save(originalProject);
 
+      projectRepository.save(originalProject);
       LOGGER.debug("Share projects added to each target collaborators");
    }
 
-   public boolean checkIfSecretsAreValid(List<User> userList,
-                                         Map<String, String> userEmailSecretMap) {
+   public boolean checkIfSecretsAreValid(List<User> userList, Map<String, String> userEmailSecretMap) {
       LOGGER.trace("Enter checkIfSecretsAreValid(userList, userEmailSecretMap)");
 
       for(var collaborator: userList) {
-         if (!collaborator.getUserSecret()
-                 .getSecret()
-                 .equals(userEmailSecretMap.get(collaborator.getEmail()))) {
+         if (!collaborator.getUserSecret().getSecret().equals(userEmailSecretMap.get(collaborator.getEmail()))) {
             return false;
          }
       }

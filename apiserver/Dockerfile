@@ -1,14 +1,28 @@
+FROM adoptopenjdk/openjdk11 as builder
+
+WORKDIR ./apiserver
+
+RUN groupadd -r apiserver && useradd -r -g apiserver apiserver
+RUN chown apiserver:apiserver ./
+
+USER apiserver
+
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} ./simple-kanban-apiserver.jar
+
+RUN java -Djarmode=layertools -jar ./simple-kanban-apiserver.jar extract
+
 FROM adoptopenjdk/openjdk11
 
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
-
-ARG DEPENDENCY=target/dependency
-COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY ${DEPENDENCY}/META-INF /app/META-INF
-COPY ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","hello.Application"]
 MAINTAINER tycorp
 
-COPY target/cup-todo-0.0.1-SNAPSHOT.jar cup-todo-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/simple-kanban-0.0.1-SNAPSHOT.jar"]
+WORKDIR ./apiserver
+
+ARG LAYERED_JAR_DIR=./apiserver
+
+COPY --from=builder ${LAYERED_JAR_DIR}/dependencies/ ./
+COPY --from=builder ${LAYERED_JAR_DIR}/spring-boot-loader/ ./
+COPY --from=builder ${LAYERED_JAR_DIR}/snapshot-dependencies/ ./
+COPY --from=builder ${LAYERED_JAR_DIR}/application/ ./
+
+ENTRYPOINT ["java", "-Djasypt.encryptor.password=simplekanban"  ,"org.springframework.boot.loader.JarLauncher"]

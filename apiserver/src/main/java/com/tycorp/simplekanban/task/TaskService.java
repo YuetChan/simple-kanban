@@ -29,16 +29,15 @@ public class TaskService {
 
    @Autowired
    private TaskRepository taskRepository;
+
    @Autowired
    private TaskNodeRepository taskNodeRepository;
 
    @Autowired
    private ProjectRepository projectRepository;
+
    @Autowired
    private ProjectUUIDRepository projectUUIDRepository;
-   
-   @Autowired
-   private UserRepository userRepository;
 
    @Transactional
    public Task create(Task task) {
@@ -51,23 +50,20 @@ public class TaskService {
 
       // Check if project is existed and set project
       if(!checkIfProjectForTaskExists(task)) {
-         LOGGER.debug("Given project is invalid");
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Given project is invalid");
+         LOGGER.debug("Project is invalid");
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project is invalid");
       }
 
       attachTaskToProject(task);
 
-      LOGGER.debug("Tag list temporarily removed from task");
       List<Tag> tagList = task.getTagList();
       task.setTagList(new ArrayList<>());
 
-      LOGGER.debug("Task node temporarily removed from task");
       TaskNode node = task.getTaskNode();
       task.setTaskNode(new TaskNode());
 
       // Get task with persistent state
       task = taskRepository.save(task);
-      LOGGER.debug("Task created successfully");
 
       task.setTaskNode(node);
 
@@ -108,27 +104,27 @@ public class TaskService {
 
       // Detach task node from and attach task node to linkedList
       if(detachTaskNodeFromLinkedList(originalTask)) {
-         TaskNode updatedNode = updatedTask.getTaskNode();
+         LOGGER.debug("Task is detached from linkedlist");
 
+         TaskNode updatedNode = updatedTask.getTaskNode();
          if(updatedNode.getStatus().equals(Status.ARCHIVE)) {
+            LOGGER.debug("Task status is archived");
+
             updatedNode.setTailUUID("");
             updatedNode.setHeadUUID("");
 
             taskNodeRepository.save(updatedNode);
          }else {
-            if(!reinsertTaskNodeToLinkedList(originalTask,
-                    updatedNode.getHeadUUID(), updatedNode.getTailUUID(),
+            if(!reinsertTaskNodeToLinkedList(originalTask, updatedNode.getHeadUUID(), updatedNode.getTailUUID(),
                     updatedNode.getStatus())) {
                LOGGER.debug("Failed to reinsert task node to linkedlist");
-               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update task node.");
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to reinsert task node to linkedlist");
             }
          }
       }else {
          LOGGER.debug("Failed to detach task node from linkedlist");
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update task node.");
+         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to detach task node from linkedlist");
       }
-
-      LOGGER.debug("Task node detached");
 
       // Remove tag list from or add tag to task
       List<Tag> tagList = originalTask.getTagList();
@@ -144,20 +140,19 @@ public class TaskService {
       List<Tag> tagToRemoveList = tagList.stream()
               .filter(tag -> !updatedTagListNames.contains(tag.getName()))
               .collect(Collectors.toList());
+
       List<Tag> tagToAddList = updatedTagList.stream()
               .filter(tag -> !tagListNames.contains(tag.getName()))
               .collect(Collectors.toList());
 
       // Populate from the child side
-      List<Tag> tagAddedList = tagService.addTagListToProjectAndTask(tagToAddList,
-              originalTask.getProject(), originalTask);
+      List<Tag> tagAddedList = tagService.addTagListToProjectAndTask(tagToAddList, originalTask.getProject(),
+              originalTask);
       originalTask.getTagList().addAll(tagAddedList);
 
       // Remove from parent side
       originalTask.removeTags(tagToRemoveList);
       originalTask = taskRepository.save(originalTask);
-
-      LOGGER.debug("Task updated successfully");
 
       return taskRepository.save(originalTask);
    }
@@ -170,11 +165,8 @@ public class TaskService {
       task.setActive(false);
       taskRepository.save(task);
 
-      // Detach task from linkedlist
-      // It should always return true
+      // Detach task from linkedlist and should always return true
       detachTaskNodeFromLinkedList(task);
-
-      LOGGER.debug("Task deleted successfully");
    }
 
    // Task need to be in persistent state
@@ -185,10 +177,13 @@ public class TaskService {
       TaskNode node = task.getTaskNode();
 
       if(checkIfHeadUUIDAnUtilUUID(node) && checkIfTailUUIDAnUtilUUID(node)) {
+         LOGGER.debug("Both head and tail UUIDs are util UUIDs");
          return true;
       }
 
       if(checkIfHeadUUIDAnUtilUUID(node)) {
+         LOGGER.debug("Head UUID is an util UUID");
+
          TaskNode tailNode = taskRepository.findById(node.getTailUUID()).get().getTaskNode();
          tailNode.setHeadUUID(node.getHeadUUID());
 
@@ -196,6 +191,8 @@ public class TaskService {
       }
 
       if(checkIfTailUUIDAnUtilUUID(node)) {
+         LOGGER.debug("Tail UUID is an util UUID");
+
          TaskNode headNode = taskRepository.findById(node.getHeadUUID()).get().getTaskNode();
          headNode.setTailUUID(node.getTailUUID());
 
@@ -203,6 +200,8 @@ public class TaskService {
       }
 
       if(!checkIfHeadUUIDAnUtilUUID(node) && !checkIfTailUUIDAnUtilUUID(node)) {
+         LOGGER.debug("Neither head and tail UUIDs are util UUIDs");
+
          TaskNode headNode = taskRepository.findById(node.getHeadUUID()).get().getTaskNode();
          headNode.setTailUUID(node.getTailUUID());
 
@@ -240,7 +239,7 @@ public class TaskService {
 
          // Validate updated node against util uuids
          if(checkIfHeadUUIDAnUtilUUID(node) && checkIfTailUUIDAnUtilUUID(node)) {
-            LOGGER.debug("Head UUID and tail UUID are valid");
+            LOGGER.debug("Head and tail UUIDs are valid");
 
             // Update new node
             node.setTask(task);
@@ -344,7 +343,7 @@ public class TaskService {
 
          // Validate node against head node and util uuid
          if(checkIfTaskNodeValid(node, headNode) && checkIfTailUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
-            LOGGER.debug("Validate head node and tail UUID  is an util UUID");
+            LOGGER.debug("Head node is valid while tail UUID is an util UUID");
 
             // Update head node
             headNode.setTailUUID(task.getId());
@@ -369,7 +368,7 @@ public class TaskService {
 
          // Validate node against tail node and util uuid
          if(checkIfTaskNodeValid(node, tailNode) && checkIfHeadUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
-            LOGGER.debug("Validate tail node and head UUID is an util UUID");
+            LOGGER.debug("Tail node is valid while head UUID is an util UUID");
 
             // Update tail node
             tailNode.setHeadUUID(task.getId());
@@ -386,9 +385,8 @@ public class TaskService {
          return false;
       }
 
-      if(headTaskMaybe.isPresent() && tailTaskMaybe.isPresent()
-              && !headUUID.equals(tailUUID)) {
-         LOGGER.debug("Both head, tail tasks are present while head UUID not equal to tail UUID");
+      if(headTaskMaybe.isPresent() && tailTaskMaybe.isPresent() && !headUUID.equals(tailUUID)) {
+         LOGGER.debug("Both head and tail tasks are present while head and tail UUIDs are not equal");
 
          Task headTask = headTaskMaybe.get();
          Task tailTask = tailTaskMaybe.get();
@@ -402,7 +400,7 @@ public class TaskService {
 
          // Validate node against head node and check the consecutiveness
          if(checkIfTaskNodeValid(node, headNode) && areHeadAndTailNodesConsecutive) {
-            LOGGER.debug("Validate head node");
+            LOGGER.debug("Head node is valid");
 
             // Update head and tail task nodes
             headNode.setTailUUID(task.getId());
@@ -532,6 +530,8 @@ public class TaskService {
 
          // Validate new node against head node and util uuid
          if(checkIfNewTaskNodeValid(node, headNode) && checkIfTailUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
+            LOGGER.debug("Head node is valid while tail UUID is an util UUID");
+
             // Update new node
             node.setProject(task.getProject());
             node.setTask(task);
@@ -556,6 +556,8 @@ public class TaskService {
 
          // Validate new node against tail node and util uuid
          if(checkIfNewTaskNodeValid(node, tailNode) && checkIfHeadUUIDAnUtilUUID(node) && areHeadAndTailNodesConsecutive) {
+            LOGGER.debug("Tail node is valid while head UUID is an util UUID");
+
             // Update node
             node.setProject(task.getProject());
             node.setTask(task);
@@ -572,9 +574,8 @@ public class TaskService {
          return false;
       }
 
-      if(headTaskMaybe.isPresent() && tailTaskMaybe.isPresent()
-              && !node.getHeadUUID().equals(node.getTailUUID())) {
-         LOGGER.debug("Both task and tail nodes exist while head UUID not equal to tail UUID");
+      if(headTaskMaybe.isPresent() && tailTaskMaybe.isPresent() && !node.getHeadUUID().equals(node.getTailUUID())) {
+         LOGGER.debug("Both task and tail nodes are present while head UUID and tail UUID are not equal");
 
          Task headTask = headTaskMaybe.get();
          Task tailTask = tailTaskMaybe.get();
@@ -583,10 +584,13 @@ public class TaskService {
          TaskNode tailNode = tailTask.getTaskNode();
 
          // Get the consecutiveness of head and tail nodes
-         boolean areHeadAndTailNodesConsecutive = headTask.getId().equals(tailNode.getHeadUUID()) && headNode.getTailUUID().equals(tailTask.getId());
+         boolean areHeadAndTailNodesConsecutive = headTask.getId().equals(tailNode.getHeadUUID())
+                 && headNode.getTailUUID().equals(tailTask.getId());
 
          // Validate new node against head node and check the consecutiveness
          if(checkIfNewTaskNodeValid(node, headNode) && areHeadAndTailNodesConsecutive) {
+            LOGGER.debug("Head node is valid");
+
             // Update node
             node.setProject(task.getProject());
             node.setTask(task);
@@ -611,24 +615,28 @@ public class TaskService {
 
    @Transactional
    public boolean checkIfHeadUUIDAnUtilUUID(TaskNode node) {
-      LOGGER.trace("Enter validateHeadUUIDAnUtilUUID(node)");
+      LOGGER.trace("Enter checkIfHeadUUIDAnUtilUUID(node)");
 
       String headUUID = node.getHeadUUID();
       Status status = node.getStatus();
 
       if(status.equals(Status.BACKLOG)) {
+         LOGGER.debug("Task status is backlog");
          return projectUUIDRepository.findByUuid1(headUUID).isPresent();
       }
 
       if(status.equals(Status.TODO)) {
+         LOGGER.debug("Task status is todo");
          return projectUUIDRepository.findByUuid3(headUUID).isPresent();
       }
 
       if(status.equals(Status.IN_PROGRESS)) {
+         LOGGER.debug("Task status is in progress");
          return projectUUIDRepository.findByUuid5(headUUID).isPresent();
       }
 
       if(status.equals(Status.DONE)) {
+         LOGGER.debug("Task status is done");
          return projectUUIDRepository.findByUuid7(headUUID).isPresent();
       }
 
@@ -643,18 +651,22 @@ public class TaskService {
       Status status = node.getStatus();
 
       if(status.equals(Status.BACKLOG)) {
+         LOGGER.debug("Task status is backlog");
          return projectUUIDRepository.findByUuid2(tailUUID).isPresent();
       }
 
       if(status.equals(Status.TODO)) {
+         LOGGER.debug("Task status is todo");
          return projectUUIDRepository.findByUuid4(tailUUID).isPresent();
       }
 
       if(status.equals(Status.IN_PROGRESS)) {
+         LOGGER.debug("Task status is in progress");
          return projectUUIDRepository.findByUuid6(tailUUID).isPresent();
       }
 
       if(status.equals(Status.DONE)) {
+         LOGGER.debug("Task status is done");
          return projectUUIDRepository.findByUuid8(tailUUID).isPresent();
       }
 
@@ -663,8 +675,7 @@ public class TaskService {
 
    public void attachTaskToProject(Task task) {
       LOGGER.trace("Enter attachTaskToProject(task)");
-      Project project = projectRepository.findById(task.getTaskNode().getProjectId()).get();
-      task.setProject(project);
+      task.setProject(projectRepository.findById(task.getTaskNode().getProjectId()).get());
    }
 
    @Transactional
@@ -719,7 +730,6 @@ public class TaskService {
    @Transactional
    public boolean checkIfTaskNodeValid(TaskNode node, TaskNode existedNode) {
       LOGGER.trace("Enter checkIfTaskNodeValid(newNode, existedNode)");
-      return checkIfProjectOfTaskNodeValid(node, existedNode)
-              && checkIfStatusOfTaskNodeValid(node, existedNode);
+      return checkIfProjectOfTaskNodeValid(node, existedNode) && checkIfStatusOfTaskNodeValid(node, existedNode);
    }
 }

@@ -3,6 +3,7 @@ package com.tycorp.simplekanban.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,10 +15,13 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Component
-public class RequestMetaFilter extends OncePerRequestFilter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RequestMetaFilter.class);
+public class LogMessageMetaFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogMessageMetaFilter.class);
 
-    // Insert request id to log message
+    @Value("${correlation.alias}")
+    private String correlationAlias;
+
+    // Insert request id to each log messages
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -25,12 +29,13 @@ public class RequestMetaFilter extends OncePerRequestFilter {
 
         LOGGER.info("Generating requestId");
 
-        String correlationId = request.getHeader("correlationId");
+        String correlationId = request.getHeader(correlationAlias);
         String requestId = correlationId != null ? correlationId : UUID.randomUUID().toString();
 
         MDC.put("requestId", requestId);
 
         LOGGER.info("Request id generation done");
+
         try {
             filterChain.doFilter(request, response);
         } finally {
