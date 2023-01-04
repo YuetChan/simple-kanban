@@ -30,10 +30,9 @@ public class UserController {
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> getUserByEmail(@RequestParam(name = "email") String email) {
       LOGGER.trace("Enter getUserByParams(email)");
-
-      LOGGER.info("Obtaining user");
       
       Optional<User> userMaybe = userRepository.findByEmail(email);
+
       if(!userMaybe.isPresent()) {
          LOGGER.debug("User not found");
          return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -45,8 +44,6 @@ public class UserController {
       dataJson.add("user", GsonHelper.getExposeSensitiveGson().toJsonTree(userMaybe.get(), User.class));
       resJson.add("data", dataJson);
 
-      LOGGER.info("User obtained");
-
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
@@ -54,9 +51,8 @@ public class UserController {
    public ResponseEntity<String> getUserRoleById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserRoleById(id)");
 
-      LOGGER.info("Obtaining user role");
-
       Optional<User> userMaybe = userRepository.findById(id);
+
       if(!userMaybe.isPresent()) {
          LOGGER.debug("User not found");
          return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -68,16 +64,12 @@ public class UserController {
       dataJson.addProperty("role", userMaybe.get().getRole());
       resJson.add("data", dataJson);
 
-      LOGGER.info("User role obtained");
-
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
 
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createUser(@RequestBody String reqJsonStr) {
       LOGGER.trace("Enter createUser(reqJsonStr)");
-
-      LOGGER.info("Creating user");
 
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject userJson = dataJson.get("user").getAsJsonObject();
@@ -98,8 +90,6 @@ public class UserController {
 
          javax.json.JsonObject resJavaxJson = Json.createObjectBuilder().add("data", dataJsonBuilder).build();
 
-         LOGGER.info("User creation done");
-
          return new ResponseEntity(resJavaxJson.toString(), HttpStatus.CREATED);
       }else {
          return new ResponseEntity(HttpStatus.CONFLICT);
@@ -109,10 +99,9 @@ public class UserController {
    @GetMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> getUserSecretById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter getUserSecretById(reqJsonStr)");
-
-      LOGGER.info("Obtaining user secret");
       
       Optional<User> userMaybe = userRepository.findById(id);
+
       if(userMaybe.isPresent()) {
          LOGGER.debug("User is present");
 
@@ -121,8 +110,6 @@ public class UserController {
 
          dataJson.addProperty("secret", userMaybe.get().getUserSecret().getSecret());
          resJson.add("data", dataJson);
-
-         LOGGER.info("User secret obtained");
 
          return new ResponseEntity(resJson.toString(), HttpStatus.OK);
       }else {
@@ -134,10 +121,9 @@ public class UserController {
    @PutMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> generateUserSecretById(@PathVariable(name = "id") String id) {
       LOGGER.trace("Enter generateUserSecretById(reqJsonStr)");
-
-      LOGGER.info("Generating secret");
       
       Optional<User> userMaybe = userRepository.findById(id);
+
       if(userMaybe.isPresent()) {
          LOGGER.debug("User is present");
 
@@ -153,8 +139,6 @@ public class UserController {
 
          dataJson.addProperty("secret", userSecret.getSecret());
          resJson.add("data", dataJson);
-
-         LOGGER.info("Secret generation done");
 
          return new ResponseEntity(resJson.toString(), HttpStatus.CREATED);
       }else {

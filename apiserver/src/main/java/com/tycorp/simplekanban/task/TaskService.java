@@ -48,7 +48,6 @@ public class TaskService {
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "TagList or subTaskList counts exceed maximum");
       }
 
-      // Check if project is existed and set project
       if(!checkIfProjectForTaskExists(task)) {
          LOGGER.debug("Project is invalid");
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project is invalid");
@@ -62,7 +61,7 @@ public class TaskService {
       TaskNode node = task.getTaskNode();
       task.setTaskNode(new TaskNode());
 
-      // Get task with persistent state
+      // Get task with persistent state before setting task node
       task = taskRepository.save(task);
 
       task.setTaskNode(node);
@@ -89,7 +88,6 @@ public class TaskService {
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "tagList or subTaskList count exceed maximum");
       }
 
-      // Update task properties
       originalTask.setTitle(updatedTask.getTitle());
 
       originalTask.setDescription(updatedTask.getDescription());

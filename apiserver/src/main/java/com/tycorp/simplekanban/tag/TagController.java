@@ -37,16 +37,16 @@ public class TagController {
                                                                 @RequestParam(name = "start") int start) {
       LOGGER.trace("Enter searchTagsByProjectIdAndPrefix(projectId, prefix, start)");
 
-      LOGGER.info("Searching for tags");
-
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
+
       if(!projectMaybe.isPresent()) {
          LOGGER.debug("Project: [{}] not found", projectId);
          return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
       Page<Tag> page = tagRepository.findByProjectIdAndNameLike(projectId,
-              prefix + "%", PageRequest.of(start, 20, Sort.by("createdAt").descending()));
+              prefix + "%",
+              PageRequest.of(start, 20, Sort.by("createdAt").descending()));
       List<Tag> tagList = page.getContent();
 
       LOGGER.debug("Found total of {} tags", tagList.size());
@@ -58,15 +58,14 @@ public class TagController {
       Type tagListType = new TypeToken<ArrayList<Tag>>() {}.getType();
 
       JsonObject dataJson = new JsonObject();
+      JsonObject resJson = new JsonObject();
+
       dataJson.add("tags", GsonHelper.getExposeSensitiveGson().toJsonTree(tagList, tagListType));
 
       dataJson.addProperty("page", start);
       dataJson.addProperty("totalPage", page.getTotalPages());
 
-      JsonObject resJson = new JsonObject();
       resJson.add("data", dataJson);
-
-      LOGGER.info("Tags search done");
 
       return new ResponseEntity(resJson.toString(), HttpStatus.OK);
    }
