@@ -29,8 +29,6 @@ public class UserController {
 
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> getUserByEmail(@RequestParam(name = "email") String email) {
-      LOGGER.trace("Enter getUserByParams(email)");
-      
       Optional<User> userMaybe = userRepository.findByEmail(email);
 
       if(!userMaybe.isPresent()) {
@@ -49,8 +47,6 @@ public class UserController {
 
    @GetMapping(value = "/{id}/role", produces = "application/json")
    public ResponseEntity<String> getUserRoleById(@PathVariable(name = "id") String id) {
-      LOGGER.trace("Enter getUserRoleById(id)");
-
       Optional<User> userMaybe = userRepository.findById(id);
 
       if(!userMaybe.isPresent()) {
@@ -69,8 +65,6 @@ public class UserController {
 
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createUser(@RequestBody String reqJsonStr) {
-      LOGGER.trace("Enter createUser(reqJsonStr)");
-
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject userJson = dataJson.get("user").getAsJsonObject();
 
@@ -98,8 +92,6 @@ public class UserController {
 
    @GetMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> getUserSecretById(@PathVariable(name = "id") String id) {
-      LOGGER.trace("Enter getUserSecretById(reqJsonStr)");
-      
       Optional<User> userMaybe = userRepository.findById(id);
 
       if(userMaybe.isPresent()) {
@@ -120,8 +112,6 @@ public class UserController {
 
    @PutMapping(value = "/{id}/userSecret", produces = "application/json")
    public ResponseEntity<String> generateUserSecretById(@PathVariable(name = "id") String id) {
-      LOGGER.trace("Enter generateUserSecretById(reqJsonStr)");
-      
       Optional<User> userMaybe = userRepository.findById(id);
 
       if(userMaybe.isPresent()) {
@@ -148,8 +138,6 @@ public class UserController {
    }
 
    public UserSecret generateUserSecret(User user) {
-      LOGGER.trace("Enter generateUserSecret(user)");
-
       UserSecret userSecret = new UserSecret(generateUserSecretStr());
       userSecret.setUser(user);
 
@@ -157,8 +145,6 @@ public class UserController {
    }
 
    public String generateUserSecretStr() {
-      LOGGER.trace("Enter generateUserSecretStr()");
-
       String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       StringBuilder stringBuilder = new StringBuilder();
 

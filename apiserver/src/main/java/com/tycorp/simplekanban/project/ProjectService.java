@@ -27,8 +27,6 @@ public class ProjectService {
    private UserRepository userRepository;
 
    public Project create(Project project) {
-      LOGGER.trace("Enter create(project)");
-
       if(!checkIfUserForEmailExists(project.getUserEmail())) {
          LOGGER.debug("User is not found by email: {}", project.getUserEmail());
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not found");
@@ -55,8 +53,6 @@ public class ProjectService {
    }
 
    public Project update(Project originalProject, Project updatedProject, Map<String, String> collaboratorEmailSecretMap) {
-      LOGGER.trace("Enter update(originalProject, updatedProject, collaboratorSecretMap)");
-
       if(!checkIfCollaboratorListCountValid(updatedProject)) {
          LOGGER.debug("Collaborator count exceeds 20");
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CollaboratorList count exceeds maximum");
@@ -82,29 +78,23 @@ public class ProjectService {
    }
 
    public boolean checkIfUserForEmailExists(String email) {
-      LOGGER.trace("Enter checkIfUserForEmailExists(email)");
       return userRepository.findByEmail(email).isPresent();
    }
 
    public boolean checkIfCollaboratorListCountValid(Project project) {
-      LOGGER.trace("Enter checkIfCollaboratorListCountValid(project)");
       return project.getCollaboratorList().size() <= 20;
    }
 
    public boolean checkIfCollaboratorListValid(Project project) {
-      LOGGER.trace("Enter checkIfCollaboratorListValid(project)");
       List<String> collaboratorEmailList = getCollaboratorEmailList(project.getCollaboratorList());
       return userRepository.countByEmailIn(collaboratorEmailList) == collaboratorEmailList.size();
    }
 
    public void attachUserToProject(Project project) {
-      LOGGER.trace("Enter attachUserToProject(project)");
       project.setUser(userRepository.findByEmail(project.getUserEmail()).get());
    }
 
    public void attachCollaboratorListToProject(Project project) {
-      LOGGER.trace("Enter attachCollaboratorListToProject(project)");
-
       List<String> collaboratorEmailList = getCollaboratorEmailList(project.getCollaboratorList());
       List<User> collaboratorList = userRepository.findAllByEmailIn(collaboratorEmailList);
 
@@ -112,8 +102,6 @@ public class ProjectService {
    }
 
    public void attachNewProjectUUIDToProject(Project project) {
-      LOGGER.trace("Enter attachNewProjectUUIDToProject(project)");
-
       ProjectUUID projectUUID = new ProjectUUID();
       projectUUID.setProject(project);
 
@@ -121,14 +109,11 @@ public class ProjectService {
    }
 
    private List<String> getCollaboratorEmailList(List<User> collaboratorList) {
-      LOGGER.trace("Enter getCollaboratorEmailList(collaboratorList)");
       return collaboratorList.stream().map(collaborator -> collaborator.getEmail()).collect(Collectors.toList());
    }
 
    public void updateCollaboratorListForProject(Project originalProject, Project updatedProject,
                                                 Map<String, String> collaboratorEmailSecretMap) {
-      LOGGER.trace("Enter updateCollaboratorListFromProject(project)");
-
       List<User> updatedCollaboratorList = updatedProject.getCollaboratorList();
       List<String> updatedCollaboratorEmailList = updatedCollaboratorList.stream()
               .map(collaborator -> collaborator.getEmail())
@@ -180,8 +165,6 @@ public class ProjectService {
    }
 
    public boolean checkIfSecretsAreValid(List<User> userList, Map<String, String> userEmailSecretMap) {
-      LOGGER.trace("Enter checkIfSecretsAreValid(userList, userEmailSecretMap)");
-
       for(var collaborator: userList) {
          if (!collaborator.getUserSecret().getSecret().equals(userEmailSecretMap.get(collaborator.getEmail()))) {
             return false;

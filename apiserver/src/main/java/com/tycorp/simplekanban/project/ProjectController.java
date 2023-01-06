@@ -38,8 +38,6 @@ public class ProjectController {
 
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getProjectById(@PathVariable(name = "id") String id) {
-      LOGGER.trace("Enter getProjectById(id)");
-
       Optional<Project> projectMaybe = projectRepository.findById(id);
 
       if(!projectMaybe.isPresent()) {
@@ -59,8 +57,6 @@ public class ProjectController {
    @GetMapping(value = "", produces = "application/json")
    public ResponseEntity<String> searchProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                            @RequestParam(name = "start") int start) {
-      LOGGER.trace("Enter searchProjectsByUserEmail(userEmail, start)");
-
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
 
       if(userMaybe.isPresent()) {
@@ -92,16 +88,13 @@ public class ProjectController {
    @GetMapping(value = "/share", produces = "application/json")
    public ResponseEntity<String> searchShareProjectsByUserEmail(@RequestParam(name = "userEmail") String userEmail,
                                                                 @RequestParam(name = "start") int start) {
-      LOGGER.trace("Enter searchShareProjectsByUserEmail(userEmail, start)");
-
       Optional<User> userMaybe = userRepository.findByEmail(userEmail);
 
       if(userMaybe.isPresent()) {
          LOGGER.debug("User is present");
 
          Page<Project> page = projectRepository.findProjectListByCollaborator(userMaybe.get(),
-                 PageRequest.of(start, 20,
-                         Sort.by("createdAt").descending()));
+                 PageRequest.of(start, 20, Sort.by("createdAt").descending()));
          List<Project> projectList = page.getContent();
 
          Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
@@ -125,8 +118,6 @@ public class ProjectController {
 
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createProject(@RequestBody String reqJsonStr) {
-      LOGGER.trace("Enter createProject(reqJsonStr)");
-
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();
 
@@ -145,8 +136,6 @@ public class ProjectController {
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateProjectById(@PathVariable(name = "id") String id,
                                                    @RequestBody String reqJsonStr) throws JsonProcessingException {
-      LOGGER.trace("Enter updateProjectById(id, reqJsonStr)");
-
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();
 
@@ -176,8 +165,6 @@ public class ProjectController {
 
    @DeleteMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> deleteProjectById(@PathVariable(name = "id") String id) {
-      LOGGER.trace("Enter deleteProjectById(id)");
-
       Optional<Project> projectMaybe = projectRepository.findById(id);
 
       if(projectMaybe.isPresent()) {

@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Component
-public class LogMessageMetaFilter extends OncePerRequestFilter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogMessageMetaFilter.class);
+public class RequestMetaFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestMetaFilter.class);
 
     @Value("${correlation.alias}")
     private String correlationAlias;
@@ -25,16 +25,14 @@ public class LogMessageMetaFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        LOGGER.trace("doFilterInternal(request, response, filterChain)");
-
-        LOGGER.info("Generating requestId");
+        LOGGER.trace("Enter doFilterInternal(request, response, filterChain)");
 
         String correlationId = request.getHeader(correlationAlias);
         String requestId = correlationId != null ? correlationId : UUID.randomUUID().toString();
 
         MDC.put("requestId", requestId);
 
-        LOGGER.info("Request id generation done");
+        LOGGER.debug("Request id generation done");
 
         try {
             filterChain.doFilter(request, response);

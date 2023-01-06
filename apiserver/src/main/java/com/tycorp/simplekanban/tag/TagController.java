@@ -35,8 +35,6 @@ public class TagController {
    public ResponseEntity<String> searchTagsByProjectIdAndPrefix(@RequestParam(name = "projectId") String projectId,
                                                                 @RequestParam(name = "prefix") String prefix,
                                                                 @RequestParam(name = "start") int start) {
-      LOGGER.trace("Enter searchTagsByProjectIdAndPrefix(projectId, prefix, start)");
-
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
 
       if(!projectMaybe.isPresent()) {
@@ -44,8 +42,7 @@ public class TagController {
          return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
-      Page<Tag> page = tagRepository.findByProjectIdAndNameLike(projectId,
-              prefix + "%",
+      Page<Tag> page = tagRepository.findByProjectIdAndNameLike(projectId, prefix + "%",
               PageRequest.of(start, 20, Sort.by("createdAt").descending()));
       List<Tag> tagList = page.getContent();
 

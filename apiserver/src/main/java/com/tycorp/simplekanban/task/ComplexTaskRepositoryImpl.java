@@ -26,8 +26,6 @@ public class ComplexTaskRepositoryImpl implements ComplexTaskRepository {
                                   boolean archived,
                                   List<String> tagList,
                                   Pageable pageable) {
-      LOGGER.trace("Enter findByParams(projectId, archived, tagList, pageable)");
-
       if(projectId == null || pageable == null) {
          throw new IllegalArgumentException();
       }

@@ -21,8 +21,6 @@ public class ComplexTagRepositoryImpl implements ComplexTagRepository {
 
    @Override
    public Page<Tag> findByProjectIdAndNameLike(String projectId, String name, Pageable pageable) {
-      LOGGER.trace("Enter findByProjectIdAndNameLike(projectId, name, pageable)");
-
       CriteriaBuilder cBuilder = em.getCriteriaBuilder();
 
       CriteriaQuery<Tag> cqTag = cBuilder.createQuery(Tag.class);

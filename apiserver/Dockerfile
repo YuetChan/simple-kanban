@@ -2,11 +2,6 @@ FROM adoptopenjdk/openjdk11 as builder
 
 WORKDIR ./apiserver
 
-RUN groupadd -r apiserver && useradd -r -g apiserver apiserver
-RUN chown apiserver:apiserver ./
-
-USER apiserver
-
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} ./simple-kanban-apiserver.jar
 

@@ -41,8 +41,6 @@ public class TaskService {
 
    @Transactional
    public Task create(Task task) {
-      LOGGER.trace("Enter create(task)");
-
       if(!checkIfTagListCountValid(task) || !checkIfSubTaskListCountValid(task)) {
          LOGGER.debug("Tag list or sub task list count exceed maximum");
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "TagList or subTaskList counts exceed maximum");
@@ -81,8 +79,6 @@ public class TaskService {
    // Original task need to be in persistent state
    @Transactional
    public Task update(Task originalTask, Task updatedTask) {
-      LOGGER.trace("Enter update(originalTask, updatedTask)");
-
       if(!checkIfTagListCountValid(originalTask) || !checkIfSubTaskListCountValid(originalTask)) {
          LOGGER.debug("Tag list or sub task list count exceed maximum");
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "tagList or subTaskList count exceed maximum");
@@ -126,9 +122,7 @@ public class TaskService {
 
       // Remove tag list from or add tag to task
       List<Tag> tagList = originalTask.getTagList();
-      List<String> tagListNames = tagList.stream()
-              .map(tag -> tag.getName())
-              .collect(Collectors.toList());
+      List<String> tagListNames = tagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
 
       List<Tag> updatedTagList = updatedTask.getTagList();
       List<String> updatedTagListNames = updatedTagList.stream()
@@ -157,8 +151,6 @@ public class TaskService {
 
    @Transactional
    public void delete(Task task) {
-      LOGGER.trace("Enter delete(task)");
-
       // Delete task
       task.setActive(false);
       taskRepository.save(task);
@@ -170,8 +162,6 @@ public class TaskService {
    // Task need to be in persistent state
    @Transactional
    public boolean detachTaskNodeFromLinkedList(Task task) {
-      LOGGER.trace("Enter detachTaskNodeFromLinkedList(task)");
-
       TaskNode node = task.getTaskNode();
 
       if(checkIfHeadUUIDAnUtilUUID(node) && checkIfTailUUIDAnUtilUUID(node)) {
@@ -213,7 +203,6 @@ public class TaskService {
    // Task need to be in persistent state
    @Transactional
    public boolean reinsertTaskNodeToLinkedList(Task task, String headUUID, String tailUUID, Status status) {
-      LOGGER.trace("Enter attachTaskNodeToLinkedList(task)");
       return reinsertTaskNodeToLinkedListByBaseCase(task, headUUID, tailUUID, status)
               || reinsertTaskNodeToLinkedListByStepCase(task, headUUID, tailUUID, status);
    }
@@ -221,8 +210,6 @@ public class TaskService {
    // Task need to be in persistent state
    @Transactional
    public boolean reinsertTaskNodeToLinkedListByBaseCase(Task task, String headUUID, String tailUUID, Status status) {
-      LOGGER.trace("Enter reinsertTaskNodeToLinkedListByBaseCase(task, headUUID, tailUUID, status)");
-
       TaskNode node = task.getTaskNode();
       String projectId = task.getProject().getId();
 
@@ -321,8 +308,6 @@ public class TaskService {
    // Task need to be in persistent state
    @Transactional
    public boolean reinsertTaskNodeToLinkedListByStepCase(Task task, String headUUID, String tailUUID, Status status) {
-      LOGGER.trace("Enter reinsertTaskNodeToLinkedListByStepCase(task, headUUID, tailUUID, status)");
-
       TaskNode node = task.getTaskNode();
 
       node.setHeadUUID(headUUID);
@@ -423,15 +408,12 @@ public class TaskService {
 
    @Transactional
    public boolean insertTaskToLinkedList(Task task) {
-      LOGGER.trace("Enter insertTaskPosition(task)");
       return insertTaskNodeToLinkedListByBaseCase(task) || insertTaskNodeToLinkedListByStepCase(task);
    }
 
    // Task need to be in persistent state
    @Transactional
    public boolean insertTaskNodeToLinkedListByBaseCase(Task task) {
-      LOGGER.trace("Enter insertTaskNodeToLinkedListByBaseCase(task)");
-
       TaskNode node = task.getTaskNode();
 
       // When zero node with given project id and status
@@ -513,8 +495,6 @@ public class TaskService {
    // Task need to be in persistent state
    @Transactional
    public boolean insertTaskNodeToLinkedListByStepCase(Task task) {
-      LOGGER.trace("Enter insertTaskNodeToLinkedListByStepCase(task)");
-
       TaskNode node = task.getTaskNode();
 
       Optional<Task> headTaskMaybe = taskRepository.findById(node.getHeadUUID());
@@ -613,8 +593,6 @@ public class TaskService {
 
    @Transactional
    public boolean checkIfHeadUUIDAnUtilUUID(TaskNode node) {
-      LOGGER.trace("Enter checkIfHeadUUIDAnUtilUUID(node)");
-
       String headUUID = node.getHeadUUID();
       Status status = node.getStatus();
 
@@ -643,8 +621,6 @@ public class TaskService {
 
    @Transactional
    public boolean checkIfTailUUIDAnUtilUUID(TaskNode node) {
-      LOGGER.trace("Enter checkIfTailUUIDAnUtilUUID(node)");
-
       String tailUUID = node.getTailUUID();
       Status status = node.getStatus();
 
@@ -672,62 +648,52 @@ public class TaskService {
    }
 
    public void attachTaskToProject(Task task) {
-      LOGGER.trace("Enter attachTaskToProject(task)");
       task.setProject(projectRepository.findById(task.getTaskNode().getProjectId()).get());
    }
 
    @Transactional
    public boolean checkIfProjectForTaskExists(Task task) {
-      LOGGER.trace("Enter checkIfProjectForTaskExists(task)");
       return projectRepository.findById(task.getTaskNode().getProjectId()).isPresent();
    }
 
    @Transactional
    public boolean checkIfTagListCountValid(Task task) {
-      LOGGER.trace("Enter checkIfTagListCountValid(task)");
       return task.getTagList().size() <= 20;
    }
 
    @Transactional
    public boolean checkIfSubTaskListCountValid(Task task) {
-      LOGGER.trace("Enter checkIfSubTaskListCountValid(task)");
       return task.getSubTaskList().size() <= 20;
    }
 
    @Transactional
    public boolean checkIfProjectOfNewTaskNodeValid(TaskNode newNode, TaskNode originalNode) {
-      LOGGER.trace("Enter checkIfProjectOfNewTaskNodeValid(newNode, existedNode)");
       return newNode.getProjectId().equals(originalNode.getProject().getId());
    }
 
    @Transactional
    public boolean checkIfStatusOfNewTaskNodeValid(TaskNode newNode, TaskNode originalNode) {
-      LOGGER.trace("Enter checkIfStatusOfNewTaskNodeValid(newNode, originalNode)");
       return newNode.getStatus().equals(originalNode.getStatus());
    }
 
    @Transactional
    public boolean checkIfNewTaskNodeValid(TaskNode newNode, TaskNode existedNode) {
-      LOGGER.trace("Enter checkIfNewTaskNodeValid(newNode, existedNode)");
       return checkIfProjectOfNewTaskNodeValid(newNode, existedNode)
               && checkIfStatusOfNewTaskNodeValid(newNode, existedNode);
    }
 
    @Transactional
    public boolean checkIfProjectOfTaskNodeValid(TaskNode node, TaskNode existedNode) {
-      LOGGER.trace("Enter checkIfProjectOfTaskNodeValid(newNode, existedNode)");
       return node.getProject().getId().equals(existedNode.getProject().getId());
    }
 
    @Transactional
    public boolean checkIfStatusOfTaskNodeValid(TaskNode node, TaskNode existedNode) {
-      LOGGER.trace("Enter checkIfStatusOfTaskNodeValid(newNode, existedNode)");
       return node.getStatus().equals(existedNode.getStatus());
    }
 
    @Transactional
    public boolean checkIfTaskNodeValid(TaskNode node, TaskNode existedNode) {
-      LOGGER.trace("Enter checkIfTaskNodeValid(newNode, existedNode)");
       return checkIfProjectOfTaskNodeValid(node, existedNode) && checkIfStatusOfTaskNodeValid(node, existedNode);
    }
 }

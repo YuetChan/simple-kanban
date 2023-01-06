@@ -18,8 +18,6 @@ public class ComplexTaskNodeRepositoryImpl implements ComplexTaskNodeRepository 
 
    @Override
    public long countByProjectIdAndStatus(String projectId, Status status) {
-      LOGGER.trace("Enter countByProjectIdAndStatus(projectId, status)");
-
       CriteriaBuilder cBuilder = em.getCriteriaBuilder();
 
       CriteriaQuery<TaskNode> cqTaskNode = cBuilder.createQuery(TaskNode.class);

@@ -39,8 +39,6 @@ public class TaskController {
 
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
-      LOGGER.trace("Enter getTaskById(id)");
-
       Optional<Task> taskMaybe = taskRepository.findById(id);
 
       if(!taskMaybe.isPresent()) {
@@ -62,8 +60,6 @@ public class TaskController {
                                              @RequestParam(name = "pageSize") int pageSize,
                                              @RequestParam(name = "projectId") String projectId,
                                              @RequestParam(name = "tags") Optional<List<String>> tagListMaybe) {
-      LOGGER.trace("Enter searchTasks(start, pageSize, projectId, tagListMaybe)");
-
       Optional<Project> projectMaybe = projectRepository.findById(projectId);
 
       if(!projectMaybe.isPresent()) {
@@ -98,8 +94,6 @@ public class TaskController {
 
    @PostMapping(value = "", produces = "application/json")
    public ResponseEntity<String> createTask(@RequestBody String reqJsonStr) {
-      LOGGER.trace("Enter createTask(reqJsonStr)");
-
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
 
@@ -118,8 +112,6 @@ public class TaskController {
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateTaskById(@PathVariable(name = "id") String id,
                                                 @RequestBody String reqJsonStr) {
-      LOGGER.trace("Enter updateTaskById(id, reqJsonStr)");
-
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
 
@@ -139,8 +131,6 @@ public class TaskController {
 
    @DeleteMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> deleteTaskById(@PathVariable(name = "id") String id) {
-      LOGGER.trace("Enter deleteTaskById(id)");
-
       Optional<Task> taskMaybe = taskRepository.findById(id);
 
       if(!taskMaybe.isPresent()) {

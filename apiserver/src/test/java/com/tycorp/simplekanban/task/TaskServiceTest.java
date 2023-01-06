@@ -52,8 +52,8 @@ public class TaskServiceTest {
 
       TaskNode node = new TaskNode();
       node.setProjectId("project_id_1");
-      task.setTaskNode(node);
 
+      task.setTaskNode(node);
       task.setTagList(tagList);
 
       doReturn(true).when(taskService).checkIfTagListCountValid(Mockito.any());

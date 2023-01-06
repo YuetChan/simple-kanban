@@ -31,8 +31,6 @@ public class TagService {
    private UserRepository userRepository;
 
    public List<Tag> addTagListToProjectAndTask(List<Tag> tagList, Project project, Task task) {
-      LOGGER.trace("addTagListToProjectAndTask(tagList, project, task)");
-
       List<String> tagNameList = getNameList(tagList);
       Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(), tagNameList,
               PageRequest.of(0, 3000));
@@ -65,17 +63,14 @@ public class TagService {
    }
 
    public void attachTagListToTask(List<Tag> tagList, Task task) {
-      LOGGER.trace("Enter attachTagListToTask(tagList, task)");
       tagList.forEach(currentTag -> currentTag.getTaskList().add(task));
    }
 
    public void attachTagListToProject(List<Tag> tagList, Project project) {
-      LOGGER.trace("Enter attachTagListToProject(tagList, project)");
       tagList.forEach(tag -> tag.setProject(project));
    }
 
    public List<String> getNameList(List<Tag> tagList) {
-      LOGGER.trace("Enter getNameList(tagList)");
       return tagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
    }
 }

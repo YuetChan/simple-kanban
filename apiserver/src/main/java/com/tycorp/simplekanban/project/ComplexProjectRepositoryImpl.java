@@ -22,8 +22,6 @@ public class ComplexProjectRepositoryImpl implements ComplexProjectRepository {
    
    @Override
    public Page<Project> findProjectListByCollaborator(User collaborator, Pageable pageable) {
-      LOGGER.trace("Enter findProjectListByCollaborator(User collaborator, Pageable pageable)");
-
       CriteriaBuilder cBuilder = em.getCriteriaBuilder();
 
       CriteriaQuery<Project> cqProject = cBuilder.createQuery(Project.class);
