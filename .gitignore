@@ -72,6 +72,11 @@
 /apiserver/!**/src/main/**/target/
 /apiserver/!**/src/test/**/target/
 
+/apiserver/dependencies
+/apiserver/spring-boot-loader
+/apiserver/snapshot-dependencies
+/apiserver/application
+
 ### Properties ###
 /apiserver/*.properties
 

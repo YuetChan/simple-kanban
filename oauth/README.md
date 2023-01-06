@@ -1,13 +1,13 @@
-# Cup Kanban abac
+# Simple Kanban Oauth
 
-Cup Kanban abac is an oauth service of Cup Kanban built in Nest.js.
+Simple Kanban Oauth is an Oauth service of Simple Kanban built in Nest.js.
 
 ## Description
 
-Cup Kanban abac provides oauth APIs to [cup-kanban-ui](https://github.com/YuetChan/cup-kanban-ui) to implement __social media sign in__ feature in [cup-kanban-user-guide](https://github.com/YuetChan/cup-kanban-user-guide "cup-kanban-user-guide").
+Simple Kanban Oauth provides Oauth APIs to implement __social media sign in__ feature in [simple-kanban-user-guide](https://github.com/YuetChan/simple-kanban-user-guide "simple-kanban-user-guide").
 
 ## User guide
-Please refer to [cup-kanban-user-guide](https://github.com/YuetChan/cup-kanban-user-guide "cup-kanban-user-guide") for detail documentation.
+Please refer to [simple-kanban-user-guide](https://github.com/YuetChan/simple-kanban-user-guide "simple-kanban-user-guide") for detail documentation.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

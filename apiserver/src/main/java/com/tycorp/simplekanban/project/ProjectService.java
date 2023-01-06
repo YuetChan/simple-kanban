@@ -136,6 +136,7 @@ public class ProjectService {
       }
 
       userRepository.saveAll(collaboratorToRemoveList);
+
       LOGGER.debug("Share projects removed from each target collaborators");
 
       // Add share project to each collaborators
@@ -161,6 +162,7 @@ public class ProjectService {
       originalProject.getCollaboratorList().addAll(collaboratorToAddList);
 
       projectRepository.save(originalProject);
+
       LOGGER.debug("Share projects added to each target collaborators");
    }
 

@@ -125,9 +125,7 @@ public class TaskService {
       List<String> tagListNames = tagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
 
       List<Tag> updatedTagList = updatedTask.getTagList();
-      List<String> updatedTagListNames = updatedTagList.stream()
-              .map(tag -> tag.getName())
-              .collect(Collectors.toList());
+      List<String> updatedTagListNames = updatedTagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
 
       List<Tag> tagToRemoveList = tagList.stream()
               .filter(tag -> !updatedTagListNames.contains(tag.getName()))
