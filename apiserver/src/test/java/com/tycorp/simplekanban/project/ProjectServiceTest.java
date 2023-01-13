@@ -1,7 +1,10 @@
 package com.tycorp.simplekanban.project;
 
-import com.tycorp.simplekanban.user.User;
-import com.tycorp.simplekanban.user.UserRepository;
+import com.tycorp.simplekanban.engine.domain.project.Project;
+import com.tycorp.simplekanban.engine.domain.project.ProjectService;
+import com.tycorp.simplekanban.engine.domain.project.repository.ProjectRepository;
+import com.tycorp.simplekanban.engine.domain.user.User;
+import com.tycorp.simplekanban.engine.domain.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -240,9 +243,9 @@ public class ProjectServiceTest {
 
       when(userRepository.findAllByEmailIn(Mockito.any())).thenReturn(updatedCollaboratorList);
 
-      doReturn(true).when(projectService).checkIfSecretsAreValid(Mockito.any(), Mockito.any());
-      doReturn(true).when(projectService).checkIfCollaboratorListCountValid(Mockito.any());
-      doReturn(true).when(projectService).checkIfCollaboratorListValid(Mockito.any());
+//      doReturn(true).when(projectService).checkIfSecretsAreValid(Mockito.any(), Mockito.any());
+//      doReturn(true).when(projectService).checkIfCollaboratorListCountValid(Mockito.any());
+//      doReturn(true).when(projectService).checkIfCollaboratorListValid(Mockito.any());
 
       when(projectRepository.save(Mockito.any())).thenReturn(updatedProject);
 

@@ -1,9 +1,13 @@
 package com.tycorp.simplekanban.task;
 
-import com.tycorp.simplekanban.project.Project;
-import com.tycorp.simplekanban.tag.Tag;
-import com.tycorp.simplekanban.tag.TagService;
-import com.tycorp.simplekanban.task.value.Status;
+import com.tycorp.simplekanban.engine.domain.task.Task;
+import com.tycorp.simplekanban.engine.domain.task.TaskNode;
+import com.tycorp.simplekanban.engine.domain.task.TaskRepository;
+import com.tycorp.simplekanban.engine.domain.task.TaskService;
+import com.tycorp.simplekanban.engine.domain.project.Project;
+import com.tycorp.simplekanban.engine.domain.tag.Tag;
+import com.tycorp.simplekanban.engine.domain.tag.TagService;
+import com.tycorp.simplekanban.engine.domain.task.value.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,8 +64,8 @@ public class TaskServiceTest {
       doReturn(true).when(taskService).checkIfProjectForTaskExists(Mockito.any());
       doReturn(true).when(taskService).checkIfProjectForTaskExists(Mockito.any());
 
-      doReturn(true).when(taskService).insertTaskToLinkedList(Mockito.any());
-      doNothing().when(taskService).attachTaskToProject(Mockito.any());
+      doReturn(true).when(taskService).insertNewTaskToLinkedList(Mockito.any());
+      doNothing().when(taskService).attachProjectToNewTask(Mockito.any());
 
       when(taskRepository.save(Mockito.any())).thenReturn(task);
       when(tagService.addTagListToProjectAndTask(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tagList);
