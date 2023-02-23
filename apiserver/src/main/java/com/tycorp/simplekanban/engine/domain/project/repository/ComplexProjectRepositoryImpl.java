@@ -1,9 +1,9 @@
 package com.tycorp.simplekanban.engine.domain.project.repository;
 
 import com.tycorp.simplekanban.engine.domain.project.Project;
-import com.tycorp.simplekanban.project.Project_;
+import com.tycorp.simplekanban.engine.domain.project.Project_;
 import com.tycorp.simplekanban.engine.domain.user.User;
-import com.tycorp.simplekanban.user.User_;
+import com.tycorp.simplekanban.engine.domain.user.User_;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

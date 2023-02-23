@@ -1,7 +1,9 @@
 package com.tycorp.simplekanban.engine.domain.tag;
 
+import com.tycorp.simplekanban.engine.domain.project.repository.ProjectRepository;
+import com.tycorp.simplekanban.engine.domain.tag.repository.TagRepository;
 import com.tycorp.simplekanban.engine.domain.task.Task;
-import com.tycorp.simplekanban.engine.domain.task.TaskRepository;
+import com.tycorp.simplekanban.engine.domain.task.repository.TaskRepository;
 import com.tycorp.simplekanban.engine.domain.user.UserRepository;
 import com.tycorp.simplekanban.engine.domain.project.Project;
 import org.slf4j.Logger;
@@ -15,12 +17,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TagService {
+   // Loggers
    private static final Logger LOGGER = LoggerFactory.getLogger(TagService.class);
-   
+
+   // Repositories
    @Autowired
    private TagRepository tagRepository;
 
@@ -28,38 +33,58 @@ public class TagService {
    private TaskRepository taskRepository;
 
    @Autowired
+   private ProjectRepository projectRepository;
+
+   @Autowired
    private UserRepository userRepository;
 
-   public List<Tag> addTagListToProjectAndTask(List<Tag> tagList, Project project, Task task) {
-      List<String> tagNameList = getNameList(tagList);
-      Page<Tag> page = tagRepository.findByProjectIdAndNameIn(project.getId(), tagNameList,
-              PageRequest.of(0, 3000));
+   public List<Tag> addTagList(List<String> tagNameList, String projectId, String taskId) {
+      Optional<Project> projectMaybe = projectRepository.findById(projectId);
+      Optional<Task> taskMaybe = taskRepository.findById(taskId);
 
-      LOGGER.debug("Found total of {} tags", page.getTotalElements());
+      if(projectMaybe.isPresent() && taskMaybe.isPresent()) {
+         Page<Tag> page = tagRepository.findByProjectIdAndNameIn(
+                 projectId,
+                 tagNameList,
+                 PageRequest.of(0, 3000));
 
-      if(page.getTotalElements() > 3000) {
-         LOGGER.debug("Tags count exceeds 3000");
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tag count exceeds 3000");
+         LOGGER.debug("Found total of {} tags", page.getTotalElements());
+
+         if(page.getTotalElements() > 3000) {
+            LOGGER.debug("Tags count exceeds 3000");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tag count exceeds 3000");
+         }
+
+         Project project = projectMaybe.get();
+
+         Task task = taskMaybe.get();
+
+         List<Tag> existedTagList = page.getContent();
+         attachTagListToTask(existedTagList, task);
+
+         List<String> existedTagNameList = toNameList(existedTagList);
+
+         List<Tag> nonExistedTagList = tagNameList.stream()
+                 .map(name -> {
+                    Tag tag = new Tag();
+                    tag.setName(name);
+                    return tag;
+                 })
+                 .filter(tag -> !existedTagNameList.contains(tag.getName()))
+                 .collect(Collectors.toList());
+
+         attachTagListToProject(nonExistedTagList, project);
+         attachTagListToTask(nonExistedTagList, task);
+
+         List<Tag> updatedTagList = new ArrayList<>();
+
+         updatedTagList.addAll(nonExistedTagList);
+         updatedTagList.addAll(existedTagList);
+
+         return (List<Tag>) tagRepository.saveAll(updatedTagList);
       }
 
-      List<Tag> currentTagList = page.getContent();
-      attachTagListToTask(currentTagList, task);
-
-      List<String> currentTagNameList = getNameList(currentTagList);
-
-      List<Tag> tagToAddList = tagList.stream()
-              .filter(tag -> !currentTagNameList.contains(tag.getName()))
-              .collect(Collectors.toList());
-
-      attachTagListToProject(tagToAddList, project);
-      attachTagListToTask(tagToAddList, task);
-
-      List<Tag> updatedTagList = new ArrayList<>();
-
-      updatedTagList.addAll(tagToAddList);
-      updatedTagList.addAll(currentTagList);
-
-      return (List<Tag>) tagRepository.saveAll(updatedTagList);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid project / task on tag lsit");
    }
 
    public void attachTagListToTask(List<Tag> tagList, Task task) {
@@ -70,7 +95,7 @@ public class TagService {
       tagList.forEach(tag -> tag.setProject(project));
    }
 
-   public List<String> getNameList(List<Tag> tagList) {
+   public List<String> toNameList(List<Tag> tagList) {
       return tagList.stream().map(tag -> tag.getName()).collect(Collectors.toList());
    }
 }

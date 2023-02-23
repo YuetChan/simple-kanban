@@ -10,7 +10,7 @@ import java.util.Map;
 @Configuration
 @ComponentScan("com.tycorp")
 public class AppConfig {
-    @Bean
+    @Bean(name="configCache")
     public Map<String, Object> configCache() {
         final Map<String, Object> cache = new HashMap<>();
         return cache;

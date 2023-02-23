@@ -13,8 +13,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "project_uuid")
 public class ProjectUUID {
-   // this class contains uuids for different util purposes
-   // one of the use case is to prevent uuids circulation when ordering tasks
+   // This class contains uuids for different util purposes
+   // One of the use case is to prevent uuids circulation when ordering tasks
    @Expose
    @Id
    @GeneratedValue(generator = "uuid2")

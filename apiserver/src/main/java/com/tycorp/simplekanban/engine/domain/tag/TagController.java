@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tycorp.simplekanban.engine.core.GsonHelper;
 import com.tycorp.simplekanban.engine.domain.project.Project;
 import com.tycorp.simplekanban.engine.domain.project.repository.ProjectRepository;
+import com.tycorp.simplekanban.engine.domain.tag.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/tags")
 public class TagController {
+   // Loggers
    private static final Logger LOGGER = LoggerFactory.getLogger(TagController.class);
 
+   // Repositories
    @Autowired
    private TagRepository tagRepository;
 
@@ -42,7 +45,9 @@ public class TagController {
          return new ResponseEntity(HttpStatus.NOT_FOUND);
       }
 
-      Page<Tag> page = tagRepository.findByProjectIdAndNameLike(projectId, prefix + "%",
+      Page<Tag> page = tagRepository.findByProjectIdAndNameLike(
+              projectId,
+              prefix + "%",
               PageRequest.of(start, 20, Sort.by("createdAt").descending()));
       List<Tag> tagList = page.getContent();
 

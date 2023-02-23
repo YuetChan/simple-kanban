@@ -19,8 +19,10 @@ import java.util.Random;
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
+   // Loggers
    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+   // Repositories
    @Autowired
    private UserRepository userRepository;
 

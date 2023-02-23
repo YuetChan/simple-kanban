@@ -5,6 +5,7 @@ import com.tycorp.simplekanban.engine.domain.tag.Tag;
 import com.tycorp.simplekanban.engine.domain.task.Task;
 import com.tycorp.simplekanban.engine.domain.task.TaskNode;
 import com.tycorp.simplekanban.engine.domain.user.User;
+import com.tycorp.simplekanban.plugin.PluginConfig;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -69,6 +70,10 @@ public class Project {
    @Expose
    @OneToOne(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
    private ProjectUUID projectUUID;
+
+   @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   private List<PluginConfig> pluginConfigList;
+
 
    @Expose
    @Column(name = "created_at")
