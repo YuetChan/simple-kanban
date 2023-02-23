@@ -33,6 +33,7 @@ import { actions as usersCacheActions } from './stores/user-cache-slice';
 import { actions as projectsCacheActions } from './stores/projects-cache-slice';
 import { actions as projectCreateDialogActions } from './stores/project-create-dialog-slice';
 import { actions as kanbanTableActions } from './stores/kanban-table-slice';
+import KanbanOauthPage from './layouts/kanban-oauth-page';
 
 function App() {
   // ------------------ Dispatch ------------------
@@ -73,6 +74,8 @@ function App() {
   const { refreshTable } = kanbanTableActions;
 
   // ------------------ Home ------------------
+
+  
   // ------------------ Auth ------------------
   const [ authed, setAuthed ] = React.useState(false);
 
@@ -91,7 +94,7 @@ function App() {
       }).catch(err => {
         console.log(err);
       });
-    }
+    } 
   }, [ authed ]);
 
   useEffect(() => {
@@ -105,15 +108,15 @@ function App() {
         if(decoded.email) {
           dispatch(updateLoginedUserEmail(decoded.email));
         }else {
-          redirectToLoginPage();
+          dispatch(updateLoginedUserEmail(''));
         }
       }else {
-        redirectToLoginPage();
+        dispatch(updateLoginedUserEmail(''));
       }
     }catch {
-      console.log('called')
 
-      redirectToLoginPage();
+
+      dispatch(updateLoginedUserEmail(''));
     }
   }, []);
 
@@ -192,29 +195,34 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <section style={{
-        width: "100vw", 
-        height: "100vh",
-        overflow: "hidden"
+   
+    (
+      <div className="App" >
+        <section style={{
+          width: "100vw", 
+          height: "100vh",
+          overflow: "hidden",
+          display: authed? "block": "none"
         }}>
-        {
-          authed
-          ? (
-            <Stack 
-              direction="row" 
-              style={{ 
-                width: "100%", 
-                height: "100%" 
-              }}>    
-              <KanbanDrawer />
+          <Stack 
+            direction="row" 
+            style={{ 
+              width: "100%", 
+              height: "100%" 
+            }}>    
+            <KanbanDrawer />
   
-              <KanbanTable /> 
-            </Stack>
-          )
-          : null
-        }  
+            <KanbanTable /> 
+          </Stack>
       </section>
+      <div style={{
+                    height: "100vh",
+          alignItems: "center",
+          justifyContent: "center",
+          display: authed? "none": "flex"
+      }}>
+<KanbanOauthPage />
+      </div>
    
       <div style={{ 
         display: tasksSearchState._tagsEditAreaFocused || tagsSearchResultPanelState._mouseOver
@@ -224,19 +232,14 @@ function App() {
         <TagsSearchResultPanel />
       </div>
 
-      {
-        authed
-        ? (
-          <div style={{
-            position: "fixed",
-            bottom: "4px",
-            left: "244px"
-            }}>
-            <TaskAddButton handleOnClick={ handleOnTaskAddClick }/>
-          </div>
-        )
-        : null
-      }  
+      <div style={{
+        position: "fixed",
+        bottom: "4px",
+        left: "244px",
+        display: authed? "block": "none"
+      }}>
+        <TaskAddButton handleOnClick={ handleOnTaskAddClick }/>
+      </div>
 
       <div>
         <TaskCreateDialog 
@@ -265,6 +268,7 @@ function App() {
          handleOnDelete={ handleOnProjectDeleteDialogDelete } />
       </div>
     </div>
+    )
   );
 }
 
