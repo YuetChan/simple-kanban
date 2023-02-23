@@ -28,6 +28,7 @@ import TaskSearchkSprintSelect from '../features/task/components/task-search-spr
 
 import { AppState } from '../stores/app-reducers';
 
+import { actions as usersCacheActions } from '../stores/user-cache-slice';
 import { actions as projectsCacheActions } from '../stores/projects-cache-slice';
 import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
@@ -53,6 +54,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
   // -------------- User cache --------------
   const userCacheState = useSelector((state: AppState) => state.UserCache);
+
+  const { updateLoginedUserEmail } = usersCacheActions;
 
   // -------------- Tasks search --------------
   const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
@@ -89,7 +92,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
   const handleOnLogoutClick = () => {
     removeCookie('jwt', '/');
-    redirectToLoginPage();
+
+    dispatch(updateLoginedUserEmail(''));
+    // redirectToLoginPage();
   }
 
   const handleOnDeleteClick = () => {

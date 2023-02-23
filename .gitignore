@@ -22,6 +22,8 @@
 /oauth/yarn-debug.log*
 /oauth/yarn-error.log*
 
+/oauth/dist*
+
 /ui/.build
 
 # compiled output
