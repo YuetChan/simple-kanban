@@ -195,13 +195,14 @@ function App() {
   }
 
   return (
-    authed? 
+   
     (
-      <div className="App">
-      <section style={{
-        width: "100vw", 
-        height: "100vh",
-        overflow: "hidden"
+      <div className="App" >
+        <section style={{
+          width: "100vw", 
+          height: "100vh",
+          overflow: "hidden",
+          display: authed? "block": "none"
         }}>
           <Stack 
             direction="row" 
@@ -214,6 +215,14 @@ function App() {
             <KanbanTable /> 
           </Stack>
       </section>
+      <div style={{
+                    height: "100vh",
+          alignItems: "center",
+          justifyContent: "center",
+          display: authed? "none": "flex"
+      }}>
+<KanbanOauthPage />
+      </div>
    
       <div style={{ 
         display: tasksSearchState._tagsEditAreaFocused || tagsSearchResultPanelState._mouseOver
@@ -226,7 +235,8 @@ function App() {
       <div style={{
         position: "fixed",
         bottom: "4px",
-        left: "244px"
+        left: "244px",
+        display: authed? "block": "none"
       }}>
         <TaskAddButton handleOnClick={ handleOnTaskAddClick }/>
       </div>
@@ -258,8 +268,6 @@ function App() {
          handleOnDelete={ handleOnProjectDeleteDialogDelete } />
       </div>
     </div>
-    ): (
-      <KanbanOauthPage />
     )
   );
 }

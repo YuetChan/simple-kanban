@@ -11,19 +11,14 @@ const KanbanOauthPage = () => {
     }
 
     return (
-    	<div style={{
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}>
+    	
         <button 
           onClick={ handleOnGoogleSignInClick } 
           type="button" 
           className="login-with-google-btn" >
             Sign in with Google
         </button>
-      </div>
+      
     )
 }
 
