@@ -39,9 +39,9 @@ describe('JwtAuthService', () => {
   describe('getJwt', () => {
     it('should return jwt for registered user', async () => {
       registerService.register.mockResolvedValueOnce({
-        id: 'pesudo-id',
-        email: 'sk@gmail.com', 
-        name: 'sk',
+        id: 'dummy-id',
+        email: 'yuetchany@gmail.com', 
+        name: 'yuetchany',
         role: 'user'
       });
 
@@ -57,9 +57,9 @@ describe('JwtAuthService', () => {
         }
 
         if(p.provider === 'google' 
-        && p.id === 'pesudo-id' 
-        && p.email === 'sk@gmail.com' 
-        && p.name === 'sk') {
+        && p.id === 'dummy-id' 
+        && p.email === 'yuetchany@gmail.com' 
+        && p.name === 'yuetchany') {
           return 'signed'
         }
 
@@ -68,16 +68,16 @@ describe('JwtAuthService', () => {
 
       expect(await jwtAuthService.getJwt({
         provider: 'google', 
-        email: 'sk@gmail.com', 
-        name: 'sk'
+        email: 'yuetchany@gmail.com', 
+        name: 'yuetchany'
       }, LoginType.GOOGLE)).toBe('signed');
     });
 
     it('should return jwt for unregistered user', async () => {
       registerService.register.mockResolvedValueOnce({
-        id: 'pesudo-id',
-        email: 'sk@gmail.com', 
-        name: 'sk',
+        id: 'dummy-id',
+        email: 'yuetchany@gmail.com', 
+        name: 'yuetchany',
         role: 'user'
       });
 
@@ -93,9 +93,9 @@ describe('JwtAuthService', () => {
         }
 
         if(p.provider === 'google' 
-        && p.id === 'pesudo-id' 
-        && p.email === 'sk@gmail.com' 
-        && p.name === 'sk') {
+        && p.id === 'dummy-id' 
+        && p.email === 'yuetchany@gmail.com' 
+        && p.name === 'yuetchany') {
           return 'signed'
         }
 
@@ -104,8 +104,8 @@ describe('JwtAuthService', () => {
 
       expect(await jwtAuthService.getJwt({
         provider: 'google', 
-        email: 'sk@gmail.com', 
-        name: 'sk'
+        email: 'yuetchany@gmail.com', 
+        name: 'yuetchany'
       }, LoginType.GOOGLE)).toBe('signed');
     });
   });
