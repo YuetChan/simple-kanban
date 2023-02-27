@@ -1,6 +1,6 @@
 # Simple Kanban ui
 
-Simple Kanban ui is an ui app of Simple Kanban built in React.js.
+Simple Kanban ui is an ui app of Simple Kanban built in React.js and Mui.
 
 ## Description
 
