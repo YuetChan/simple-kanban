@@ -1,5 +1,5 @@
 {
-  "name": "cup-kanban-ui",
+  "name": "simple-kanban-ui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -73,6 +73,7 @@
     "checkJs": false
   },
   "devDependencies": {
-    "@types/redux-logger": "^3.0.9"
+    "@types/redux-logger": "^3.0.9",
+    "cypress": "^12.6.0"
   }
 }
