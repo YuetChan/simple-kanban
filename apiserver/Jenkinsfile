@@ -14,7 +14,9 @@ pipeline{
 
     stage('Compile') {
       steps {
+        sh 'cd apiserver'
         sh 'mvn compile'
+        
       }
     }
 
