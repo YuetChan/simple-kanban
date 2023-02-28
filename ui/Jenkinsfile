@@ -4,10 +4,37 @@ pipeline{
     nodejs "node-18.7.0" 
   }
 
+
+
   stages {
-    stage('Build') {
+    stage('Checkout') {
       steps {
-        sh 'npm install' // install project dependencies using npm
+        checkout([$class: 'GitSCM', 
+          branches: [[name: env.GIT_BRANCH]], 
+          doGenerateSubmoduleConfigurations: false, 
+          extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'ui']]]], 
+          submoduleCfg: [], 
+          userRemoteConfigs: [[url: 'https://github.com/YuetChan/simple-kanban.git']]])
+      }
+    }
+
+    stage('Post-Checkout') {
+      steps {
+        sh 'mv ./ui/* ./'
+        sh 'rm -rf ./ui'
+        sh 'ls'
+      }
+    }
+
+    stage('Install') {
+      steps {
+        sh 'npm install'
+      }
+    }
+
+    stage('Unit test') {
+      steps {
+        sh 'npm test'
       }
     }
   }
