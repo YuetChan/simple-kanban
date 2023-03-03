@@ -6,8 +6,9 @@ pipeline{
   }
 
   environment {
-    DOCKER_REGISTRY = "docker.io"
-    DOCKER_REPO = "tycorp/simple-kanban-apiserver"
+    DOCKER_REGISTRY = "registry.hub.docker.com/v2/ "
+    DOCKER_REPO = "simple-kanban-apiserver"
+    image=null
   }
 
   stages {
@@ -48,20 +49,15 @@ pipeline{
       }
     }
 
-    stage('Build docker image') {
+    stage('Build and push docker image') {
       steps {
-        docker.withRegistry("https://${DOCKER_REGISTRY}", "2b57eec1-d6dc-4e96-ba14-a63ed7166ff4") {
-          def customTag = "latest"
-          docker.build("${DOCKER_REPO}:${customTag}", "-f Dockerfile .")
+        script {
+          docker.withRegistry("", "2b57eec1-d6dc-4e96-ba14-a63ed7166ff4") {
+            docker.build("tycorp/${DOCKER_REPO}:latest", "-f Dockerfile .").push()
+          }
         }
       }
     }
-    // stage('Build Docker Image') {
-    //   steps {
-    //     script {
-    //       def dockerImage = docker.build("tycorp/simple-kanban-apiserver", "-f ./Dockerfile .")
-    //     }
-    //   }
-    // }
+
   }
 }

@@ -4,8 +4,6 @@ pipeline{
     nodejs "node-18.7.0" 
   }
 
-
-
   stages {
     stage('Checkout') {
       steps {
@@ -35,6 +33,12 @@ pipeline{
     stage('Unit test') {
       steps {
         sh 'npm test'
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh 'npm run build'
       }
     }
   }
