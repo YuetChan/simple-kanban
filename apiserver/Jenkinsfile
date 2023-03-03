@@ -19,7 +19,7 @@ pipeline{
 
     stage('Post-Checkout') {
       steps {
-        sh 'mv ./apiserver/* ./'
+        sh 'cp -r ./apiserver/* ./'
         sh 'rm -rf ./apiserver'
         sh 'ls'
       }
@@ -37,12 +37,18 @@ pipeline{
       }
     }
 
-    stage('Build Docker Image') {
+    stage('Build docker image') {
       steps {
-        script {
-          def dockerImage = docker.build("tycorp/simple-kanban-apiserver", "-f ./Dockerfile .")
-        }
+        sh 'id'
+        sh 'docker build -t tycorp/simple-kanban-apiserver .'
       }
     }
+    // stage('Build Docker Image') {
+    //   steps {
+    //     script {
+    //       def dockerImage = docker.build("tycorp/simple-kanban-apiserver", "-f ./Dockerfile .")
+    //     }
+    //   }
+    // }
   }
 }
