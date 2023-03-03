@@ -5,6 +5,11 @@ pipeline{
     maven 'mvn-3.6.3'
   }
 
+  environment {
+    DOCKER_REGISTRY = "docker.io"
+    DOCKER_REPO = "tycorp/simple-kanban-apiserver"
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -37,10 +42,18 @@ pipeline{
       }
     }
 
+    stage('Build') {
+      steps {
+        sh 'mvn clean package'
+      }
+    }
+
     stage('Build docker image') {
       steps {
-        sh 'id'
-        sh 'docker build -t tycorp/simple-kanban-apiserver .'
+        docker.withRegistry("https://${DOCKER_REGISTRY}", "2b57eec1-d6dc-4e96-ba14-a63ed7166ff4") {
+          def customTag = "latest"
+          docker.build("${DOCKER_REPO}:${customTag}", "-f Dockerfile .")
+        }
       }
     }
     // stage('Build Docker Image') {
