@@ -139,27 +139,27 @@ public class ProjectService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, validationResult.getErrorMsg());
    }
 
-   public void addPlugin(String id, PluginConfig config) {
-      Optional<Project> projectMaybe = projectRepository.findById(id);
-
-      if(projectMaybe.isPresent()) {
-         Project project = projectMaybe.get();
-
-         config.setProject(project);
-         pluginConfigRepository.save(config);
-      }
-   }
-
-   public void removePlugin(String configId) {
-      Optional<PluginConfig> pluginConfigMaybe = pluginConfigRepository.findById(configId);
-
-      if(pluginConfigMaybe.isPresent()) {
-         PluginConfig config = pluginConfigMaybe.get();
-         config.setActive(false);
-
-         pluginConfigRepository.save(config);
-      }
-   }
+//   public void addPlugin(String id, PluginConfig config) {
+//      Optional<Project> projectMaybe = projectRepository.findById(id);
+//
+//      if(projectMaybe.isPresent()) {
+//         Project project = projectMaybe.get();
+//
+//         config.setProject(project);
+//         pluginConfigRepository.save(config);
+//      }
+//   }
+//
+//   public void removePlugin(String configId) {
+//      Optional<PluginConfig> pluginConfigMaybe = pluginConfigRepository.findById(configId);
+//
+//      if(pluginConfigMaybe.isPresent()) {
+//         PluginConfig config = pluginConfigMaybe.get();
+//         config.setActive(false);
+//
+//         pluginConfigRepository.save(config);
+//      }
+//   }
 
    public void delete(String id) {
       ValidationResult validationResult = defaultProjectDeleteValidator.validate(id);

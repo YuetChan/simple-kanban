@@ -36,5 +36,13 @@ pipeline{
         sh 'mvn test'
       }
     }
+
+    stage('Build Docker Image') {
+      steps {
+        script {
+          def dockerImage = docker.build("tycorp/simple-kanban-apiserver", "-f ./Dockerfile .")
+        }
+      }
+    }
   }
 }
