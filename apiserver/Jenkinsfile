@@ -53,11 +53,18 @@ pipeline{
       steps {
         script {
           docker.withRegistry("", "2b57eec1-d6dc-4e96-ba14-a63ed7166ff4") {
-            docker.build("tycorp/${DOCKER_REPO}:latest", "-f Dockerfile .").push()
+            def gitCommit = sh(returnStdout: true, script: 'git rev-parse --short HEAD')
+            .trim()
+
+            docker
+            .build("tycorp/${DOCKER_REPO}:${gitCommit}", "-f Dockerfile .")
+            .push()
           }
         }
       }
     }
+
+
 
   }
 }
