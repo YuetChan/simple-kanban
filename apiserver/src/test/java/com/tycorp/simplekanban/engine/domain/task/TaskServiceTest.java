@@ -248,6 +248,7 @@ public class TaskServiceTest {
 
       taskService.update(model);
 
+      // Verifies the attachment of new tags and removal of old tags
       verify(taskService).attachTagListToTask(eq(dummyOrgTask), Mockito.any());
       verify(taskService).removeTagListFromTask(eq(dummyOrgTask), Mockito.any());
    }

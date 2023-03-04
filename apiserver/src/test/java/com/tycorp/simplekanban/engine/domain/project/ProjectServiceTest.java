@@ -171,7 +171,7 @@ public class ProjectServiceTest {
    }
 
    @Test
-   public void shouldUpdateProject() throws Exception {
+   public void shouldUpdatePropertiesOfProject() throws Exception {
       // Updated project
       Project dummyUpdatedProject = new Project();
 
@@ -199,5 +199,40 @@ public class ProjectServiceTest {
               .thenReturn(dummyUpdatedProject);
 
       projectService.update(model);
+
+      verify(mergePropertiesToProjectStage).process(Mockito.any());
+   }
+
+   @Test
+   public void shouldUpdateCollaboratorListOfProject() throws Exception {
+      // Updated project
+      Project dummyUpdatedProject = new Project();
+
+      Map<String, String> collaboratorEmailSecretMap = new HashMap();
+
+      collaboratorEmailSecretMap.put("collaborator_1@simplekanban.com", "");
+      collaboratorEmailSecretMap.put("collaborator_2@simplekanban.com", "");
+
+      ProjectService.UpdateModel model = new ProjectService.UpdateModel(
+              "dummy-id",
+              "name",
+              "description",
+              collaboratorEmailSecretMap);
+
+      when(configCache.get("collaboratorEmailToSecretMap"))
+              .thenReturn(collaboratorEmailSecretMap);
+
+      when(defaultProjectUpdateValidator.validate(Mockito.any()))
+              .thenReturn(ValidationResult.valid());
+
+      when(mergePropertiesToProjectStage.process(Mockito.any()))
+              .thenReturn(dummyUpdatedProject);
+
+      when(mergeCollaboratorListToProjectStage.process(Mockito.any()))
+              .thenReturn(dummyUpdatedProject);
+
+      projectService.update(model);
+
+      verify(mergeCollaboratorListToProjectStage).process(Mockito.any());
    }
 }
