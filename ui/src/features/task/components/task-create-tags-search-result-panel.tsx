@@ -27,8 +27,11 @@ const TagsSearchResultPanel = (props: any) => {
 
   const fetchTags = (projectId: string, page: number) => {
     const timeout = setTimeout(() => {  
-      searchTagsByProjectIdAndPrefix(projectId, 
-        taskCreateState._tagsEditAreaSearchStr, page).then(res => {
+      searchTagsByProjectIdAndPrefix(
+        projectId, 
+        taskCreateState._tagsEditAreaSearchStr, 
+        page)
+        .then(res => {
           setTags(res.tags);
 
           setPage(res.page + 1);
@@ -41,6 +44,7 @@ const TagsSearchResultPanel = (props: any) => {
 
   useEffect(() => {
     const activeProject = projectsCacheState._activeProject;
+
     if(activeProject) {
       fetchTags(activeProject.id, 0);
     }
@@ -48,6 +52,7 @@ const TagsSearchResultPanel = (props: any) => {
 
   const handleOnPageChange = (e: any, val: number) => {
     const activeProject = projectsCacheState._activeProject;
+
     if(activeProject && taskCreateState._lastFocusedArea === 'tagsEditArea') {
       fetchTags(activeProject.id, val - 1);
     }

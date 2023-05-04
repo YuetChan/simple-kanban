@@ -12,31 +12,43 @@ import * as ProjectsService from '../services/projects-service';
 const mockStore = configureMockStore([thunk]);
 
 describe('ProjectCollaboratorMenu', () => {
-    let store: any = mockStore({
-        ProjectsCache: {
-            _activeProject: {
-                id: '1',
-                collaboratorList: [
-                { email: 'user2@example.com' },
-                { email: 'user3@example.com' },
-                ],
-            },
-        },
-        UserCache: {
-            _loginedUserEmail: 'user1@example.com',
-        },
-    });
+    let store: any;
 
-    const props = {
-        collaboratorsMenuAnchorEl: document.body,
-        collaboratorsMenuOpen: true,
-        handleOnCollaboratorsMenuClose: jest.fn()
+    let props: {
+        collaboratorsMenuAnchorEl: any,
+        collaboratorsMenuOpen: boolean,
+        
+        handleOnCollaboratorsMenuClose?: Function
     }
   
     // Mock updateProjectById and window.alert
     jest.mock('../services/projects-service', () => ({
         updateProjectById: jest.fn()
     }));
+
+
+    beforeEach(() => {
+        store = mockStore({
+            ProjectsCache: {
+                _activeProject: {
+                    id: '1',
+                    collaboratorList: [
+                    { email: 'user2@example.com' },
+                    { email: 'user3@example.com' },
+                    ],
+                },
+            },
+            UserCache: {
+                _loginedUserEmail: 'user1@example.com',
+            },
+        });
+
+        props = {
+            collaboratorsMenuAnchorEl: document.body,
+            collaboratorsMenuOpen: true,
+            handleOnCollaboratorsMenuClose: jest.fn()
+        };
+    });
 
     
     it('clicking quit project menu item should update project by id', async () => {
@@ -80,7 +92,7 @@ describe('ProjectCollaboratorMenu', () => {
     it("clicking quit project menu item should alert 'You are removed from project'", async () => {
         const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => { });
 
-        const updateProjectByIdSpy = jest.spyOn(ProjectsService, "updateProjectById")
+        jest.spyOn(ProjectsService, "updateProjectById")
         .mockImplementation((
             id, 
             project, 

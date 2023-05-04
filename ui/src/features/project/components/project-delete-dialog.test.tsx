@@ -10,20 +10,30 @@ import ProjectDeleteDialog from './project-delete-dialog';
 const mockStore = configureMockStore([thunk]);
 
 describe('ProjectDeleteDialog', () => {
-    let store: any = mockStore({
-        UserCache: {
-          _loginedUserEmail: 'test_user1@example.com',
-        },
-    });
+    let store: any;
 
-    const props = {
-        open: true,
-        label: "Delete dialog",
-        handleOnClose: jest.fn(),
-        handleOnDelete: jest.fn()
+    let props: {
+        open?: boolean,
+        label?: string,
+        
+        handleOnClose?: Function,
+        handleOnDelete?: Function
     };
 
-    const handleOnClose = jest.fn();
+    beforeEach(() => {
+        props = {
+            open: true,
+            label: "Delete dialog",
+            handleOnClose: jest.fn(),
+            handleOnDelete: jest.fn()
+        }; 
+
+        store = mockStore({
+            UserCache: {
+              _loginedUserEmail: 'test_user1@example.com',
+            },
+        })
+    })
 
 
     it("closing a delete dialog should remove dialog from dom", () => {
@@ -44,7 +54,7 @@ describe('ProjectDeleteDialog', () => {
             </Provider>
         );
 
-        const enterDeleteInput = screen.getByLabelText("Enter delete");
+        const enterDeleteInput = screen.getByLabelText("Enter DELETE");
 
         fireEvent.change(enterDeleteInput, { target: { value: "DELETE" } });
 
@@ -55,22 +65,22 @@ describe('ProjectDeleteDialog', () => {
     it("Clicking cancel should call handleOnClose", () => {
         render(
             <Provider store={ store }>
-                <ProjectDeleteDialog {... props } open={ true } handleOnClose={ handleOnClose }/>
+                <ProjectDeleteDialog {... props } open={ true }/>
             </Provider>
         );
 
-        const cancelButton = screen.getByRole('button', { name: /cancel/i });
+        const cancelButton = screen.getByRole("button", { name: /cancel/i });
 
         fireEvent.click(cancelButton)
 
-        expect(handleOnClose).toHaveBeenCalledTimes(1);
+        expect(props.handleOnClose).toHaveBeenCalledTimes(1);
     });
 
 
     it("Closing dialog should call handleOnClose", () => {
         render(
             <Provider store={ store }>
-                <ProjectDeleteDialog {... props } open={ true } handleOnClose={ handleOnClose }/>
+                <ProjectDeleteDialog {... props } open={ true }/>
             </Provider>
         );
 
@@ -78,6 +88,6 @@ describe('ProjectDeleteDialog', () => {
 
         fireEvent.keyDown(dialog, { key: "Escape", code: 27 });
 
-        expect(handleOnClose).toHaveBeenCalledTimes(1);
+        expect(props.handleOnClose).toHaveBeenCalledTimes(1);
     });
 })

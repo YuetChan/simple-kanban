@@ -49,8 +49,8 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
 
         <Select
           value={ assignee }
-          label="status"
-          onChange={e => handlOnAssigneeSelect(e)}>
+          label="Status"
+          onChange={ (e) => handlOnAssigneeSelect(e) }>
 
           <MenuItem 
             value={ "none" }

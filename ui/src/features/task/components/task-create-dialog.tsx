@@ -113,6 +113,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
 
   const handleOnClose = () => {
     dispatch(updateActiveTags([]));
+    
     setTask(defaultTask);
 
     if(props.handleOnClose) {
@@ -132,6 +133,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     }
 
     dispatch(updateActiveTags([]));
+
     setTask(defaultTask);
   }
 

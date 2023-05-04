@@ -1,42 +1,47 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+
+import { Provider } from 'react-redux';
+
 import TaskAssigneeSelect from './task-assignee-select';
+import { truncate } from '../../../libs/text-lib';
 
-describe('AssigneeSelect', () => {
+const mockStore = configureMockStore([thunk]);
 
+describe('TaskAssigneeSelect', () => {
+    let store: any = mockStore({ });
 
-  const allAssignees = ["Alice", "Bob", "Charlie"];
-  const assignee = "Alice";
-  const handleOnSelectChange = jest.fn();
+    let props: {
+        assignee: string,
+        allAssignees: Array<string>,
+        handleOnSelectChange: Function
+    }
 
-  beforeEach(() => {
-
-  });
-
-    it('should render the AssigneeSelect component', () => {
-        render(
-            <TaskAssigneeSelect
-                assignee={ assignee }
-                allAssignees={ allAssignees }
-                handleOnSelectChange={ handleOnSelectChange }
-            />
-        );
-
-        const assigneeSelect = screen.getByRole('combobox');
-        expect(assigneeSelect).toBeInTheDocument();
+    beforeEach(() => {
+        props = {
+            allAssignees: [ "test_user1@example.com", "test_user2@example.com", "test_user3@example.com" ],
+            assignee: "test_user1@example.com",
+            handleOnSelectChange: jest.fn()
+        }
     });
 
-    it('should display the current assignee', () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+
+    it('should render correctly', () => {
         render(
-            <TaskAssigneeSelect
-                assignee={ assignee }
-                allAssignees={ allAssignees }
-                handleOnSelectChange={ handleOnSelectChange }
-            />
+            <Provider store={ store }>
+                <TaskAssigneeSelect { ... props } />
+            </Provider>
         );
+
+        const assigneeSelect = screen.getByRole("button", { name: truncate("test_user1@example.com", 18)  })
         
-        const selectedAssignee = screen.getByText(assignee);
-        
-        expect(selectedAssignee).toBeInTheDocument();
+        expect(assigneeSelect).toBeInTheDocument();
     });
 
 //   it('should display all the assignees', () => {

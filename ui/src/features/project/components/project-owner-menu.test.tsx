@@ -16,15 +16,15 @@ describe("ProjectOwnerMenu", () => {
     let store: any = mockStore({
         ProjectsCache: {
             _activeProject: {
-              id: '1',
+              id: "1",
               collaboratorList: [
-                { email: 'test_user2@example.com' },
-                { email: 'test_user3@example.com' },
+                { email: "test_user2@example.com" },
+                { email: "test_user3@example.com" },
               ],
             },
         },
         UserCache: {
-          _loginedUserEmail: 'test_user1@example.com',
+          _loginedUserEmail: "test_user1@example.com",
         },
     });
 
@@ -61,11 +61,11 @@ describe("ProjectOwnerMenu", () => {
             </Provider>
         );
     
-        const collaboratorAddEmailInput = screen.getByLabelText("Add email");
+        const collaboratorAddEmailInput = screen.getByLabelText("Email to add");
 
         fireEvent.change(collaboratorAddEmailInput, { target: { value: "test_user4@example.com" } });
 
-        const secretInput = screen.getByLabelText("Enter secret");
+        const secretInput = screen.getByLabelText("Secret");
 
         fireEvent.change(secretInput, { target: { value: "Test secret" } });    
 
@@ -116,11 +116,11 @@ describe("ProjectOwnerMenu", () => {
             </Provider>
         );
     
-        const collaboratorAddEmailInput = screen.getByLabelText("Add email");
+        const collaboratorAddEmailInput = screen.getByLabelText("Email to add");
 
         fireEvent.change(collaboratorAddEmailInput, { target: { value: "test_user4@example.com" } });
 
-        const secretInput = screen.getByLabelText("Enter secret");
+        const secretInput = screen.getByLabelText("Secret");
 
         fireEvent.change(secretInput, { target: { value: "Test secret" } });    
 
@@ -156,7 +156,7 @@ describe("ProjectOwnerMenu", () => {
             </Provider>
         );
     
-        const collaboratorRemoveEmailInput = screen.getByLabelText("Remove email");
+        const collaboratorRemoveEmailInput = screen.getByLabelText("Email to remove");
 
         fireEvent.change(collaboratorRemoveEmailInput, { target: { value: "test_user3@example.com" } });  
 
@@ -203,7 +203,7 @@ describe("ProjectOwnerMenu", () => {
             </Provider>
         );
     
-        const collaboratorRemoveEmailInput = screen.getByLabelText("Remove email");
+        const collaboratorRemoveEmailInput = screen.getByLabelText("Email to remove");
 
         fireEvent.change(collaboratorRemoveEmailInput, { target: { value: "test_user3@example.com" } });  
 

@@ -152,7 +152,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
       direction="column" 
       style={{ padding: "4px 16px" }} >
       <TextField 
-        label="Add email" 
+        label="Email to add" 
         variant="standard" 
         placeholder="Email"
         inputRef={ collaboratorAddRef }  
@@ -160,7 +160,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         onChange={ (e) => handleOnCollaboratorToAddEmailChange(e) } />
 
       <TextField 
-        label="Enter secret"
+        label="Secret"
         variant="standard" 
         placeholder="Secret" 
         inputRef={ collaboratorSecretRef }
@@ -186,7 +186,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
       direction="column" 
       style={{ padding: "4px 16px" }} >
       <TextField 
-        label="Remove email" 
+        label="Email to remove" 
         variant="standard" 
         placeholder="Email" 
         inputRef={ collaboratorRemoveRef }

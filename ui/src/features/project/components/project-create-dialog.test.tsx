@@ -10,27 +10,40 @@ import ProjectCreateDialog from "./project-create-dialog";
 const mockStore = configureMockStore([thunk]);
 
 describe('ProjectCreateDialog', () => {
-    let store: any = mockStore({
-        UserCache: {
-          _loginedUserEmail: 'test_user1@example.com',
-        },
-    });
+    let store: any;
 
-    const props = {
-        open: true,
-        title: "Test Title",
-        description: "Test Description",
-        showLogout: true,
-
-        handleOnProjectCreateClick: jest.fn(),
-        handleOnLogout: jest.fn(),
-        handleOnClose: jest.fn()
+    let props: {
+        open?: boolean,
+        title?: string,
+        description?: string,
+        showLogout?: boolean,
+      
+        handleOnProjectCreateClick?: Function,
+        handleOnLogout?: Function,
+        handleOnClose?: Function
     };
-
-    const handleOnProjectCreateClick = jest.fn();
-    const handleOnLogout = jest.fn();
-    const handleOnClose = jest.fn();
     
+
+    beforeEach(() => {
+        store = mockStore({
+            UserCache: {
+              _loginedUserEmail: 'test_user1@example.com',
+            },
+        });
+
+        props = {
+            open: true,
+            title: "Test Title",
+            description: "Test Description",
+            showLogout: true,
+    
+            handleOnProjectCreateClick: jest.fn(),
+            handleOnLogout: jest.fn(),
+            handleOnClose: jest.fn()
+        };
+    
+    })
+
 
     it("renders correctly", () => {
         render(
@@ -39,8 +52,9 @@ describe('ProjectCreateDialog', () => {
             </Provider>
         );
 
-        expect(screen.getByText( props.title )).toBeInTheDocument();
-        expect(screen.getByText( props.description )).toBeInTheDocument();
+        // 
+        expect(screen.getByText( "Test Title" )).toBeInTheDocument();
+        expect(screen.getByText( "Test Description" )).toBeInTheDocument();
     });
     
 
@@ -62,7 +76,7 @@ describe('ProjectCreateDialog', () => {
     it("Clicking logout button should call handleOnLogout", () => {
         render(
             <Provider store={ store }>
-                <ProjectCreateDialog { ... props } handleOnLogout={ handleOnLogout } />
+                <ProjectCreateDialog { ... props } />
             </Provider>
         );
 
@@ -70,14 +84,14 @@ describe('ProjectCreateDialog', () => {
 
         fireEvent.click(logoutButton);
 
-        expect(handleOnLogout).toHaveBeenCalledTimes(1);
+        expect(props.handleOnLogout).toHaveBeenCalledTimes(1);
     });
     
 
     it("Clicking close button should call handleOnClose", () => {   
         render(
             <Provider store={ store }>
-                <ProjectCreateDialog { ... props } handleOnClose={ handleOnClose } />
+                <ProjectCreateDialog { ... props } />
             </Provider>
         );
 
@@ -85,14 +99,14 @@ describe('ProjectCreateDialog', () => {
 
         fireEvent.keyDown(dialog, { key: "Escape", code: 27 });
         
-        expect(handleOnClose).toHaveBeenCalledTimes(1);
+        expect(props.handleOnClose).toHaveBeenCalledTimes(1);
     });
 
 
     it("Clicking close button should empty project name", () => {
         render(
             <Provider store={ store }>
-                <ProjectCreateDialog { ... props } handleOnClose={ handleOnClose } />
+                <ProjectCreateDialog { ... props } />
             </Provider>
         );
 
@@ -109,7 +123,7 @@ describe('ProjectCreateDialog', () => {
     it("Clicking create button should call handleOnProjectCreateClick", () => {  
         render(
             <Provider store={ store }>
-                <ProjectCreateDialog { ...props }  handleOnProjectCreateClick={handleOnProjectCreateClick} />
+                <ProjectCreateDialog { ...props } />
             </Provider>
         );
 
@@ -117,6 +131,6 @@ describe('ProjectCreateDialog', () => {
 
         fireEvent.click(createButton);
 
-        expect(handleOnProjectCreateClick).toHaveBeenCalledTimes(1);
+        expect(props.handleOnProjectCreateClick).toHaveBeenCalledTimes(1);
     });
 })

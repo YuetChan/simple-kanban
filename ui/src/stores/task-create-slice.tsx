@@ -16,11 +16,11 @@ interface TaskCreateState {
 }
 
 const { reducer, actions } = createSlice({
-  name: 'TaskCreate',
+  name: "TaskCreate",
 
   initialState: {
     _tagsEditAreaFocused: false,
-    _tagsEditAreaSearchStr: '',
+    _tagsEditAreaSearchStr: "",
     _tagsEditAreaRef: undefined,
 
     _activeTags: [],
@@ -29,7 +29,7 @@ const { reducer, actions } = createSlice({
   
     _searchResultPanelMouseOver: false,
 
-    _lastFocusedArea: ''
+    _lastFocusedArea: ""
   } as TaskCreateState,
   
   reducers: {
