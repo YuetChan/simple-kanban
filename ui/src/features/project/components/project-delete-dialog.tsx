@@ -67,6 +67,7 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
             <TextField 
               placeholder="DELETE" 
               value={ value }  
+              label="Enter delete"
               onChange={ handleOnChange } />
           </DialogContentText>
         </DialogContent>

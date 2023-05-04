@@ -37,6 +37,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
   }
 
   const handleOnTextFieldChange = (e: any) => {
+    console.log(e.target.value)
     if(props.handleOnTextFieldChange) {
       props.handleOnTextFieldChange(e);
     }
@@ -47,6 +48,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
   const handleOnKeyPress = (e: any) => {
     if(e.keyCode === 13) {
       const newTag = e.target.value;
+
       if(tags.filter(tag => tag === newTag).length <= 0) {
         setTags([... tags, newTag]);
         setTagInput('');
@@ -82,7 +84,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
           inputRef={ props.inputRef } 
           value={ tagInput } 
           onChange={ (e) => handleOnTextFieldChange(e) }
-          onKeyDown={ handleOnKeyPress }
+          onKeyDown={ (e) => handleOnKeyPress(e) }
           onFocus= { (e) => handleOnFocus(e) }
           onBlur={ handleOnBlur } />
           {
@@ -96,8 +98,8 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
                     tags.map(tag => {
                       return (
                         <TagArea 
-                          tag={tag}
-                          showDelete={true}
+                          tag={ tag }
+                          showDelete={ true }
                           handleOnDeleteClick={ handleOnDeleteClick } />
                       )
                     })

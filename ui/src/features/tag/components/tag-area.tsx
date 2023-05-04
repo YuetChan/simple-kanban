@@ -40,8 +40,8 @@ const TagArea = (props: TagAreaProps) => {
           <IconButton 
             sx={{ padding: "0px" }}
             onClick={ e => handleOnCloseClick(e) }>
-            <CloseIcon fontSize='small' />
-          </ IconButton>
+            <CloseIcon fontSize="small" />
+          </IconButton>
           )
         : null
       }

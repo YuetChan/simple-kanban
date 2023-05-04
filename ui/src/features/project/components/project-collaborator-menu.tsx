@@ -39,6 +39,7 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
 
   const handleOnQuitProjectClick = () => {
     const activeProject = projectsCacheState._activeProject;
+
     if(activeProject) {
       const activeCollaboratorEmails = activeProject.collaboratorList.map(collaborator => collaborator.email);
       
@@ -56,7 +57,7 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
       }
   
       updateProjectById(updatedProject.id, updatedProject, new Map()).then(res => {
-        alert('You are removed');
+        alert('You are removed from project');
         dispatch(updateActiveProject(undefined));
       }).catch(err => {
         console.log(err);

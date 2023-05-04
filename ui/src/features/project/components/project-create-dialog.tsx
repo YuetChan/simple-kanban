@@ -121,7 +121,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
       <UserSecretMenu 
         secretMenuAnchorEl={ secretMenuAnchorEl }
         secretMenuOpen={ secretMenuOpen }
-        handleSecretMenuClose={ handleSecretMenuClose } />  
+        handleSecretMenuClose={ handleSecretMenuClose }/>  
     </Dialog>
   )
 }

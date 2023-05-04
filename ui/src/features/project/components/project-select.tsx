@@ -19,11 +19,11 @@ const ProjectSelect = (props: ProjectSelectProps) => {
   return (
     <FormControl sx={{ m: 1, minWidth: 120 }}>
       <Select
-        inputProps={{ 'aria-label': 'Without label' }}
+        // inputProps={{ 'aria-label': 'Without label' }}
         value={ projectsCacheState._activeProject?.id ? projectsCacheState._activeProject?.id: "-" }
         onChange={ props.handleOnProjectChange } >
         <MenuItem disabled={ props.yourProjectDisabled } value="-" >
-          <em>Your Projects</em>
+          Your Projects
         </MenuItem>
 
         {
@@ -46,7 +46,7 @@ const ProjectSelect = (props: ProjectSelectProps) => {
         }
 
         <MenuItem disabled={ true } value="+" >
-          <em>Joined Projects</em>
+          Joined Projects
         </MenuItem>
       </Select>
     </FormControl>
