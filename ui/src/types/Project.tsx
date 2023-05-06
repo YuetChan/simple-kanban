@@ -3,6 +3,7 @@ import { User } from "./User"
 export interface Project {
   id: string,
   name: string,
+  description: string,
   userEmail: string,
 
   collaboratorList: Array<User>,

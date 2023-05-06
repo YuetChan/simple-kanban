@@ -18,7 +18,9 @@ import { actions as ProjectsCahceActions } from "../../../stores/projects-cache-
 interface ProjectOwnerMenuProps {
   ownerMenuAnchorEl: any,
   ownerMenuOpen: boolean,
-  handleOnOwnerMenuClose?: Function
+  handleOnOwnerMenuClose?: Function,
+
+  handleOnCollaboratorAddClick?: Function
 }
 
 const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
@@ -69,45 +71,14 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   }
 
   const handleOnCollaboratorAddClick = (e: any) => {
-    const activeProject = projectsCacheState._activeProject;
-
-    if(activeProject) {
-      const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
-
-      if(collaboratorEmails.indexOf(collaboratorToAddEmail) !== -1) {
-        alert("Collaborator already added to the project");
-        return;
-      }
-  
-      const updatedCollaboratorEmails = [ ...collaboratorEmails, collaboratorToAddEmail];
-      const updatedCollaborators = updatedCollaboratorEmails.map(email => {
-        return { email: email } as User;
-      })
-  
-      const updatedProject = {
-        ... activeProject,
-        collaboratorList: updatedCollaborators
-      }
-  
-      const collaboratorEmailSecretMap = {
-        [collaboratorToAddEmail]: collaboratorSecret
-      }
-  
-      updateProjectById(activeProject.id, updatedProject, collaboratorEmailSecretMap).then(res => {
-        alert("Collaborator added");
-  
-        getProjectById(activeProject.id).then(res => {
-          dispatch(updateActiveProject(res));
-        });
-      }).catch(err => {
-        console.log(err);
-        alert("Opps, failed to add collaborator")
-      });
+    if(props.handleOnCollaboratorAddClick) {
+      props.handleOnCollaboratorAddClick(collaboratorToAddEmail, collaboratorSecret)
     }
   }
 
   const handleOnCollaboratorRemoveClick = (e: any) => {
     const activeProject = projectsCacheState._activeProject;
+
     if(activeProject) {
       const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
       const updatedCollaboratorEmails = collaboratorEmails.filter(email => {
@@ -116,6 +87,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
   
       if(updatedCollaboratorEmails.length === collaboratorEmails.length) {
         alert("Collaborator not in project");
+
         return;
       }
   
@@ -136,6 +108,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
         })
       }).catch(err => {
         console.log(err);
+
         alert("Opps, failed to remove collaborator")
       });
     }

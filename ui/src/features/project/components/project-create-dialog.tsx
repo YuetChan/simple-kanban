@@ -1,12 +1,8 @@
 import React from "react";
 
-import { useSelector } from "react-redux";
-
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField } from "@mui/material";
 
 import UserSecretMenu from "../../user/components/user-secret-menu";
-
-import { AppState } from "../../../stores/app-reducers";
 
 interface ProjectCreateDialogProps {
   open?: boolean,
@@ -14,15 +10,12 @@ interface ProjectCreateDialogProps {
   description?: string,
   showLogout?: boolean,
 
-  handleOnProjectCreateClick?: Function,
+  handleOnProjectCreate?: Function,
   handleOnLogout?: Function,
   handleOnClose?: Function
 }
 
 const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
-  // ------------------ User cache ------------------
-  const userCacheState = useSelector((state: AppState) => state.UserCache);;
-
   // ------------------ Project create dialog ------------------
   const [ projectName, setProjectName ] = React.useState('');
 
@@ -30,12 +23,9 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
     setProjectName(e.target.value);
   }  
   
-  const handleOnProjectCreateClick = () => {
-    if(props.handleOnProjectCreateClick) {
-      props.handleOnProjectCreateClick({
-        name: projectName,
-        userEmail: userCacheState._loginedUserEmail
-      });
+  const handleOnProjectCreate = () => {
+    if(props.handleOnProjectCreate) {
+      props.handleOnProjectCreate(projectName, "");
     } 
 
     setProjectName('');
@@ -45,6 +35,8 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
     if(props.handleOnLogout) {
       props.handleOnLogout();
     }
+
+    setProjectName('');
   }
 
   const handleOnClose = () => {
@@ -113,7 +105,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
 
         <Button 
           variant="outlined" 
-          onClick={ handleOnProjectCreateClick }>
+          onClick={ handleOnProjectCreate }>
           Create
         </Button>
       </DialogActions>

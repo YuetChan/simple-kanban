@@ -5,11 +5,11 @@ import thunk from 'redux-thunk';
 
 import { Provider } from 'react-redux';
 
-import TaskPrioritySelect from './task-priority-select';
+import TaskSearchPrioritySelect from './task-search-priority-select';
 
 const mockStore = configureMockStore([thunk]);
 
-describe('TaskPrioritySelect', () => {
+describe('TaskSearchPrioritySelect', () => {
     let store: any = mockStore({ 
         UserCache: {
           _loginedUserEmail: "test_user1@example.com",
@@ -36,7 +36,7 @@ describe('TaskPrioritySelect', () => {
     it('should render correctly', () => {
         render(
             <Provider store={ store }>
-                <TaskPrioritySelect { ... props } />
+                <TaskSearchPrioritySelect { ... props } />
             </Provider>
         );
 

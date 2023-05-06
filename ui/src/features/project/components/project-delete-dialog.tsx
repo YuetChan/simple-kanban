@@ -13,10 +13,10 @@ interface ProjectDeleteDialogProps {
 const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
   // ------------------ Project delete dialog ------------------
   const [ enable, setEnable ] = React.useState(false);
-  const [ value, setValue ] = React.useState('');
+  const [ value, setValue ] = React.useState("");
 
   useEffect(() => {
-    setEnable(value === 'DELETE');
+    setEnable(value === "DELETE");
   }, [ value ]);
 
   const handleOnClose = () => {
@@ -24,13 +24,15 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
       props.handleOnClose();
     }
 
-    setValue('');
+    setValue("");
   }
 
   const handleOnDelete = () => {
     if(props.handleOnDelete) {
       props.handleOnDelete();
     }
+
+    setValue("");
   }
 
   const handleOnChange = (e: any) => {

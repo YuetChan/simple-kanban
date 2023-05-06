@@ -72,9 +72,6 @@ function App() {
 
   // ------------------ Kanban table ------------------
   const { refreshTable } = kanbanTableActions;
-
-  // ------------------ Home ------------------
-
   
   // ------------------ Auth ------------------
   const [ authed, setAuthed ] = React.useState(false);
@@ -148,7 +145,13 @@ function App() {
 
 
   // ------------------ Project create dialog ------------------
-  const handleOnProjectCreateClick = (project: Project) => {
+  const handleOnProjectCreate = (name: string, description: string) => {
+    const project = {
+      name: name,
+      description: description,
+      userEmail: userCacheState._loginedUserEmail,
+    } as Project
+
     createProject(project).then(res => {
       getProjectById(res.id).then(res => {
         dispatch(updateAllProjects([ res, ...projectsCacheState._allProjects ]));
@@ -255,7 +258,7 @@ function App() {
           description="Please enter the project name to create your project."
           open={ projectCreateDialogState.show } 
           showLogout={ projectsCacheState._allProjects.length === 0 }
-          handleOnProjectCreateClick = { (project: Project) => handleOnProjectCreateClick(project) } 
+          handleOnProjectCreate = { (name: string, description: string) => handleOnProjectCreate(name, description) } 
           handleOnClose={ handleOnProjectCreateDialogClose } 
           handleOnLogout={ handleOnLogoutClick }/>  
       </div>

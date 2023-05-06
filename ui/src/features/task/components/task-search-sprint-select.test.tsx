@@ -5,27 +5,21 @@ import thunk from 'redux-thunk';
 
 import { Provider } from 'react-redux';
 
-import TaskPrioritySelect from './task-priority-select';
+import TaskSearchSprintSelect from './task-search-sprint-select';
 
 const mockStore = configureMockStore([thunk]);
 
-describe('TaskPrioritySelect', () => {
+describe('TaskSearchPrioritySelect', () => {
     let store: any = mockStore({ 
         UserCache: {
           _loginedUserEmail: "test_user1@example.com",
         },
     });
 
-    let props: { 
-        value: string,
-        handleOnPriorityChange: Function
-    }
+    let props: { }
 
     beforeEach(() => {
-        props = { 
-            value: "low",
-            handleOnPriorityChange: jest.fn()
-        }
+        props = { }
     });
 
     afterEach(() => {
@@ -36,12 +30,12 @@ describe('TaskPrioritySelect', () => {
     it('should render correctly', () => {
         render(
             <Provider store={ store }>
-                <TaskPrioritySelect { ... props } />
+                <TaskSearchSprintSelect { ... props } />
             </Provider>
         );
 
-        const prioritySelect = screen.getByRole("button", { name: /low/i  })
+        const sprintLabel = screen.getByText("Sprint")
 
-        expect(prioritySelect).toBeInTheDocument();
+        expect(sprintLabel).toBeInTheDocument();
     });
 });

@@ -2,7 +2,7 @@ import { FormControl, InputLabel, Select } from "@mui/material";
 
 interface TasSearchkSprintSelectProps { }
 
-const TaskSearchkSprintSelect = (props: TasSearchkSprintSelectProps) => {
+const TaskSearchSprintSelect = (props: TasSearchkSprintSelectProps) => {
   // ------------------ Html template ------------------
   return (
     <FormControl 
@@ -16,4 +16,4 @@ const TaskSearchkSprintSelect = (props: TasSearchkSprintSelectProps) => {
   )
 }
 
-export default TaskSearchkSprintSelect;
+export default TaskSearchSprintSelect;

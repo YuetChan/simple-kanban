@@ -13,6 +13,7 @@ const TaskPrioritySelect = (props: TaskPrioritySelectProps) => {
 
   const handleOnPrioritySelect = (e: any) =>{
     setPriority(e.target.value);
+    
     props.handleOnPriorityChange(e);
   }
 

@@ -1,7 +1,5 @@
 package com.tycorp.simplekanban.engine.domain.task;
 
-import com.tycorp.simplekanban.engine.domain.task.Task;
-import com.tycorp.simplekanban.engine.domain.task.TaskNode;
 import com.tycorp.simplekanban.engine.domain.task.repository.TaskRepository;
 import com.tycorp.simplekanban.engine.pattern.persistence.PersistenceStageI;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -18,7 +18,7 @@ describe('ProjectCreateDialog', () => {
         description?: string,
         showLogout?: boolean,
       
-        handleOnProjectCreateClick?: Function,
+        handleOnProjectCreate?: Function,
         handleOnLogout?: Function,
         handleOnClose?: Function
     };
@@ -37,7 +37,7 @@ describe('ProjectCreateDialog', () => {
             description: "Test Description",
             showLogout: true,
     
-            handleOnProjectCreateClick: jest.fn(),
+            handleOnProjectCreate: jest.fn(),
             handleOnLogout: jest.fn(),
             handleOnClose: jest.fn()
         };
@@ -120,7 +120,7 @@ describe('ProjectCreateDialog', () => {
     });
 
 
-    it("Clicking create button should call handleOnProjectCreateClick", () => {  
+    it("Clicking create button should call handleOnProjectCreate", () => {  
         render(
             <Provider store={ store }>
                 <ProjectCreateDialog { ...props } />
@@ -131,6 +131,6 @@ describe('ProjectCreateDialog', () => {
 
         fireEvent.click(createButton);
 
-        expect(props.handleOnProjectCreateClick).toHaveBeenCalledTimes(1);
+        expect(props.handleOnProjectCreate).toHaveBeenCalledTimes(1);
     });
 })

@@ -24,7 +24,7 @@ import ProjectSelect from '../features/project/components/project-select';
 import UserListMenu from '../features/user/components/user-list-menu';
 import UserSecretMenu from '../features/user/components/user-secret-menu';
 import TaskSearchPrioritySelect from '../features/task/components/task-search-priority-select';
-import TaskSearchkSprintSelect from '../features/task/components/task-search-sprint-select';
+import TaskSearchSprintSelect from '../features/task/components/task-search-sprint-select';
 
 import { AppState } from '../stores/app-reducers';
 
@@ -33,7 +33,13 @@ import { actions as projectsCacheActions } from '../stores/projects-cache-slice'
 import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
 
+
+
+// import { updateProjectById } from "../services/projects-service";
+
 import { redirectToLoginPage } from '../services/auth.services';
+import { getProjectById, updateProjectById } from '../features/project/services/projects-service';
+import { User } from '../types/User';
 
 interface KanbanDrawerProps { }
 
@@ -47,7 +53,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   // -------------- Projects cache --------------
   const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-  const { selectActiveProject } = projectsCacheActions;
+  const { selectActiveProject, updateActiveProject } = projectsCacheActions;
 
   // -------------- Projects create dialog --------------
   const { showProjectCreateDialog, hideProjectCreateDialog } = projectCreateDialogActions;
@@ -141,6 +147,76 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
   const handleOnCollaboratorsMenuClose = () => {
     setCollaboratorsMenuAnchorEl(null);
+  }
+
+  const handleOnQuitProjectClick = () => {
+    const activeProject = projectsCacheState._activeProject;
+
+    if(activeProject) {
+      const activeCollaboratorEmails = activeProject.collaboratorList.map(collaborator => collaborator.email);
+      
+      const updatedCollaboratorEmails = activeCollaboratorEmails.filter(email => 
+        email !== userCacheState._loginedUserEmail);
+
+      const updatedCollaborators = updatedCollaboratorEmails.map(email => {
+        return { 
+          email: email 
+        } as User;
+      });
+  
+      const updatedProject = {
+        ... activeProject,
+        collaboratorList: updatedCollaborators
+      }
+  
+      updateProjectById(updatedProject.id, updatedProject, new Map()).then(res => {
+        alert('You are removed from project');
+
+        dispatch(updateActiveProject(undefined));
+      }).catch(err => {
+        console.log(err);
+        alert('Opps, failed to remove yourself from project')
+      });
+    }
+  }
+
+  const handleOnCollaboratorAddClick = (collaboratorToAddEmail: string, collaboratorSecret: string) => {
+    const activeProject = projectsCacheState._activeProject;
+
+    if(activeProject) {
+      const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
+
+      if(collaboratorEmails.indexOf(collaboratorToAddEmail) !== -1) {
+        alert("Collaborator already added to the project");
+        return;
+      }
+  
+      const updatedCollaboratorEmails = [ ...collaboratorEmails, collaboratorToAddEmail];
+      const updatedCollaborators = updatedCollaboratorEmails.map(email => {
+        return { email: email } as User;
+      })
+  
+      const updatedProject = {
+        ... activeProject,
+        collaboratorList: updatedCollaborators
+      }
+  
+      const collaboratorEmailSecretMap = {
+        [collaboratorToAddEmail]: collaboratorSecret
+      }
+  
+      updateProjectById(activeProject.id, updatedProject, collaboratorEmailSecretMap).then(res => {
+        alert("Collaborator added");
+  
+        getProjectById(activeProject.id).then(res => {
+          dispatch(updateActiveProject(res));
+        });
+      }).catch(err => {
+        console.log(err);
+        
+        alert("Opps, failed to add collaborator")
+      });
+    }
   }
 
   const openCollaboratorsMenu = (e: any) => {
@@ -308,7 +384,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
           <Tooltip title="Coming soon.">
             <div>
-              <TaskSearchkSprintSelect />
+              <TaskSearchSprintSelect />
             </div>
           </Tooltip>
              
@@ -364,12 +440,15 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
       <ProjectOwnerMenu 
         ownerMenuAnchorEl={ ownerMenuAnchorEl }
         ownerMenuOpen={ ownerMenuOpen }
-        handleOnOwnerMenuClose={ handleOnOwnerMenuClose } />
+        handleOnOwnerMenuClose={ handleOnOwnerMenuClose } 
+        handleOnCollaboratorAddClick={ (collaboratorToAddEmail: string, collaboratorSecret: string) => handleOnCollaboratorAddClick(collaboratorToAddEmail, collaboratorSecret) } />
 
       <ProjectCollaboratorMenu
         collaboratorsMenuAnchorEl={ collaboratorsMenuAnchorEl }
         collaboratorsMenuOpen={ collaboratorsMenuOpen }
-        handleOnCollaboratorsMenuClose={ handleOnCollaboratorsMenuClose } />
+        handleOnCollaboratorsMenuClose={ handleOnCollaboratorsMenuClose } 
+        handleOnQuitProjectClick={ handleOnQuitProjectClick }
+        />
 
       <UserListMenu 
         usersFilterMenuAnchorEl={ usersFilterMenuAnchorEl }
