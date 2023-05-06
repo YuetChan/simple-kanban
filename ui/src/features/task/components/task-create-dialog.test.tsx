@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';

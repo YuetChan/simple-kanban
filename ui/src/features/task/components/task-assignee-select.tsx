@@ -18,10 +18,13 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
 
   const handlOnAssigneeSelect = (e: any) => {
     setAssignee(e.target.value)
+
     props.handleOnSelectChange(e); 
   }
 
   const getAssigneeHTML = (assignee: string): any => {
+    console.log(assignee)
+
     return (
       <Stack 
         direction="row" 
@@ -49,7 +52,7 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
 
         <Select
           value={ assignee }
-          label="Status"
+          label="Assignee"
           onChange={ (e) => handlOnAssigneeSelect(e) }>
 
           <MenuItem 
@@ -71,7 +74,8 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
                 overflowX: "auto"
                 }}>
               { getAssigneeHTML(assignee) }
-            </MenuItem>))
+            </MenuItem>
+            ))
           }
         </Select>
       </FormControl>

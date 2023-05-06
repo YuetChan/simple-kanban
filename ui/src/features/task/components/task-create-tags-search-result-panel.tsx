@@ -48,7 +48,7 @@ const TagsSearchResultPanel = (props: any) => {
     if(activeProject) {
       fetchTags(activeProject.id, 0);
     }
-  }, [ taskCreateState._tagsEditAreaSearchStr]);
+  }, [ taskCreateState._tagsEditAreaSearchStr ]);
 
   const handleOnPageChange = (e: any, val: number) => {
     const activeProject = projectsCacheState._activeProject;
