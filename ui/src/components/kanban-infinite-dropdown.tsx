@@ -1,4 +1,4 @@
-import { Menu, MenuItem, TextField } from "@mui/material";
+import { MenuItem, MenuList, Paper, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 
 interface KanbanInfiniteDropdownProps {
@@ -9,8 +9,9 @@ interface KanbanInfiniteDropdownProps {
 }
 
 const KanbanInfiniteDropdown = (props: KanbanInfiniteDropdownProps) => {
-    const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
     const [ open, setOpen ] = useState<boolean>(false)
+
+    const [ value, setValue ] = useState<string>("")
 
     const [options, setOptions ] = useState<Array<any>>([]);
 
@@ -23,30 +24,34 @@ const KanbanInfiniteDropdown = (props: KanbanInfiniteDropdownProps) => {
         if (Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 1) {
             setLoading(true);
 
-            // props.fetchByPageFunc(page)
-
             setTimeout(() => {
                 setLoading(false);
-                e.target.scrollTop = target.scrollHeight - target.clientHeight - 100
+
+                let scrollTop = target.scrollHeight - target.clientHeight - 10; 
+                scrollTop = scrollTop < 0 ? 0 : scrollTop
+
+                e.target.scrollTop = scrollTop
             }, 1000);
         }   
     };
+
+    const handleOnChange = (e: any) => {
+        setValue(e.target.value)
+    }
 
     const handleOnFocus = (e: any) => {
         if(props.handleOnInputFocus){
             props.handleOnInputFocus(e)
         }
 
-        setAnchorEl(e.currentTarget)
         setOpen(true)
     }
 
-    const handleOnClose = (e: any) => {
+    const handleOnBlur = (e: any) => {
         if(props.handleOnDropdownClose) {
             props.handleOnDropdownClose(e)
         }
 
-        setAnchorEl(null);
         setOpen(false)
     }
   
@@ -57,36 +62,50 @@ const KanbanInfiniteDropdown = (props: KanbanInfiniteDropdownProps) => {
     return (
         <div>
             <TextField 
-                variant="outlined"
+                variant="standard"
                 label="Filter card on board"
+                value={ value }
+
+                onChange={ (e) => handleOnChange(e)}
                 onFocus={ (e) => handleOnFocus(e) }
+                onBlur={ (e) => handleOnBlur(e) }
+
+                sx={{
+                    width: "100px"
+                }}
                 />
 
-            <Menu        
-                anchorEl={ anchorEl }
-                open={ open }
-                onClose={ (e) => handleOnClose(e) }
-                PaperProps={{
-                    onScroll: (e) => handleOnScroll(e)
-                }}
-                sx={{
-                    maxHeight: "200px"
-                    }}>
-                {
-                    options.map(option => (
-                        <MenuItem 
-                            key={ option } 
-                            value={ option } 
-                            sx={{ 
-                                minWidth: "100px" 
-                                }}>
-                            { option }
-                        </MenuItem>
-                    ))
-                }
-                
-                { loading && <MenuItem disabled>Loading...</MenuItem> }
-            </Menu>
+            {
+                open
+                ? (
+                    <Paper 
+                        sx={{
+                            maxHeight: "200px",
+                            overflow: "scroll",
+                            position: "fixed",
+                            zIndex: "999"
+                            }}
+                        onScroll={ (e: any) => handleOnScroll(e) } 
+                        >
+                        <MenuList variant="menu">
+                            {
+                                options.map(option => (
+                                    <MenuItem 
+                                        key={ option } 
+                                        value={ option } 
+                                        sx={{ 
+                                            width: "100px" 
+                                            }}>
+                                        { option }
+                                    </MenuItem>
+                                ))
+                            }
+                    
+                            { <MenuItem disabled>{loading?  "Loading..." : "No more"}</MenuItem> }
+                        </MenuList>
+                    </Paper>
+                ): null
+            }
         </div>
     );
 }
