@@ -11,7 +11,6 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import KeyOutlinedIcon from '@mui/icons-material/KeyOutlined';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -33,13 +32,12 @@ import { actions as projectsCacheActions } from '../stores/projects-cache-slice'
 import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
 
-
-
-// import { updateProjectById } from "../services/projects-service";
-
 import { redirectToLoginPage } from '../services/auth.services';
 import { getProjectById, updateProjectById } from '../features/project/services/projects-service';
+import { generateUserSecretById, getUserByEmail } from "../features/user/services/users-service";
 import { User } from '../types/User';
+import { textToAvatar } from '../services/avatar-service';
+import KanbanInfiniteDropdown from '../components/kanban-infinite-dropdown';
 
 interface KanbanDrawerProps { }
 
@@ -49,6 +47,18 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
   // ------------------ Cookies -----------------
   const [ cookie, removeCookie ] = useCookies(['jwt']);
+
+  // -------------- Tasks search --------------
+  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
+
+  const { 
+    focusTagsEditArea, blurTagsEditArea,
+    updateTagsEditAreaSearchStr, 
+    updateActiveTags, 
+    setTagsEditAreaRef, 
+    selectActivePriority,
+    addActiveUserEmail, removeActiveUserEmail
+  } = tasksSearchActions;
 
   // -------------- Projects cache --------------
   const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
@@ -61,17 +71,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   // -------------- User cache --------------
   const userCacheState = useSelector((state: AppState) => state.UserCache);
 
-  const { updateLoginedUserEmail } = usersCacheActions;
-
-  // -------------- Tasks search --------------
-  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
-
-  const { 
-    focusTagsEditArea, blurTagsEditArea,
-    updateTagsEditAreaSearchStr, 
-    updateActiveTags, 
-    setTagsEditAreaRef, 
-  } = tasksSearchActions;
+  const { updateLoginedUserEmail, updateLoginedUserSecret } = usersCacheActions;
 
   // -------------- Kanban drawer --------------
   const [ yourProjectDisabled, setYourProjectDisabled ] = React.useState(true);
@@ -84,9 +84,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     }
   }, [ projectsCacheState._allProjects ]);
 
-  const handleOnProjectChange = (e: any) => {
+  const handleOnProjectChange = (projectId: string) => {
     const projects = projectsCacheState._allProjects.filter(project => {
-      return project.id === e.target.value
+      return project.id === projectId
     });
 
     dispatch(selectActiveProject(projects.length > 0 ? projects[0] : undefined));
@@ -96,11 +96,14 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     dispatch(showProjectCreateDialog());
   }
 
+  const handleOnPrioritySelect = (priority: string) => {
+    dispatch(selectActivePriority(priority));
+  }
+
   const handleOnLogoutClick = () => {
     removeCookie('jwt', '/');
 
     dispatch(updateLoginedUserEmail(''));
-    // redirectToLoginPage();
   }
 
   const handleOnDeleteClick = () => {
@@ -111,12 +114,65 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   const [ usersFilterMenuAnchorEl, setUsersFilterMenuAnchorEl ] = React.useState(null);
   const usersFilterMenuOpen = Boolean(usersFilterMenuAnchorEl);
 
+  const [ userCheckMp, setUserCheckMp ] =  React.useState<Map<string, boolean> | undefined>(undefined);
+  
+  const [ userList, setUserList ] = React.useState<Array<string>>([])
+
+  useEffect(() => {
+    if(projectsCacheState._activeProject) {
+      const checkMp = new Map();
+      checkMp.set(projectsCacheState._activeProject.userEmail, false);
+
+      setUserCheckMp(checkMp);
+
+      const _userList = projectsCacheState._activeProject.collaboratorList.map(user => user.email)
+      _userList.push(projectsCacheState._activeProject.userEmail)
+
+      setUserList(_userList)
+    }
+  }, [ projectsCacheState._activeProject ]);
+
+  useEffect(() => {
+    if(projectsCacheState._activeProject) {
+      const userEmail = projectsCacheState._activeProject.userEmail;
+
+      const checkMp = new Map();
+      checkMp.set(userEmail, checkMp.get(userEmail));
+
+      tasksSearchState._activeUserEmails.forEach(email => checkMp.set(email, true));
+
+      setUserCheckMp(checkMp);
+    }
+  }, [ tasksSearchState._activeUserEmails ]);
+
   const handleOnUsersFilterMenuClose = () => {
     setUsersFilterMenuAnchorEl(null);
   }
 
   const handleOnUserAvatarsClick = (e: any) => {
     setUsersFilterMenuAnchorEl(e.currentTarget);
+  }
+
+  const handleOnOwnerCheck = (checked: boolean) => {
+    const activeProject = projectsCacheState._activeProject;
+
+    if(activeProject) {
+      const userEmail = activeProject.userEmail;
+
+      if(checked) {
+        dispatch(addActiveUserEmail(userEmail));
+      }else {
+        dispatch(removeActiveUserEmail(userEmail));
+      }
+    }
+  }
+
+  const handleOnCollaboratorCheck = (checked: boolean, email: string) => {
+    if(checked) {
+      dispatch(addActiveUserEmail(email));
+    }else {
+      dispatch(removeActiveUserEmail(email));
+    }
   }
 
   // -------------- Project owner menu --------------
@@ -169,12 +225,13 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
         collaboratorList: updatedCollaborators
       }
   
-      updateProjectById(updatedProject.id, updatedProject, new Map()).then(res => {
+      updateProjectById(updatedProject.id, updatedProject).then(res => {
         alert('You are removed from project');
 
         dispatch(updateActiveProject(undefined));
       }).catch(err => {
         console.log(err);
+
         alert('Opps, failed to remove yourself from project')
       });
     }
@@ -188,6 +245,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
       if(collaboratorEmails.indexOf(collaboratorToAddEmail) !== -1) {
         alert("Collaborator already added to the project");
+
         return;
       }
   
@@ -201,11 +259,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
         collaboratorList: updatedCollaborators
       }
   
-      const collaboratorEmailSecretMap = {
-        [collaboratorToAddEmail]: collaboratorSecret
-      }
-  
-      updateProjectById(activeProject.id, updatedProject, collaboratorEmailSecretMap).then(res => {
+      updateProjectById(activeProject.id, updatedProject).then(res => {
         alert("Collaborator added");
   
         getProjectById(activeProject.id).then(res => {
@@ -215,6 +269,44 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
         console.log(err);
         
         alert("Opps, failed to add collaborator")
+      });
+    }
+  }
+
+  const handleOnCollaboratorRemoveClick = (collaboratorToRemoveEmail: string) => {
+    const activeProject = projectsCacheState._activeProject;
+
+    if(activeProject) {
+      const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
+      const updatedCollaboratorEmails = collaboratorEmails.filter(email => {
+        return email !== collaboratorToRemoveEmail;
+      })
+  
+      if(updatedCollaboratorEmails.length === collaboratorEmails.length) {
+        alert("Collaborator not in project");
+
+        return;
+      }
+  
+      const updatedCollaborators = updatedCollaboratorEmails.map(email => {
+        return { email: email } as User;
+      })
+  
+      const updatedProject = {
+        ... activeProject,
+        collaboratorList: updatedCollaborators
+      }
+  
+      updateProjectById(activeProject.id, updatedProject).then(res => {
+        alert("Collaborator removed");
+  
+        getProjectById(activeProject.id).then(res => {
+          dispatch(updateActiveProject(res));
+        })
+      }).catch(err => {
+        console.log(err);
+
+        alert("Opps, failed to remove collaborator")
       });
     }
   }
@@ -229,6 +321,14 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
   const handleSecretMenuClose = () => {
     setSecretMenuAnchorEl(null);
+  }
+
+  const handleOnRenewSecretClick = () => {
+    getUserByEmail(userCacheState._loginedUserEmail).then((res: any) => {
+      generateUserSecretById(res.id).then((res: any) => {
+        dispatch(updateLoginedUserSecret(res));
+      });
+    });
   }
 
   const openSecretMenu = (e: any) => {
@@ -282,11 +382,16 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
       anchor="left">
       <List>
         <ListItem>
+          <KanbanInfiniteDropdown />
+
           <div><b>Projects: </b></div>
 
-          <ProjectSelect 
-            handleOnProjectChange={ handleOnProjectChange }
-            yourProjectDisabled={ yourProjectDisabled } />
+          <ProjectSelect
+            activeProject={ projectsCacheState._activeProject } 
+            projects = { projectsCacheState._allProjects }
+            yourProjectDisabled={ yourProjectDisabled } 
+            
+            handleOnProjectChange={ (projectId: string) => handleOnProjectChange(projectId) }/>
         </ListItem>
 
         <ListItem key={ "New Project" } disablePadding>
@@ -295,6 +400,15 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
               <AddBoxOutlinedIcon/>
             </ListItemIcon>
             <ListItemText primary={ "New Project" } />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem key={ "Delete" } disablePadding>
+          <ListItemButton onClick={ handleOnDeleteClick }>
+            <ListItemIcon>
+              <CancelIcon />
+            </ListItemIcon>
+            <ListItemText primary={ "Delete" } />
           </ListItemButton>
         </ListItem>
       </List>
@@ -367,20 +481,27 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
           isOwner={ isOwner }
           openOwnerMenu={ openOwnerMenu }
           openCollaboratorsMenu={ openCollaboratorsMenu }
-          handleOnUserAvatarsClick={ handleOnUserAvatarsClick } />  
 
-        <TaskSearchPrioritySelect />
+          handleOnUserAvatarsClick={ handleOnUserAvatarsClick } 
+          />  
+
+        <TaskSearchPrioritySelect 
+          handleOnPrioritySelect={ (priority: string) => handleOnPrioritySelect(priority) }
+          />
 
         <TagsEditArea 
           label="Tags" 
           tags={ tasksSearchState._activeTags }
           disabled={ false } 
+
           handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
           handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
           handleOnKeyPress={ (e: any) => handleOnTagsFilterAreaKeyPress(e) }
           handleOnFocus={ (e: any) => handleOnTagsFilterAreaFocus(e) }
           handleOnBlur={ handleOnTagsFilterAreaBlur } 
-          inputRef={ tagsEditAreaRef } /> 
+
+          inputRef={ tagsEditAreaRef } 
+          /> 
 
           <Tooltip title="Coming soon.">
             <div>
@@ -393,16 +514,12 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
       <Divider />
 
       <List>
-        <ListItem 
-          key={ "Secret" } 
-          disablePadding 
-          onClick={ (e) => openSecretMenu(e) } >
-          <ListItemButton>
-            <ListItemIcon>
-              <KeyOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary={ "Secret" } />
-          </ListItemButton>
+        <ListItem >
+          <b>User:</b> 
+        </ListItem>
+        
+        <ListItem key={ "User" } >
+          { userCacheState._loginedUserEmail }
         </ListItem>
 
         <ListItem 
@@ -427,25 +544,26 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
           </ListItemButton>
         </ListItem>
 
-        <ListItem key={ "Delete" } disablePadding>
-          <ListItemButton onClick={ handleOnDeleteClick }>
-            <ListItemIcon>
-              <CancelIcon />
-            </ListItemIcon>
-            <ListItemText primary={ "Delete" } />
-          </ListItemButton>
-        </ListItem>
+
       </List>
 
       <ProjectOwnerMenu 
         ownerMenuAnchorEl={ ownerMenuAnchorEl }
         ownerMenuOpen={ ownerMenuOpen }
+
         handleOnOwnerMenuClose={ handleOnOwnerMenuClose } 
-        handleOnCollaboratorAddClick={ (collaboratorToAddEmail: string, collaboratorSecret: string) => handleOnCollaboratorAddClick(collaboratorToAddEmail, collaboratorSecret) } />
+
+        handleOnCollaboratorAddClick={ (collaboratorToAddEmail: string, collaboratorSecret: string) => 
+          handleOnCollaboratorAddClick(collaboratorToAddEmail, collaboratorSecret) } 
+
+        handleOnCollaboratorRemoveClick={ (collaboratorToRemoveEmail: string) => 
+          handleOnCollaboratorRemoveClick(collaboratorToRemoveEmail) }
+        />
 
       <ProjectCollaboratorMenu
         collaboratorsMenuAnchorEl={ collaboratorsMenuAnchorEl }
         collaboratorsMenuOpen={ collaboratorsMenuOpen }
+
         handleOnCollaboratorsMenuClose={ handleOnCollaboratorsMenuClose } 
         handleOnQuitProjectClick={ handleOnQuitProjectClick }
         />
@@ -453,12 +571,28 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
       <UserListMenu 
         usersFilterMenuAnchorEl={ usersFilterMenuAnchorEl }
         usersFilterMenuOpen={ usersFilterMenuOpen }
-        handleOnUsersFilterMenuClose={ handleOnUsersFilterMenuClose } />  
+
+        userCheckMp={ userCheckMp }
+        userList={ userList }
+
+        handleOnUsersFilterMenuClose={ handleOnUsersFilterMenuClose } 
+
+        handleOnOwnerCheck={ (checked: boolean) => 
+          handleOnOwnerCheck(checked) }
+
+        handleOnCollaboratorCheck={ (checked: boolean, email: string) => 
+          handleOnCollaboratorCheck(checked, email) }
+        />  
 
       <UserSecretMenu 
         secretMenuAnchorEl={ secretMenuAnchorEl }
         secretMenuOpen={ secretMenuOpen }
-        handleSecretMenuClose={ handleSecretMenuClose } />  
+
+        secret={ userCacheState._loginedUserSecret }
+
+        handleSecretMenuClose={ handleSecretMenuClose } 
+        handleOnRenewSecretClick={ handleOnRenewSecretClick }
+        />  
     </Drawer>
   );
 }

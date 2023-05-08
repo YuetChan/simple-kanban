@@ -33,6 +33,7 @@ import { actions as usersCacheActions } from './stores/user-cache-slice';
 import { actions as projectsCacheActions } from './stores/projects-cache-slice';
 import { actions as projectCreateDialogActions } from './stores/project-create-dialog-slice';
 import { actions as kanbanTableActions } from './stores/kanban-table-slice';
+
 import KanbanOauthPage from './layouts/kanban-oauth-page';
 
 function App() {
@@ -57,6 +58,10 @@ function App() {
 
   // ------------------ Project create dialog ------------------
   const projectCreateDialogState = useSelector((state: AppState) => state.ProjectCreateDialog);
+
+  useEffect(() => {
+    console.log(projectCreateDialogState.show)
+  }, [ projectCreateDialogState ])
 
   const { showProjectCreateDialog, hideProjectCreateDialog } = projectCreateDialogActions;
 
@@ -112,7 +117,6 @@ function App() {
       }
     }catch {
 
-
       dispatch(updateLoginedUserEmail(''));
     }
   }, []);
@@ -153,6 +157,7 @@ function App() {
     } as Project
 
     createProject(project).then(res => {
+      // console.
       getProjectById(res.id).then(res => {
         dispatch(updateAllProjects([ res, ...projectsCacheState._allProjects ]));
       });
@@ -198,7 +203,6 @@ function App() {
   }
 
   return (
-   
     (
       <div className="App" >
         <section style={{
@@ -218,13 +222,14 @@ function App() {
             <KanbanTable /> 
           </Stack>
       </section>
+
       <div style={{
           height: "100vh",
           alignItems: "center",
           justifyContent: "center",
           display: authed? "none": "flex"
       }}>
-<KanbanOauthPage />
+        <KanbanOauthPage />
       </div>
    
       <div style={{ 
@@ -258,7 +263,10 @@ function App() {
           description="Please enter the project name to create your project."
           open={ projectCreateDialogState.show } 
           showLogout={ projectsCacheState._allProjects.length === 0 }
-          handleOnProjectCreate = { (name: string, description: string) => handleOnProjectCreate(name, description) } 
+
+          handleOnProjectCreate = { (name: string, description: string) => 
+            handleOnProjectCreate(name, description) } 
+
           handleOnClose={ handleOnProjectCreateDialogClose } 
           handleOnLogout={ handleOnLogoutClick }/>  
       </div>

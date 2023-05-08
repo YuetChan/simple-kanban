@@ -42,8 +42,7 @@ describe("ProjectOwnerMenu", () => {
         const updateProjectByIdSpy = jest.spyOn(ProjectsService, "updateProjectById")
         .mockImplementation((
             id, 
-            project, 
-            collaboratorEmailSecretMap
+            project
             ) => Promise.resolve({
                 data: { }, // Add some data here if needed
                 status: 200,
@@ -96,8 +95,7 @@ describe("ProjectOwnerMenu", () => {
         jest.spyOn(ProjectsService, "updateProjectById")
         .mockImplementation((
             id, 
-            project, 
-            collaboratorEmailSecretMap
+            project
             ) => Promise.resolve({
                 data: { }, // Add some data here if needed
                 status: 200,
@@ -136,8 +134,7 @@ describe("ProjectOwnerMenu", () => {
         const updateProjectByIdSpy = jest.spyOn(ProjectsService, "updateProjectById")
         .mockImplementation((
             id, 
-            project, 
-            collaboratorEmailSecretMap
+            project
             ) => Promise.resolve({
                 data: { }, // Add some data here if needed
                 status: 200,
@@ -183,8 +180,7 @@ describe("ProjectOwnerMenu", () => {
         jest.spyOn(ProjectsService, "updateProjectById")
         .mockImplementation((
             id, 
-            project, 
-            collaboratorEmailSecretMap
+            project
             ) => Promise.resolve({
                 data: { }, // Add some data here if needed
                 status: 200,
@@ -219,8 +215,7 @@ describe("ProjectOwnerMenu", () => {
         jest.spyOn(ProjectsService, "updateProjectById")
         .mockImplementation((
             id, 
-            project, 
-            collaboratorEmailSecretMap
+            project
             ) => Promise.resolve({
                 data: { }, // Add some data here if needed
                 status: 200,

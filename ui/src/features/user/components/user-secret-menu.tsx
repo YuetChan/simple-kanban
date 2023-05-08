@@ -15,16 +15,16 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 interface UserSecretProps {
   secretMenuAnchorEl?: any,
   secretMenuOpen?: any,
-  handleSecretMenuClose?: Function
+
+  secret: string,
+
+  handleSecretMenuClose?: Function,
+  handleOnRenewSecretClick?:Function
 }
 
 const UserSecretMenu = (props: UserSecretProps) => {
-  // ------------------ Dispatch ------------------
-  const dispatch = useDispatch();
-
   // ------------------ User cache ------------------
   const userCacheState = useSelector(state => (state as AppState).UserCache);
-  const { updateLoginedUserSecret } = userCacheActions;
 
   // ------------------ User secret menu ------------------
   const handleOnClose = () => {
@@ -34,11 +34,9 @@ const UserSecretMenu = (props: UserSecretProps) => {
   }
 
   const handleOnRenewSecretClick = () => {
-    getUserByEmail(userCacheState._loginedUserEmail).then(res => {
-      generateUserSecretById(res.id).then(res => {
-        dispatch(updateLoginedUserSecret(res));
-      });
-    });
+    if(props.handleOnRenewSecretClick) {
+      props.handleOnRenewSecretClick()
+    }
   }
 
   const handleOnCopyClick = () => {

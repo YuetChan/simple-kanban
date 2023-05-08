@@ -1,33 +1,34 @@
-import { useSelector } from "react-redux";
-
 import { FormControl, MenuItem, Select, Tooltip } from "@mui/material";
 
 import { truncate } from "../../../libs/text-lib";
 
-import { AppState } from "../../../stores/app-reducers";
+import { Project } from "../../../types/Project";
 
 interface ProjectSelectProps {
+  activeProject?: Project,
+  projects: Array<Project>,
   yourProjectDisabled: boolean,
-  handleOnProjectChange: any
+
+  handleOnProjectChange: Function
 }
 
 const ProjectSelect = (props: ProjectSelectProps) => {
-  // ------------------ Project cache ------------------ 
-  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
-
+  const handleOnProjectChange = (e: any) => {
+    props.handleOnProjectChange(e.target.value)
+  }
+  
   // ------------------ Html templet ------------------ 
   return (
     <FormControl sx={{ m: 1, minWidth: 120 }}>
       <Select
-        // inputProps={{ 'aria-label': 'Without label' }}
-        value={ projectsCacheState._activeProject?.id ? projectsCacheState._activeProject?.id: "-" }
-        onChange={ props.handleOnProjectChange } >
+        value={ props.activeProject? props.activeProject.id : "-" }
+        onChange={ (e) => handleOnProjectChange(e) } >
         <MenuItem disabled={ props.yourProjectDisabled } value="-" >
           Your Projects
         </MenuItem>
 
         {
-          projectsCacheState._allProjects.map(project => {
+          props.projects.map(project => {
             return (
               <MenuItem key={ project.id } value={ project.id }>
                 <Tooltip 

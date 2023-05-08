@@ -9,6 +9,7 @@ import { textToAvatar } from "../../../services/avatar-service";
 interface AssigneeSelectProps {
   assignee: string,
   allAssignees: Array<string>,
+
   handleOnSelectChange: Function
 }
 
@@ -17,14 +18,12 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
   const [ assignee, setAssignee ] = React.useState<string>(props.assignee? props.assignee : 'none');
 
   const handlOnAssigneeSelect = (e: any) => {
-    setAssignee(e.target.value)
-
     props.handleOnSelectChange(e); 
+
+    setAssignee(e.target.value)
   }
 
   const getAssigneeHTML = (assignee: string): any => {
-    console.log(assignee)
-
     return (
       <Stack 
         direction="row" 

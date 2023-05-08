@@ -53,6 +53,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
       drop: (item: Task, monitor) => {
         if(!monitor.didDrop() && props.meta) {
           const statusEnum = stringToEnum(props.category);
+
           if(item.taskNode.status !== statusEnum) {
             if(tasks.length === 0 ) {
               const updatedTask = {
@@ -83,6 +84,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
           }else {
             if(tasks.length !== 0 && tasks.length !== 1) {
               const bottomTask = tasks[ tasks.length - 1 ];
+              
               if(bottomTask.id === item.id) {
                 return;
               }

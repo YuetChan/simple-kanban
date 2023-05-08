@@ -2,8 +2,6 @@ import React from "react";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField } from "@mui/material";
 
-import UserSecretMenu from "../../user/components/user-secret-menu";
-
 interface ProjectCreateDialogProps {
   open?: boolean,
   title?: string,
@@ -17,7 +15,7 @@ interface ProjectCreateDialogProps {
 
 const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
   // ------------------ Project create dialog ------------------
-  const [ projectName, setProjectName ] = React.useState('');
+  const [ projectName, setProjectName ] = React.useState("");
 
   const handleOnProjectNameChange = (e: any) => {
     setProjectName(e.target.value);
@@ -28,7 +26,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
       props.handleOnProjectCreate(projectName, "");
     } 
 
-    setProjectName('');
+    setProjectName("");
   }
 
   const handleOnLogoutClick = () => {
@@ -36,7 +34,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
       props.handleOnLogout();
     }
 
-    setProjectName('');
+    setProjectName("");
   }
 
   const handleOnClose = () => {
@@ -44,19 +42,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
       props.handleOnClose();
     }
 
-    setProjectName('');
-  }
-
-  // ------------------ Secret menu ------------------
-  const [ secretMenuAnchorEl, setSecretMenuAnchorEl ] = React.useState<null | HTMLElement>(null);
-  const secretMenuOpen = Boolean(secretMenuAnchorEl);
-  
-  const handleSecretMenuClose = () => {
-    setSecretMenuAnchorEl(null);
-  }
-  
-  const handleOnSecretClick = (e: any) => {
-    setSecretMenuAnchorEl(e.currentTarget);
+    setProjectName("");
   }
 
   // ------------------ Html template ------------------
@@ -64,11 +50,13 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
     <Dialog 
       open={ props.open? props.open : false } 
       onClose={ handleOnClose }>
-      <DialogTitle>{ props.title? props.title : "" }</DialogTitle>
+      <DialogTitle>
+        { props.title? props.title : "" }
+      </DialogTitle>
       
       <DialogContent>
         <DialogContentText>
-        { props.description? props.description : "" }
+          { props.description? props.description : "" }
         </DialogContentText>
 
         <TextField
@@ -94,12 +82,12 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
               Logout
             </Button>
 
-            <Button 
+            {/* <Button 
               style={{ display: props.showLogout? "block": "none" }}
               variant="outlined" 
               onClick={ handleOnSecretClick }>
               Secret
-            </Button>
+            </Button> */}
           </Stack>
         </Stack>
 
@@ -110,10 +98,10 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
         </Button>
       </DialogActions>
 
-      <UserSecretMenu 
+      {/* <UserSecretMenu 
         secretMenuAnchorEl={ secretMenuAnchorEl }
         secretMenuOpen={ secretMenuOpen }
-        handleSecretMenuClose={ handleSecretMenuClose }/>  
+        handleSecretMenuClose={ handleSecretMenuClose } />   */}
     </Dialog>
   )
 }

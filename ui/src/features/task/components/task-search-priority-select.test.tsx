@@ -18,13 +18,13 @@ describe('TaskSearchPrioritySelect', () => {
 
     let props: { 
         value: string,
-        handleOnPriorityChange: Function
+        handleOnPrioritySelect: Function
     }
 
     beforeEach(() => {
         props = { 
             value: "low",
-            handleOnPriorityChange: jest.fn()
+            handleOnPrioritySelect: jest.fn()
         }
     });
 

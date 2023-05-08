@@ -37,7 +37,6 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
   }
 
   const handleOnTextFieldChange = (e: any) => {
-    console.log(e.target.value)
     if(props.handleOnTextFieldChange) {
       props.handleOnTextFieldChange(e);
     }
@@ -51,7 +50,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
 
       if(tags.filter(tag => tag === newTag).length <= 0) {
         setTags([... tags, newTag]);
-        setTagInput('');
+        setTagInput("");
       }
     }
 

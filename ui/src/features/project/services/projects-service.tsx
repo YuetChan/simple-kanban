@@ -38,18 +38,17 @@ const createProject = (project: Project) => {
     data: {
       project: project
     }
-  }).then(res => res.data.data.project);
+  }).then(res => res.data.data);
 }
 
 const deleteProject = (id: string) => {
   return axios.delete(`${localhost}/${id}`).then(res => res);
 }
 
-const updateProjectById = (id: string, project: Project, collaboratorEmailSecretMap: any) => {
+const updateProjectById = (id: string, project: Project) => {
   return axios.patch(`${localhost}/${id}`, {
     data: {
-      project: project,
-      collaboratorEmailSecretMap: collaboratorEmailSecretMap
+      project: project
     }
   }).then(res => res)
 }

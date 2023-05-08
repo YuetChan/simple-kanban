@@ -2,16 +2,13 @@ import { useEffect } from "react";
 import { redirectToLoginPage } from "../services/auth.services";
 
 const KanbanOauthPage = () => {
-	useEffect(() => {
-		console.log("called12312312312312")
-	}, []);
+	useEffect(() => { }, []);
 
     const handleOnGoogleSignInClick = () => {
       redirectToLoginPage()
     }
 
     return (
-    	
         <button 
           onClick={ handleOnGoogleSignInClick } 
           type="button" 
