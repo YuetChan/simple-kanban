@@ -50,6 +50,12 @@ public class TaskController {
    @Autowired
    private DefaultTaskGetValidator defaultTaskGetValidator;
 
+   @Autowired
+   private DefaultTaskCreateValidator defaultTaskCreateValidator;
+
+   @Autowired
+   private DefaultTaskUpdateValidator defaultTaskUpdateValidator;
+
    @GetMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> getTaskById(@PathVariable(name = "id") String id) {
       ValidationResult validationResult = defaultTaskGetValidator.validate(id);
@@ -144,7 +150,7 @@ public class TaskController {
                  taskJson.get("taskNode").getAsJsonObject().get("projectId").getAsString()
                  );
 
-         Task task = taskService.create(model);
+         Task task = taskService.create(model, defaultTaskCreateValidator);
 
          JsonObjectBuilder taskJsonBuilder = Json.createObjectBuilder()
                  .add("id", task.getId());
@@ -170,10 +176,6 @@ public class TaskController {
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
 
-      System.out.println(Status.valueOf(taskJson.get("taskNode").getAsJsonObject().get("status").getAsString()));
-
-//      System.out.println(taskJson.get("taskNode").getAsJsonObject().get("status").getAsString());
-
       try {
          taskService.update(new TaskService.UpdateModel(
                  id,
@@ -190,7 +192,7 @@ public class TaskController {
                  taskJson.get("taskNode").getAsJsonObject().get("headUUID").getAsString(),
                  taskJson.get("taskNode").getAsJsonObject().get("tailUUID").getAsString(),
                  Status.valueOf(taskJson.get("taskNode").getAsJsonObject().get("status").getAsString())
-         ));
+         ), defaultTaskUpdateValidator);
       } catch (JsonProcessingException e) {
          LOGGER.debug("Failed to convert tagList from json to list", e);
          return new ResponseEntity("Failed to convert tagList from json to list", HttpStatus.BAD_REQUEST);

@@ -4,26 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { useCookies } from 'react-cookie';
 
-import { Stack, Tooltip, Typography, Drawer, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Stack, List, Divider, ListItem, ListItemButton,  ListItemText, IconButton } from '@mui/material';
 
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
-import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
-import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
-import LogoutIcon from '@mui/icons-material/Logout';
-import CancelIcon from '@mui/icons-material/Cancel';
-
-import TagsEditArea from '../features/tag/components/tags-edit-area';
-import ProjectCollaboratorMenu from '../features/project/components/project-collaborator-menu';
-import ProjectOwnerMenu from '../features/project/components/project-owner-menu';
-import UserList from '../features/user/components/user-list';
-import ProjectSelect from '../features/project/components/project-select';
-import UserListMenu from '../features/user/components/user-list-menu';
-import UserSecretMenu from '../features/user/components/user-secret-menu';
-import TaskSearchPrioritySelect from '../features/task/components/task-search-priority-select';
-import TaskSearchSprintSelect from '../features/task/components/task-search-sprint-select';
 
 import { AppState } from '../stores/app-reducers';
 
@@ -33,11 +16,12 @@ import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
 
 import { redirectToLoginPage } from '../services/auth.services';
-import { getProjectById, updateProjectById } from '../features/project/services/projects-service';
+import { createProject, getProjectById, updateProjectById } from '../features/project/services/projects-service';
 import { generateUserSecretById, getUserByEmail } from "../features/user/services/users-service";
 import { User } from '../types/User';
-import { textToAvatar } from '../services/avatar-service';
-import KanbanInfiniteDropdown from '../components/kanban-infinite-dropdown';
+
+import UserProfileMini from '../features/user/components/user-profile-mini';
+import { Project } from '../types/Project';
 
 interface KanbanDrawerProps { }
 
@@ -51,19 +35,15 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   // -------------- Tasks search --------------
   const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
 
-  const { 
-    focusTagsEditArea, blurTagsEditArea,
-    updateTagsEditAreaSearchStr, 
-    updateActiveTags, 
-    setTagsEditAreaRef, 
-    selectActivePriority,
+  const {  
+    selectActivePriorities,
     addActiveUserEmail, removeActiveUserEmail
   } = tasksSearchActions;
 
   // -------------- Projects cache --------------
   const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-  const { selectActiveProject, updateActiveProject } = projectsCacheActions;
+  const { selectActiveProject, updateActiveProject, updateAllProjects } = projectsCacheActions;
 
   // -------------- Projects create dialog --------------
   const { showProjectCreateDialog, hideProjectCreateDialog } = projectCreateDialogActions;
@@ -73,6 +53,25 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
   const { updateLoginedUserEmail, updateLoginedUserSecret } = usersCacheActions;
 
+
+  // -------------- Project create dialog ----------------
+  const handleOnProjectCreate = (name: string, description: string) => {
+    const project = {
+      name: name,
+      description: description,
+      userEmail: userCacheState._loginedUserEmail,
+    } as Project
+
+    createProject(project).then(res => {
+      // console.
+      getProjectById(res.id).then(res => {
+        dispatch(updateAllProjects([ res, ...projectsCacheState._allProjects ]));
+      });
+
+      dispatch(hideProjectCreateDialog());
+    })
+  }
+  
   // -------------- Kanban drawer --------------
   const [ yourProjectDisabled, setYourProjectDisabled ] = React.useState(true);
 
@@ -85,6 +84,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   }, [ projectsCacheState._allProjects ]);
 
   const handleOnProjectChange = (projectId: string) => {
+    console.log(projectId)
     const projects = projectsCacheState._allProjects.filter(project => {
       return project.id === projectId
     });
@@ -97,7 +97,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
   }
 
   const handleOnPrioritySelect = (priority: string) => {
-    dispatch(selectActivePriority(priority));
+    dispatch(selectActivePriorities(priority));
   }
 
   const handleOnLogoutClick = () => {
@@ -237,7 +237,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     }
   }
 
-  const handleOnCollaboratorAddClick = (collaboratorToAddEmail: string, collaboratorSecret: string) => {
+  const handleOnCollaboratorAdd = (collaboratorToAddEmail: string, collaboratorSecret: string) => {
     const activeProject = projectsCacheState._activeProject;
 
     if(activeProject) {
@@ -273,7 +273,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     }
   }
 
-  const handleOnCollaboratorRemoveClick = (collaboratorToRemoveEmail: string) => {
+  const handleOnCollaboratorRemove = (collaboratorToRemoveEmail: string) => {
     const activeProject = projectsCacheState._activeProject;
 
     if(activeProject) {
@@ -311,290 +311,102 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     }
   }
 
-  const openCollaboratorsMenu = (e: any) => {
-    setCollaboratorsMenuAnchorEl(e.currentTarget);
-  }
-
-  // ------------------ User secret menu ------------------
-  const [ secretMenuAnchorEl, setSecretMenuAnchorEl ] = React.useState<null | HTMLElement>(null);
-  const secretMenuOpen = Boolean(secretMenuAnchorEl);
-
-  const handleSecretMenuClose = () => {
-    setSecretMenuAnchorEl(null);
-  }
-
-  const handleOnRenewSecretClick = () => {
-    getUserByEmail(userCacheState._loginedUserEmail).then((res: any) => {
-      generateUserSecretById(res.id).then((res: any) => {
-        dispatch(updateLoginedUserSecret(res));
-      });
-    });
-  }
-
-  const openSecretMenu = (e: any) => {
-    setSecretMenuAnchorEl(e.currentTarget);
-  }
-
-  // ------------------ Tags filter areas ------------------
-  const tagsEditAreaRef = React.useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-   dispatch(setTagsEditAreaRef(tagsEditAreaRef));
-  }, [ tagsEditAreaRef ]);
-
-  const handleOnTagsChange = (tags: Array<string>) => {
-    dispatch(updateActiveTags(tags));
-  }
-
-  const handleOnTagsFilterAreaChange = (e: any) => {
-    dispatch(updateTagsEditAreaSearchStr(e.target.value));
-  }
-
-  const handleOnTagsFilterAreaKeyPress = (e: any) => {
-    if(e.keyCode === 13) {
-      dispatch(updateTagsEditAreaSearchStr(e.target.value));
-    }
-  }
-
-  const handleOnTagsFilterAreaFocus = (e: any) => {
-    dispatch(updateTagsEditAreaSearchStr(e.target.value));
-    dispatch(focusTagsEditArea());
-  }
-
-  const handleOnTagsFilterAreaBlur = (e: any) => {
-    dispatch(blurTagsEditArea());
-  }
+//   const openCollaboratorsMenu = (e: any) => {
+//     setCollaboratorsMenuAnchorEl(e.currentTarget);
+//   }
 
   // ------------------ Html template ------------------
-  const drawerWidth = 240;
 
-  return (
-    <Drawer
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-        }
-      }}
-      variant="permanent"
-      anchor="left">
-      <List>
-        <ListItem>
-          <KanbanInfiniteDropdown />
+    return (
+        <div style={{
+                width: "240px",
+                background: "whitesmoke"
+            }}>
+            <List>
+                <ListItem>
+                    <div style={{ 
+                        padding: "8px"
+                        }}>
+                        <img src="https://i.ibb.co/NjWwY0t/Screenshot-from-2023-05-17-19-03-10.png" width={ 180 } height={ 60 } />
+                    </div>
+                </ListItem>
 
-          <div><b>Projects: </b></div>
-
-          <ProjectSelect
-            activeProject={ projectsCacheState._activeProject } 
-            projects = { projectsCacheState._allProjects }
-            yourProjectDisabled={ yourProjectDisabled } 
+                <ListItem>
+                    <Stack 
+                        direction="row" 
+                        justifyContent="space-between" 
+                        alignItems="center"  
+                        
+                        sx={{ 
+                            width: "100%" 
+                        }}>
+                        <div style={{
+                            color: "rgb(47, 47, 47)" 
+                            }}>
+                            <b>Projects: </b>
+                        </div>
             
-            handleOnProjectChange={ (projectId: string) => handleOnProjectChange(projectId) }/>
-        </ListItem>
+                        <IconButton>
+                            <AddBoxOutlinedIcon/>
+                        </IconButton>
+                    </Stack>
+                </ListItem>
 
-        <ListItem key={ "New Project" } disablePadding>
-          <ListItemButton onClick={ handleOnNewProjectClick }>
-            <ListItemIcon>
-              <AddBoxOutlinedIcon/>
-            </ListItemIcon>
-            <ListItemText primary={ "New Project" } />
-          </ListItemButton>
-        </ListItem>
+               <ListItem>
+                    <div style={{
+                        color: "rgb(47, 47, 47)" 
+                        }}>
+                     <b>Yours/You joined: </b>
+                    </div>  
+               </ListItem>
 
-        <ListItem key={ "Delete" } disablePadding>
-          <ListItemButton onClick={ handleOnDeleteClick }>
-            <ListItemIcon>
-              <CancelIcon />
-            </ListItemIcon>
-            <ListItemText primary={ "Delete" } />
-          </ListItemButton>
-        </ListItem>
-      </List>
+                <ListItem>
+                    <List sx={{ 
+                        width: "100%",
+                        overflow: "auto",
+                        maxHeight: "180px"
+                        }}>
+                        {
+                            projectsCacheState._allProjects.map(project => 
+                                (
+                                    <ListItem sx={{  padding: "0px"}}>
+                                        <ListItemButton  
+                                            onClick={ (e: any) => handleOnProjectChange(project.id) }
+                                        
+                                            sx={{ 
+                                                paddingTop: "0px", 
+                                                paddingBottom: "0px"
+                                                }}>
+                                            <ListItemText primary={ project.name }/>
+                                        </ListItemButton>
+                                    </ListItem>
+                                )
+                            )
+                        }
+                    </List>
+                </ListItem> 
 
-      <Divider />
-
-      <List>
-        <ListItem 
-          key={ "Kanban" } 
-          disablePadding 
-          style={{ borderRight: "3px solid black" }}>
-          <ListItemButton>
-            <ListItemIcon >
-              <DashboardOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary={ <Typography style={{ fontWeight: "bold" }}>Kanban</Typography> }/>
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem 
-          key={ "Calendar" } 
-          disablePadding 
-          disabled={ true }>
-          <Tooltip title="Coming soon. Tasks are displayed in calender format.">
-          <ListItemButton>
-            <ListItemIcon>
-              <CalendarMonthOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary={ "Calendar" } />
-          </ListItemButton>
-          </Tooltip>
-        </ListItem>
-
-        <ListItem 
-          key={ "Archive" } 
-          disablePadding 
-          disabled={ true }>
-          <Tooltip title="Coming soon. Archived tasks can be found here.">
-          <ListItemButton>
-            <ListItemIcon>
-              <HistoryEduIcon />
-            </ListItemIcon>
-            <ListItemText primary={ "Archive" } />
-          </ListItemButton>
-          </Tooltip>
-        </ListItem>
-      </List>
-
-      <Divider />
-
-      <List>
-        <ListItem key={ "Search Filter" }>
-          <ListItemIcon>
-            <ManageSearchIcon />
-          </ListItemIcon>
-          <ListItemText primary={ "Search Filter" } />
-        </ListItem>
-      </List>
-
-      <Stack 
-        direction="column"
-        spacing={ 1 } 
-        style={{
-          margin: "4px 0px 16px 0px",
-          padding: "0px 0px 0px 21px",
-          borderLeft: "3px solid"
-        }}
-        alignItems="start">
-        <UserList
-          isOwner={ isOwner }
-          openOwnerMenu={ openOwnerMenu }
-          openCollaboratorsMenu={ openCollaboratorsMenu }
-
-          handleOnUserAvatarsClick={ handleOnUserAvatarsClick } 
-          />  
-
-        <TaskSearchPrioritySelect 
-          handleOnPrioritySelect={ (priority: string) => handleOnPrioritySelect(priority) }
-          />
-
-        <TagsEditArea 
-          label="Tags" 
-          tags={ tasksSearchState._activeTags }
-          disabled={ false } 
-
-          handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
-          handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
-          handleOnKeyPress={ (e: any) => handleOnTagsFilterAreaKeyPress(e) }
-          handleOnFocus={ (e: any) => handleOnTagsFilterAreaFocus(e) }
-          handleOnBlur={ handleOnTagsFilterAreaBlur } 
-
-          inputRef={ tagsEditAreaRef } 
-          /> 
-
-          <Tooltip title="Coming soon.">
-            <div>
-              <TaskSearchSprintSelect />
-            </div>
-          </Tooltip>
-             
-      </Stack>
-
-      <Divider />
-
-      <List>
-        <ListItem >
-          <b>User:</b> 
-        </ListItem>
-        
-        <ListItem key={ "User" } >
-          { userCacheState._loginedUserEmail }
-        </ListItem>
-
-        <ListItem 
-          style={{ display: projectsCacheState._allProjects.length > 0? "block": "none" }}
-          key={ "Logout" } 
-          disablePadding 
-          onClick={ handleOnLogoutClick } >
-          <ListItemButton>
-            <ListItemIcon>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary={ "Logout" } />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem key={ "Help" } disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <HelpOutlineOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary={ "Help" } />
-          </ListItemButton>
-        </ListItem>
+                <ListItem>
+                    <div style={{
+                        color: "rgb(47, 47, 47)" 
+                        }}>
+                        <b>Organization's: </b>
+                    </div>  
+                </ListItem>
 
 
-      </List>
 
-      <ProjectOwnerMenu 
-        ownerMenuAnchorEl={ ownerMenuAnchorEl }
-        ownerMenuOpen={ ownerMenuOpen }
 
-        handleOnOwnerMenuClose={ handleOnOwnerMenuClose } 
+                <Divider />
 
-        handleOnCollaboratorAddClick={ (collaboratorToAddEmail: string, collaboratorSecret: string) => 
-          handleOnCollaboratorAddClick(collaboratorToAddEmail, collaboratorSecret) } 
-
-        handleOnCollaboratorRemoveClick={ (collaboratorToRemoveEmail: string) => 
-          handleOnCollaboratorRemoveClick(collaboratorToRemoveEmail) }
-        />
-
-      <ProjectCollaboratorMenu
-        collaboratorsMenuAnchorEl={ collaboratorsMenuAnchorEl }
-        collaboratorsMenuOpen={ collaboratorsMenuOpen }
-
-        handleOnCollaboratorsMenuClose={ handleOnCollaboratorsMenuClose } 
-        handleOnQuitProjectClick={ handleOnQuitProjectClick }
-        />
-
-      <UserListMenu 
-        usersFilterMenuAnchorEl={ usersFilterMenuAnchorEl }
-        usersFilterMenuOpen={ usersFilterMenuOpen }
-
-        userCheckMp={ userCheckMp }
-        userList={ userList }
-
-        handleOnUsersFilterMenuClose={ handleOnUsersFilterMenuClose } 
-
-        handleOnOwnerCheck={ (checked: boolean) => 
-          handleOnOwnerCheck(checked) }
-
-        handleOnCollaboratorCheck={ (checked: boolean, email: string) => 
-          handleOnCollaboratorCheck(checked, email) }
-        />  
-
-      <UserSecretMenu 
-        secretMenuAnchorEl={ secretMenuAnchorEl }
-        secretMenuOpen={ secretMenuOpen }
-
-        secret={ userCacheState._loginedUserSecret }
-
-        handleSecretMenuClose={ handleSecretMenuClose } 
-        handleOnRenewSecretClick={ handleOnRenewSecretClick }
-        />  
-    </Drawer>
-  );
+                <ListItem sx={{
+                    marginTop: "12px"
+                    }}>
+                    <UserProfileMini email="yuetcheukchan@gmail.com" size={ 36 }/>
+                </ListItem>   
+            </List>
+        </div>
+    );
 }
 
 export default KanbanDrawer;

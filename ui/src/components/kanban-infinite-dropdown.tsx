@@ -1,111 +1,244 @@
 import { MenuItem, MenuList, Paper, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
 interface KanbanInfiniteDropdownProps {
-    fetchByPageFunc?: Function,
+    fetchByPageFunc: any,
 
+    fetchSuccess?: Function,
+    fetchFail?:Function,
+
+    handleOnScrollBottom: Function,
     handleOnInputFocus?: Function,
     handleOnDropdownClose?: Function,
+    handleOnInputEnter?: Function,
+    handleOnItemClick?: Function
 }
 
 const KanbanInfiniteDropdown = (props: KanbanInfiniteDropdownProps) => {
-    const [ open, setOpen ] = useState<boolean>(false)
+    const [ open, setOpen ] = useState<boolean>(false);
+    const [ value, setValue ] = useState<string>("");
 
-    const [ value, setValue ] = useState<string>("")
-
-    const [options, setOptions ] = useState<Array<any>>([]);
+    const [ options, setOptions ] = useState<Array<string>>([]);
 
     const [ page, setPage ] = useState<number>(0);
-    const [loading, setLoading ] = useState<boolean>(false);
-  
-    const handleOnScroll = (e: any) => {
+
+    const [ loading, setLoading ] = useState<boolean>(false);
+
+    const [ timeoutId, setTimeoutId ] = useState<any>(undefined);
+
+    const [ isMouseOver, setIsMouseOver ] = useState<boolean>(false);
+
+    let inputRef = useRef<HTMLInputElement>();
+
+    const handleOnDropdownScroll = (e: any) => {
         const target = e.target
         
         if (Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) < 1) {
-            setLoading(true);
+            if(props.handleOnScrollBottom) {
+                props.handleOnScrollBottom(target.scrollHeight, target.scrollTop, target.clientHeight, () => {
+                    setLoading(true);
 
-            setTimeout(() => {
-                setLoading(false);
+                    props.fetchByPageFunc(value, page).then((res: any) => {
+                        setTimeoutId(setTimeout(() => {
+                            setLoading(false);
+            
+                            let scrollTop = target.scrollHeight - target.clientHeight - 10; 
+                            scrollTop = scrollTop < 0 ? 0 : scrollTop;
+            
+                            e.target.scrollTop = scrollTop;
 
-                let scrollTop = target.scrollHeight - target.clientHeight - 10; 
-                scrollTop = scrollTop < 0 ? 0 : scrollTop
+                            if(props.fetchSuccess) {
+                                if(page <= props.fetchSuccess(res).totalPage - 1) {
+                                    setPage(page + 1);
+                                }
 
-                e.target.scrollTop = scrollTop
-            }, 1000);
+                                setOptions(options.concat(props.fetchSuccess(res).options))
+                            }
+                        }, 1000));
+                    }).catch((err: any) => {
+                        setLoading(false);
+
+                        if(props.fetchFail) {
+                            props.fetchFail(err);
+                        }
+                    });
+                });
+            }
         }   
     };
 
-    const handleOnChange = (e: any) => {
-        setValue(e.target.value)
+    const handleOnTextfieldChange = (e: any) => {
+        setLoading(true);
+
+        clearTimeout(timeoutId)
+        
+        setValue(e.target.value);
+        setPage(0);
+
+        setTimeoutId(setTimeout(() => {
+            props.fetchByPageFunc(e.target.value, 0).then((res: any) => {
+                setLoading(false);
+
+                if(props.fetchSuccess) {
+                    setOptions(props.fetchSuccess(res).options);
+                    setPage(1)
+                }
+            }).catch((err: any) => {
+                setLoading(false);
+
+                if(props.fetchFail) {
+                    props.fetchFail(err);
+                }
+            });
+        }, 1000));
     }
 
-    const handleOnFocus = (e: any) => {
-        if(props.handleOnInputFocus){
-            props.handleOnInputFocus(e)
+    const handleOnTextfieldFocus = (e: any) => {
+        if(!isMouseOver) {
+            setLoading(true);
+
+            setPage(0);
+            setOpen(true);
+    
+            setTimeoutId(setTimeout(() => {
+                props.fetchByPageFunc(value, 0).then((res: any) => {
+                    setLoading(false);
+    
+                    if(props.fetchSuccess) {
+                        setOptions(props.fetchSuccess(res).options);
+                        setPage(1)
+                    }
+                }).catch((err: any) => {
+                    setLoading(false);
+    
+                    if(props.fetchFail) {
+                        props.fetchFail(err);
+                    }
+                });
+            }, 1000));
+    
+            if(props.handleOnInputFocus){
+                props.handleOnInputFocus(e)
+            }
         }
-
-        setOpen(true)
     }
 
-    const handleOnBlur = (e: any) => {
-        if(props.handleOnDropdownClose) {
-            props.handleOnDropdownClose(e)
+    const handleOnDropdownBlur = (e: any) => {
+        if(!isMouseOver && open) {
+            clearTimeout(timeoutId)
+
+            setOptions([]);
+            setPage(0);
+    
+            setOpen(false);
+
+            if(props.handleOnDropdownClose) {
+                props.handleOnDropdownClose(e)
+            }
         }
-
-        setOpen(false)
     }
-  
-    useEffect(() => {
-      setOptions(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
-    }, []);
+
+    const handleOnTextfieldBlur = (e: any) => {
+        if(!isMouseOver && open) {
+            clearTimeout(timeoutId)
+
+            setOptions([]);
+            setPage(0);
+    
+            setOpen(false);
+
+            if(props.handleOnDropdownClose) {
+                props.handleOnDropdownClose(e)
+            }
+        }
+    }
+
+    const handleOnKeyDown = (e: any) => {
+        if (e.keyCode === 13) {
+            if(props.handleOnInputEnter) {
+                props.handleOnInputEnter(e.target.value)
+            } 
+            
+            setValue("")
+        }
+    }
+
+    const handleOnItemClick = (e: any) => {
+        if(props.handleOnItemClick) {
+            props.handleOnItemClick(e.target.textContent)
+        }
+    }
   
     return (
-        <div>
+        <div style={{ 
+            position: "relative",
+            }}>
             <TextField 
                 variant="standard"
-                label="Filter card on board"
+                label="Enter tags"
                 value={ value }
+                size="small"
+                placeholder="Enter tags"
 
-                onChange={ (e) => handleOnChange(e)}
-                onFocus={ (e) => handleOnFocus(e) }
-                onBlur={ (e) => handleOnBlur(e) }
+                onChange={ (e) => handleOnTextfieldChange(e)}
+                onFocus={ (e) => handleOnTextfieldFocus(e) }
+                onBlur={ (e) => handleOnTextfieldBlur(e) }
+                onKeyDown={ (e) => handleOnKeyDown(e) }
+
+                inputRef={ inputRef }
 
                 sx={{
-                    width: "100px"
-                }}
-                />
+                    width: "100%",
+                }} />
 
-            {
-                open
-                ? (
-                    <Paper 
-                        sx={{
-                            maxHeight: "200px",
-                            overflow: "scroll",
-                            position: "fixed",
-                            zIndex: "999"
+                {
+                    open
+                    ? (
+                        <Paper 
+                            sx={{
+                                position: "sticky",
+                                maxHeight: "200px",
+                                width: "100%",
+
+                                overflow: "scroll",
+                                zIndex: "999",                           
                             }}
-                        onScroll={ (e: any) => handleOnScroll(e) } 
-                        >
-                        <MenuList variant="menu">
-                            {
-                                options.map(option => (
-                                    <MenuItem 
-                                        key={ option } 
-                                        value={ option } 
-                                        sx={{ 
-                                            width: "100px" 
-                                            }}>
-                                        { option }
-                                    </MenuItem>
-                                ))
-                            }
+
+                            onScroll={ (e: any) => handleOnDropdownScroll(e) } 
+                            onBlur={ (e: any) => handleOnDropdownBlur(e) }
+                            onMouseOver={ (e: any) => { setIsMouseOver(true); } }
+                            onMouseMove={ (e: any) => { inputRef.current?.focus() } }
+                            onMouseLeave={ (e: any) => { setIsMouseOver(false);  } }
+                            >
+                            <MenuList variant="menu">
+                                {   
+                                    options.map(option => (
+                                        <MenuItem 
+                                            key={ "dropdown_" + option } 
+                                            value={ "dropdown_" + option } 
+
+                                            onPointerDown={(e) => { handleOnItemClick(e) } }
+                                        
+                                            sx={{ 
+                                                width: "100%"
+                                                }}>
+                                            { option }
+                                        </MenuItem>
+                                    ))
+                                }
                     
-                            { <MenuItem disabled>{loading?  "Loading..." : "No more"}</MenuItem> }
-                        </MenuList>
-                    </Paper>
-                ): null
-            }
+                                { <MenuItem 
+                                    disabled 
+                                    sx={{ 
+                                        width: "150px"
+                                        }}>
+                                    {loading?  "Loading..." : "No more"}
+                                </MenuItem> }
+                            </MenuList>
+                        </Paper>
+                    )
+                    : null
+                }
         </div>
     );
 }

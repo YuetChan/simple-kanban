@@ -1,95 +1,146 @@
-import { Checkbox, Menu, MenuItem } from "@mui/material";
+import { Checkbox, FormGroup, FormControlLabel, Menu, Stack } from "@mui/material";
 
+import Groups3Icon from '@mui/icons-material/Groups3';
+import KanbanIconTitle from "../../../components/kanban-Icon-title";
+
+// Ps: last element of user list is assumed to be the logined user
 interface UserListMenuProps {
-  usersFilterMenuAnchorEl?: any,
-  usersFilterMenuOpen?: any,
+    shallowOpen: boolean,
+    userListMenuAnchorEl?: any,
 
-  userCheckMp?: Map<string, boolean>, 
-  // last element is assumed to be the logined user
-  userList?: Array<string>,
+    userCheckMp?: Map<string, boolean>, 
+    userList?: Array<string>,
   
-  handleOnUsersFilterMenuClose?: Function,
-  handleOnOwnerCheck?: Function,
-  handleOnCollaboratorCheck?: Function
+    handleOnUsersFilterMenuClose?: Function,
+    handleOnOwnerCheck?: Function,
+    handleOnCollaboratorCheck?: Function
 }
 
 const UserListMenu = (props: UserListMenuProps) => {
-  const handleOnClose = (e: any) => {
-    if(props.handleOnUsersFilterMenuClose) {
-      props.handleOnUsersFilterMenuClose();
-    }
-  }
-
-  const handleOnOwnerCheck = (e: any) => {
-    if(props.handleOnOwnerCheck) {
-      props.handleOnOwnerCheck(e.target.checked)
-    }
-  }
-
-  const handleOnCollaboratorCheck = (e: any, email: string) => {
-    if(props.handleOnCollaboratorCheck) {
-      props.handleOnCollaboratorCheck(e.target.checked, email)
-    }
-  }
-
-  const getOwnerMenuItem = () => {
-    if (props.userList) {
-      const ownerIdx = props.userList.length - 1
-      const ownerEmail = props.userList[ownerIdx]
-
-      return (
-        <MenuItem 
-          key={ "owner_" + ownerEmail } 
-          value={ "owner_" + ownerEmail }>
-          <Checkbox 
-            checked={ props.userCheckMp?.get(ownerEmail) }
-            onChange={ (e) => handleOnOwnerCheck(e) } 
-            />
-
-          { ownerEmail }
-        </MenuItem>
-      )
-    }else {
-      return null
-    }
-  }
-
-  const getCollaboratorMenuItems = () => {
-    if (props.userList) {
-      const ownerIdx = props.userList.length - 1
-      const ownerEmail = props.userList[ownerIdx]
-
-      return props.userList.map((collaboratorEmail) => {
-        if(collaboratorEmail !== ownerEmail) {
-          return (
-            <MenuItem 
-              key={ "collbarator_" + collaboratorEmail }
-              value={ "collbarator_" + collaboratorEmail }>
-              <Checkbox 
-                checked={ props.userCheckMp?.get(collaboratorEmail) }
-                onChange={ (e) => handleOnCollaboratorCheck(e, collaboratorEmail) } 
-                />
-  
-              { collaboratorEmail }
-            </MenuItem>
-          )
+    const handleOnClose = (e: any) => {
+        if(props.handleOnUsersFilterMenuClose) {
+            props.handleOnUsersFilterMenuClose();
         }
-      })
-    }else {
-      return null
     }
-  } 
+
+    const handleOnOwnerCheck = (e: any, ownerEmail: string) => {
+        if(props.handleOnOwnerCheck) {
+            props.handleOnOwnerCheck(e.target.checked, ownerEmail)
+        }
+    }
+
+    const handleOnCollaboratorCheck = (e: any, email: string) => {
+        if(props.handleOnCollaboratorCheck) {
+            props.handleOnCollaboratorCheck(e.target.checked, email)
+        }
+    }
+
+    const getOwnerMenuItem = () => {
+        if (props.userList) {
+            const ownerIdx = props.userList.length - 1
+            const ownerEmail = props.userList[ownerIdx]
+
+            return (
+                <Stack direction="column">
+                    <FormGroup 
+                        sx={{ 
+                            marginTop: "8px", 
+                            padding: "0px 8px 0px 8px" 
+                            }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox 
+                                    checked={ props.userCheckMp?.get(ownerEmail) }
+                                    value={ ownerEmail }
+
+                                    onChange={ (e: any) => handleOnOwnerCheck(e, ownerEmail) } 
+
+                                    sx={{ 
+                                        '& .MuiSvgIcon-root': { 
+                                            fontSize: "18px" 
+                                        } 
+                                    }} />}
+                            style={{ fontSize: "12px" }}
+                            label={ ownerEmail }
+                            />
+                    </FormGroup>
+                </Stack>
+            );
+        }else {
+            return null;
+        }
+    }
+
+    const getCollaboratorMenuItems = () => {
+        if (props.userList && props.userList.length > 1) {
+            const ownerIdx = props.userList.length - 1
+            const ownerEmail = props.userList[ownerIdx]
+
+            return (
+                    <Stack direction="column">
+                        <FormGroup 
+                            sx={{ 
+                                marginTop: "8px", 
+                                padding: "0px 8px 0px 8px" 
+                            }}>
+                                {
+                                    props.userList.map((collaboratorEmail) => {
+                                        if(collaboratorEmail !== ownerEmail) {
+                                            return (
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox 
+                                                            checked={ props.userCheckMp?.get(collaboratorEmail) }
+                                                            value={ collaboratorEmail }
+                                    
+                                                            onChange={ (e: any) => handleOnCollaboratorCheck(e, collaboratorEmail) } 
+                                    
+                                                            sx={{ 
+                                                                "& .MuiSvgIcon-root": { 
+                                                                    fontSize: "18px" 
+                                                                } 
+                                                            }} />}
+                                                        style={{ fontSize: "12px" }}
+                                                        label={ ownerEmail }
+                                                        />)
+                                        }
+                                    })
+                                }
+                        </FormGroup>
+                    </Stack>
+                )
+        }else {
+            return null;
+        }
+    } 
 
   // ------------------ Html template ------------------
   return (
     <Menu
-      anchorEl={ props.usersFilterMenuAnchorEl }
-      PaperProps={{ style: { maxHeight: "360px" }}}
-      open={ props.usersFilterMenuOpen }
+        anchorEl={ props.userListMenuAnchorEl }
+        open={ Boolean(props.userListMenuAnchorEl) }
       
-      onClose={ handleOnClose } >
-      { getOwnerMenuItem() }
-      { getCollaboratorMenuItems()}
+        onClose={ handleOnClose } 
+      
+        PaperProps={{ 
+            style: { 
+                width: "330px" 
+            }}}
+
+        sx={{
+            padding: "8px 0px 8px 0px",
+            display: props.shallowOpen? "block" : "none"
+        }}>
+        <div style={{ padding: "8px" }}>
+            <KanbanIconTitle 
+                icon={<Groups3Icon />}
+                label="Team members"
+                />
+
+            { getOwnerMenuItem() }
+
+            { getCollaboratorMenuItems() }
+        </div>
     </Menu>
   )
 }

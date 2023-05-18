@@ -108,20 +108,7 @@ public class ProjectService {
       updatedProject.setName(model.name);
       updatedProject.setDescription(model.description);
 
-      // Allows pipeline stage to access collaboratorEmailToSecretMap since configCache is globally accessible
-      this.configCache.put("collaboratorEmailToSecretMap", model.collaboratorEmailToSecretMap);
-
-      List<User> updatedCollaboratorList = ((Map<String, String>)configCache.get("collaboratorEmailToSecretMap"))
-              .keySet()
-              .stream()
-              .map(email -> {
-                 User user = new User();
-                 user.setEmail(email);
-                 return user;
-              })
-              .collect(Collectors.toList());
-
-      updatedProject.setCollaboratorList(updatedCollaboratorList);
+      updatedProject.setCollaboratorList(model.collaboratorList);
 
       // Validates updated project
       ValidationResult validationResult = defaultProjectUpdateValidator.validate(updatedProject);
@@ -189,8 +176,7 @@ public class ProjectService {
       private String id;
       private String name;
       private String description;
-
-      private Map<String, String> collaboratorEmailToSecretMap;
+      private List<User> collaboratorList;
    }
 
 }

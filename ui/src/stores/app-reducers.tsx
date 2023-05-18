@@ -68,7 +68,7 @@ export interface AppState {
     _tagsEditAreaSearchStr: string,
 
     _activeTags: Array<string>,
-    _activePriority: string,
+    _activePriorities: Array<string>,
     _activeUserEmails: Array<string>
   },
 

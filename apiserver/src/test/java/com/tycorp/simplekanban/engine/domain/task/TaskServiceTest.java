@@ -63,13 +63,7 @@ public class TaskServiceTest {
    private MergePropertiesToTaskStage mergePropertiesToTaskStage;
 
    @BeforeEach
-   public void initTaskService() {
-//      MockitoAnnotations.initMocks(this);
-//      MockedStatic appContextUtilsMock = mockStatic(AppContextUtils.class);
-//
-//      appContextUtilsMock.when(() -> AppContextUtils.getBeanOfType(TaskServiceObserver.class))
-//              .thenReturn(new HashMap<>());
-   }
+   public void initTaskService() { }
 
    @Test
    public void shouldCreateTaskAndReflectTagList() throws Exception {
@@ -115,7 +109,7 @@ public class TaskServiceTest {
       doNothing()
               .when(taskService).attachTagListToNewTask(Mockito.any(), Mockito.any());
 
-      Task actualTask = taskService.create(model);
+      Task actualTask = taskService.create(model, defaultTaskCreateValidator);
 
       List<Tag> actualTagList = actualTask.getTagList();
 
@@ -139,7 +133,7 @@ public class TaskServiceTest {
       when(defaultTaskCreateValidator.validate(Mockito.any()))
               .thenReturn(ValidationResult.invalid("Tag list count exceeds maximum"));
 
-      assertThrows(ResponseStatusException.class, () -> taskService.create(model));
+      assertThrows(ResponseStatusException.class, () -> taskService.create(model, defaultTaskCreateValidator));
    }
 
    @Test
@@ -158,7 +152,7 @@ public class TaskServiceTest {
       when(defaultTaskCreateValidator.validate(Mockito.any()))
               .thenReturn(ValidationResult.invalid("Project not found"));
 
-      assertThrows(ResponseStatusException.class, () -> taskService.create(model));
+      assertThrows(ResponseStatusException.class, () -> taskService.create(model, defaultTaskCreateValidator));
    }
 
    @Test

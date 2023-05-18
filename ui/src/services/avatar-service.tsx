@@ -1,7 +1,7 @@
 import Avvvatars from 'avvvatars-react'
 
-const textToAvatar = (str: string) => {
-  return <Avvvatars value={ str } style="shape"  border={ true } />;
+const textToAvatar = (str: string, size=36) => {
+  return <Avvvatars value={ str } style="shape" size={size}/>;
 }
 
 export { textToAvatar };

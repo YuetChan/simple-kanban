@@ -9,10 +9,8 @@ import DatePicker from "react-datepicker";
 import { stringToEnum } from '../../../services/backend-enum-service';
 
 import KanbanAutosizeTextarea from "../../../components/kanban-autosize-textarea";
-import TagsEditArea from "../../tag/components/tags-edit-area";
 import KanbanCardAssignee from "./task-assignee-select";
 import StatusSelect from "./task-status-select";
-import TagsSearchResultPanel from './task-create-tags-search-result-panel';
 import TaskPrioritySelect from './task-priority-select';
 
 import { Task } from '../../../types/Task';
@@ -21,6 +19,8 @@ import { AppState } from '../../../stores/app-reducers';
 
 import { actions as taskCreateActions } from "../../../stores/task-create-slice";
 import { actions as datesCacheActions } from "../../../stores/dates-cache-slice";
+import TagsArea from '../../tag/components/tags-area';
+import { Tag } from '../../../types/Tag';
 
 interface TaskCreateDialogProps {
   label?: string,
@@ -43,14 +43,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
   // ------------------ Tasks cache ------------------
   const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
 
-  // ------------------ Task create ------------------
-  const taskCreateState = useSelector((state: AppState) => state.TaskCreate);
-
   const { 
-    updateTagsEditAreaSearchStr, updateActiveTags, 
-    mouseEnterSearchResultPanel, mouseLeaveSearchResultPanel,
-    focusTagsEditArea, blurTagsEditArea, 
-    updateLastFocusedArea, 
+    updateActiveTags, 
     setTagsEditAreaRef,
   } = taskCreateActions;
  
@@ -137,21 +131,6 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     setTask(defaultTask);
   }
 
-  const handleOnMouseEnter = () => {
-    dispatch(mouseEnterSearchResultPanel(undefined));
-    dispatch(updateLastFocusedArea('tagsEditArea'))
-  }
-
-  const handleOnMouseLeave = () => {
-    dispatch(mouseLeaveSearchResultPanel());
-
-    if(taskCreateState._lastFocusedArea === 'tagsEditArea') {
-      taskCreateState._tagsEditAreaRef.current.focus();
-    }
-
-    dispatch(focusTagsEditArea());
-  }
-
   // ------------------ Tags edit area ------------------
   const tagsEditAreaRef = React.useRef<HTMLInputElement | undefined>(undefined);
 
@@ -168,19 +147,6 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     });
 
     dispatch(updateActiveTags(tags));
-  }
-
-  const handleOnTagsFilterAreaFocus = (e: any) => {
-    dispatch(updateTagsEditAreaSearchStr(e.target.value));
-    dispatch(focusTagsEditArea());
-  }
-
-  const handleOnTagsFilterAreaBlur = () => {
-    dispatch(blurTagsEditArea());
-  }
-
-  const handleOnTagsFilterAreaChange = (e: any) => {
-    dispatch(updateTagsEditAreaSearchStr(e.target.value));
   }
 
   // ------------------ Title ------------------
@@ -358,16 +324,15 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
 
   // ------------------ HTML template ------------------
   return (
-    <section>
+    
       <Dialog
-        sx={{
-          "& .MuiDialog-container": {
-             "& .MuiPaper-root": {
-                minWidth: "300px",
-                width: "100%"
-              },
-          },
-        }}
+        // sx={{
+        //   "& .MuiDialog-container": {
+        //      "& .MuiPaper-root": {
+        //         minWidth: "300px",
+        //         width: "100%"
+        //       },
+        //   }}}
         scroll={ "paper" }
         open={ props.open? props.open : false }
         onClose={ handleOnClose } >
@@ -388,14 +353,27 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                 sx={{ marginBottom: "12px" }}
                 label="Title" 
                 variant="standard" 
-                onChange={ (e: any) => handleOnTitleChange(e) } />
+                onChange={ (e: any) => handleOnTitleChange(e) } 
+                
+                inputProps={{
+                  style: { 
+                    fontSize: "21px", 
+                    fontFamily: "'Caveat', cursive"
+                  }
+                }}/>
   
               <Stack 
                 direction="row" 
                 spacing={ 6 } >
                 <StatusSelect 
                   value={ 'backlog' }
-                  handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } />  
+
+                  handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } 
+
+                  style={{
+                    width: "120px"
+                  }}
+                  />  
   
                 <Stack 
                   direction="column" 
@@ -409,49 +387,34 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                 </Stack>
               </Stack>
   
-              <div style={{ width: "140px" }}>
+              
                 <TaskPrioritySelect
                   value={ 'low' }
-                  handleOnPriorityChange={ (e: any) => handleOnPriorityChange(e) } />
-              </div>
-              
-              <TagsEditArea 
-                label="Tags"
-                disabled={ false } 
-                inputRef={ tagsEditAreaRef }
-                tags={ taskCreateState._activeTags } 
-                handleOnTextFieldChange={ (e: any) => handleOnTagsFilterAreaChange(e) }
-                handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) } 
-                handleOnFocus={ (e: any) => handleOnTagsFilterAreaFocus(e) } 
-                handleOnBlur={ handleOnTagsFilterAreaBlur } />  
 
+                  handleOnPriorityChange={ (e: any) => handleOnPriorityChange(e) } 
+
+                  style={{
+                    width: "120px"
+                  }}/>
+              
               {
-                taskCreateState._tagsEditAreaFocused || taskCreateState._searchResultPanelMouseOver
-                ? (
-                    <section 
-                      style={{
-                        height: "169px",
-                        backgroundColor: "whitesmoke"
-                        }}
-                      onMouseEnter={ handleOnMouseEnter }
-                      onMouseLeave={ handleOnMouseLeave }>
-                      { 
-                        taskCreateState._tagsEditAreaFocused 
-                        || (taskCreateState._lastFocusedArea === "tagsEditArea" 
-                        && taskCreateState._searchResultPanelMouseOver === true)
-                        ? <TagsSearchResultPanel />
-                        : null
-                      }
-                    </section>
-                  )
-                : null
-              }
+                                    projectsCacheState._activeProject?.id
+                                    ? (
+                                        <TagsArea 
+                                            projectId={ projectsCacheState._activeProject.id } 
+                                            tags={ task.tagList.map((tag: Tag) => tag.name) }
+
+                                            handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
+                                            />)
+                                    : null
+                                }
 
               <br></br>
 
               <Stack 
                 direction="column" 
-                spacing={ 0.5 } >
+                spacing={ 0.5 } 
+                >
                 <KanbanAutosizeTextarea 
                   label="Description" 
                   placeholder="Enter the description"
@@ -479,7 +442,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
           <Button onClick={ handleOnApply }>Apply</Button>
         </DialogActions>
       </Dialog>
-    </section>
+  
     )
 }
 

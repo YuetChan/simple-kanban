@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import { Stack, TextField } from "@mui/material";
 
-import TagArea from "./tag-area";
+import TagChip from "./tag-chip";
 
 interface TagsEditsAreaProps {
   label?: string,
@@ -82,6 +82,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
           variant="standard" 
           inputRef={ props.inputRef } 
           value={ tagInput } 
+          
           onChange={ (e) => handleOnTextFieldChange(e) }
           onKeyDown={ (e) => handleOnKeyPress(e) }
           onFocus= { (e) => handleOnFocus(e) }
@@ -96,7 +97,7 @@ const TagsEditArea = (props: TagsEditsAreaProps) => {
                   {
                     tags.map(tag => {
                       return (
-                        <TagArea 
+                        <TagChip 
                           tag={ tag }
                           showDelete={ true }
                           handleOnDeleteClick={ handleOnDeleteClick } />

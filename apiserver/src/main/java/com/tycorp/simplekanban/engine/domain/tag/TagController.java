@@ -48,7 +48,7 @@ public class TagController {
       Page<Tag> page = tagRepository.findByProjectIdAndNameLike(
               projectId,
               prefix + "%",
-              PageRequest.of(start, 20, Sort.by("createdAt").descending()));
+              PageRequest.of(start, 5, Sort.by("createdAt").descending()));
       List<Tag> tagList = page.getContent();
 
       LOGGER.debug("Found total of {} tags", tagList.size());

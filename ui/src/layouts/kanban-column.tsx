@@ -12,15 +12,18 @@ import { Task } from "../types/Task";
 import { AppState } from "../stores/app-reducers";
 
 import { actions as kanbanTableActions } from "../stores/kanban-table-slice";
+import { Stack } from "@mui/material";
 
 interface KanbanColumnProps {
-  category: string,
-  meta: {
-    headUUID: string,
-    tailUUID: string
-  } | undefined,
+    category: string,
+    meta: {
+        headUUID: string,
+        tailUUID: string
+    } | undefined,
   
-  children: any
+    children: any,
+
+    style?: any
 }
 
 const KanbanColumn = (props: KanbanColumnProps) => {
@@ -117,14 +120,20 @@ const KanbanColumn = (props: KanbanColumnProps) => {
 
   // ------------------ HTML template ------------------
   return (
-    <div 
+    <Stack 
+      direction="column"
+      alignItems="center"
+
+      spacing={ 1.4 }
+
+      ref={ drop }
+
       style={{
         width: "100%",
-        height: "100%"
-      }}
-      ref={ drop } >
+        ... props.style
+      }}>
       { props.children }
-    </div>
+    </Stack>
   )
 }
 

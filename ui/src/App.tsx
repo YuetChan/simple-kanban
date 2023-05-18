@@ -17,7 +17,6 @@ import { redirectToLoginPage } from './services/auth.services';
 import { Project } from './types/Project';
 import { Task } from './types/Task';
 
-import TagsSearchResultPanel from './features/task/components/task-search-tags-search-result-panel';
 import KanbanTable from './layouts/kanban-table';
 import KanbanDrawer from './layouts/kanban-drawer';
 import TaskAddButton from './features/task/components/task-add-button';
@@ -31,6 +30,7 @@ import { AppState } from './stores/app-reducers';
 
 import { actions as usersCacheActions } from './stores/user-cache-slice';
 import { actions as projectsCacheActions } from './stores/projects-cache-slice';
+import { actions as projectDeleteDialogActions } from './stores/project-delete-dialog-slice';
 import { actions as projectCreateDialogActions } from './stores/project-create-dialog-slice';
 import { actions as kanbanTableActions } from './stores/kanban-table-slice';
 
@@ -55,6 +55,8 @@ function App() {
 
   // ------------------ Project delete dialog ------------------
   const projectDeleteDialogState = useSelector((state: AppState) => state.ProjectDeleteDialog);
+
+  const { hideProjectDeleteDialog } = projectDeleteDialogActions;
 
   // ------------------ Project create dialog ------------------
   const projectCreateDialogState = useSelector((state: AppState) => state.ProjectCreateDialog);
@@ -125,11 +127,12 @@ function App() {
   const [ projectDeleteDialogOpen, setProjectDeleteDialogOpen ] = React.useState(false);
 
   const handleOnProjectDeleteDialogClose = () => {
-    setProjectDeleteDialogOpen(false);
+    dispatch(hideProjectDeleteDialog())
   }
 
   const handleOnProjectDeleteDialogDelete = () => {
     const activeProject = projectsCacheState._activeProject;
+    
     if(activeProject) {
       deleteProject(activeProject.id).then(res => {
         setProjectDeleteDialogOpen(false);
@@ -144,8 +147,10 @@ function App() {
   }
 
   useEffect(() => {
+    console.log(projectDeleteDialogState.show)
+
     setProjectDeleteDialogOpen(projectDeleteDialogState.show);
-  }, [ projectDeleteDialogState ])
+  }, [ projectDeleteDialogState.show ])
 
 
   // ------------------ Project create dialog ------------------
@@ -212,14 +217,22 @@ function App() {
           display: authed? "block": "none"
         }}>
           <Stack 
-            direction="row" 
+            direction="column" 
             style={{ 
               width: "100%", 
               height: "100%" 
             }}>    
-            <KanbanDrawer />
+            {/* <KanbanHorizontalDrawer /> */}
+           
   
-            <KanbanTable /> 
+            <Stack direction="row">
+               <KanbanDrawer />
+               
+                <KanbanTable />
+               
+               
+            </Stack>
+             
           </Stack>
       </section>
 
@@ -230,14 +243,6 @@ function App() {
           display: authed? "none": "flex"
       }}>
         <KanbanOauthPage />
-      </div>
-   
-      <div style={{ 
-        display: tasksSearchState._tagsEditAreaFocused || tagsSearchResultPanelState._mouseOver
-        ? "block" 
-        : "none" 
-        }}>
-        <TagsSearchResultPanel />
       </div>
 
       <div style={{

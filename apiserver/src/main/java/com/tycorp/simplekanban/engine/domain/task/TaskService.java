@@ -1,6 +1,5 @@
 package com.tycorp.simplekanban.engine.domain.task;
 
-import com.tycorp.simplekanban.engine.core.AppContextUtils;
 import com.tycorp.simplekanban.engine.domain.task.repository.TaskNodeRepository;
 import com.tycorp.simplekanban.engine.domain.task.repository.TaskRepository;
 import com.tycorp.simplekanban.engine.domain.task.validation.validator.DefaultTaskCreateValidator;
@@ -15,6 +14,7 @@ import com.tycorp.simplekanban.engine.domain.tag.TagService;
 import com.tycorp.simplekanban.engine.pattern.observer.TaskServiceObserver;
 import com.tycorp.simplekanban.engine.pattern.persistence.PersistencePipeline;
 import com.tycorp.simplekanban.engine.pattern.validation.ValidationResult;
+import com.tycorp.simplekanban.engine.pattern.validation.ValidatorI;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,19 +83,10 @@ public class TaskService {
    @Autowired
    private DefaultTaskDeleteValidator defaultTaskDeleteValidator;
 
-   public TaskService() {
-//      initObserverList();
-   }
-
-//   public void initObserverList() {
-//      LOGGER.debug("initObserverList");
-//      for(var observer: AppContextUtils.getBeanOfType(TaskServiceObserver.class).values()) {
-//         this.observerList.add(observer);
-//      }
-//   }
+   public TaskService() { }
 
    @Transactional
-   public Task create(CreateModel model) {
+   public Task create(CreateModel model, ValidatorI validator) {
       // Creates tag list from model
       List<Tag> tagList = new ArrayList<>();
 
@@ -128,7 +119,7 @@ public class TaskService {
       task.setTagList(tagList);
 
       // Validates new task
-      ValidationResult validationResult = defaultTaskCreateValidator.validate(task);
+      ValidationResult validationResult = validator.validate(task);
 
       if(validationResult.isValid()) {
          task = new PersistencePipeline<>(
@@ -151,7 +142,7 @@ public class TaskService {
 
    // Updated task needed to be in transient state
    @Transactional
-   public void update(UpdateModel model) {
+   public void update(UpdateModel model, ValidatorI validator) {
       notifyObserversPreUpdate(model);
 
       // Creates tag list from model
@@ -183,7 +174,7 @@ public class TaskService {
       updatedTask.setAssigneeEmail(model.assigneeEmail);
 
       // Validates updated task
-      ValidationResult validationResult = defaultTaskUpdateValidator.validate(updatedTask);
+      ValidationResult validationResult = validator.validate(updatedTask);
 
       if(validationResult.isValid()) {
          new PersistencePipeline<>(mergePropertiesToTaskStage)

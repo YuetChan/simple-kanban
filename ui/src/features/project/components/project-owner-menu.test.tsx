@@ -54,8 +54,8 @@ describe("ProjectOwnerMenu", () => {
         render(
             <Provider store={ store }>
                 <ProjectOwnerMenu
-                    ownerMenuAnchorEl={ ownerMenuAnchorEl }
-                    ownerMenuOpen={ true }
+                    anchorEl={ ownerMenuAnchorEl }
+                    open={ true }
                     handleOnOwnerMenuClose={ handleOnOwnerMenuClose } />
             </Provider>
         );
@@ -107,8 +107,8 @@ describe("ProjectOwnerMenu", () => {
         render(
             <Provider store={ store }>
                 <ProjectOwnerMenu
-                    ownerMenuAnchorEl={ ownerMenuAnchorEl }
-                    ownerMenuOpen={ true }
+                    anchorEl={ ownerMenuAnchorEl }
+                    open={ true }
                     handleOnOwnerMenuClose={ handleOnOwnerMenuClose }
                 />
             </Provider>
@@ -146,8 +146,8 @@ describe("ProjectOwnerMenu", () => {
         render(
             <Provider store={ store }>
                 <ProjectOwnerMenu
-                    ownerMenuAnchorEl={ ownerMenuAnchorEl }
-                    ownerMenuOpen={ true }
+                    anchorEl={ ownerMenuAnchorEl }
+                    open={ true }
                     handleOnOwnerMenuClose={ handleOnOwnerMenuClose }
                 />
             </Provider>
@@ -192,8 +192,8 @@ describe("ProjectOwnerMenu", () => {
         render(
             <Provider store={ store }>
                 <ProjectOwnerMenu
-                    ownerMenuAnchorEl={ ownerMenuAnchorEl }
-                    ownerMenuOpen={ true }
+                    anchorEl={ ownerMenuAnchorEl }
+                    open={ true }
                     handleOnOwnerMenuClose={ handleOnOwnerMenuClose }
                 />
             </Provider>
@@ -227,8 +227,8 @@ describe("ProjectOwnerMenu", () => {
         render(
             <Provider store={ store }>
                 <ProjectOwnerMenu
-                    ownerMenuAnchorEl={ ownerMenuAnchorEl }
-                    ownerMenuOpen={ true }
+                    anchorEl={ ownerMenuAnchorEl }
+                    open={ true }
                     handleOnOwnerMenuClose={ handleOnOwnerMenuClose }
                 />
             </Provider>

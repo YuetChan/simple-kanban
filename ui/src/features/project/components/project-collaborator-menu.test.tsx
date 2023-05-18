@@ -15,8 +15,8 @@ describe('ProjectCollaboratorMenu', () => {
     let store: any;
 
     let props: {
-        collaboratorsMenuAnchorEl: any,
-        collaboratorsMenuOpen: boolean,
+        anchorEl: any,
+        open: boolean,
         
         handleOnCollaboratorsMenuClose?: Function
     }
@@ -44,8 +44,8 @@ describe('ProjectCollaboratorMenu', () => {
         });
 
         props = {
-            collaboratorsMenuAnchorEl: document.body,
-            collaboratorsMenuOpen: true,
+            anchorEl: document.body,
+            open: true,
             handleOnCollaboratorsMenuClose: jest.fn()
         };
     });

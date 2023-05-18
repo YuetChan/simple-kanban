@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
+import java.io.DataInput;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -166,28 +168,22 @@ public class ProjectController {
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateProjectById(@PathVariable(name = "id") String id,
                                                    @RequestBody String reqJsonStr) {
+      JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
+      JsonObject projectJson = dataJson.get("project").getAsJsonObject();
+
+      ProjectService.UpdateModel model = null;
       try {
-         JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
-         JsonObject projectJson = dataJson.get("project").getAsJsonObject();
-
-         JsonObject collaboratorEmailSecretMapJson = dataJson
-                 .get("collaboratorEmailSecretMap")
-                 .getAsJsonObject();
-
-         ProjectService.UpdateModel model = new ProjectService.UpdateModel(
+         model = new ProjectService.UpdateModel(
                  projectJson.get("id").getAsString(),
                  projectJson.get("name").getAsString(),
                  projectJson.get("description").getAsString(),
-                 new ObjectMapper().readValue(collaboratorEmailSecretMapJson.toString(), HashMap.class));
+                 Arrays.asList(new ObjectMapper().readValue((DataInput) projectJson.get("collaboratorList"), User[].class)));
 
          projectService.update(model);
 
          return new ResponseEntity(HttpStatus.NO_CONTENT);
-      }catch(JsonProcessingException e) {
-         LOGGER.debug("Failed to convert collaboratorEmailSecretMap from json to map", e);
-         return new ResponseEntity(
-                 "Failed to convert collaboratorEmailSecretMap from json to map",
-                 HttpStatus.BAD_REQUEST);
+      } catch (IOException e) {
+         throw new RuntimeException(e);
       }
    }
 

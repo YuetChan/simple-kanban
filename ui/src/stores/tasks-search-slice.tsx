@@ -1,14 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 interface TasksSearchState {
-  _activeTab: string,
+	_activeTab: string,
 
-  _tagsEditAreaFocused: boolean,
-  _tagsEditAreaRef: any,
-  _tagsEditAreaSearchStr: string,
+  	_tagsEditAreaFocused: boolean,
+  	_tagsEditAreaRef: any,
+  	_tagsEditAreaSearchStr: string,
 
-  _activeTags: Array<string>,
-  _activePriority: string,
+  	_activeTags: Array<string>,
+  	_activePriorities: Array<string>,
   _activeUserEmails: Array<string>
 }
 
@@ -23,56 +23,37 @@ const { reducer, actions } = createSlice({
     _tagsEditAreaSearchStr: '',
 
     _activeTags: [],
-    _activePriority: 'all',
+    _activePriorities: [],
     _activeUserEmails: []
   } as TasksSearchState,
   
   reducers: {
-    selectActivePriority: (state, action) => {
-      state._activePriority = action.payload;
-    },
-
-    focusTagsEditArea: (state) => {
-      state._tagsEditAreaFocused = true;
-    },
-
-    blurTagsEditArea: (state) => {
-      state._tagsEditAreaFocused = false;
-    },
-
-    setTagsEditAreaRef: (state, action) => {
-      state._tagsEditAreaRef = action.payload;
-    },
-
-    setTagsEditAreaFocused: (state) => {
-      state._tagsEditAreaRef?.current?.focus();
-      state._tagsEditAreaFocused = true;
+    selectActivePriorities: (state, action) => {
+      state._activePriorities = action.payload;
     },
 
     updateActiveTags: (state, action) => {
       state._activeTags = action.payload;
     },
 
-    updateTagsEditAreaSearchStr: (state, action) => {
-      state._tagsEditAreaSearchStr = action.payload;
-    }, 
-
     addActiveUserEmail: (state, action) => {
-      let updatedActiveUserEmails = state._activeUserEmails;
-      if(!state._activeUserEmails.includes(action.payload)) {
-        updatedActiveUserEmails = state._activeUserEmails.concat(action.payload);
-      }
-
-      state._activeUserEmails = updatedActiveUserEmails;
+      state._activeUserEmails = !state._activeUserEmails.includes(action.payload)
+      ? state._activeUserEmails.concat(action.payload)
+      : state._activeUserEmails;
     },  
 
     removeActiveUserEmail: (state, action) => {
-      const activeUserEmails = state._activeUserEmails;
+      let activeUserEmails = state._activeUserEmails;
+
       const idx = activeUserEmails.indexOf(action.payload);
+      
+      if (idx !== -1) {
+        activeUserEmails.splice(idx, 1);
+        state._activeUserEmails = activeUserEmails;
+      }
+      
 
-      console.log(idx, activeUserEmails.splice(idx, 1))
-
-      state._activeUserEmails = activeUserEmails.splice(idx, 1);
+      console.log(state._activeUserEmails)
     }
   }
 });

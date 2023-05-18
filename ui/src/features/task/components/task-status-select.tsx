@@ -3,66 +3,81 @@ import React, { useEffect } from "react";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 interface TaskStatusSelectProps {
-  value: string,
-  showArchive?: boolean,
+    value: string,
+    showArchive?: boolean,
   
-  handleOnSelectChange: Function
+    handleOnSelectChange: Function,
+
+    style?: any
 }
 
 const StatusSelect = (props: TaskStatusSelectProps) => {
-  // ------------------ Status select ------------------
-  const [ status, setStatus ] = React.useState<string>(props.value);
+    // ------------------ Status select ------------------
+    const [ status, setStatus ] = React.useState<string>(props.value);
 
-  const handleOnStatusSelect = (e: any) => {
-    setStatus(e.target.value)
-    props.handleOnSelectChange(e); 
-  }
+    const handleOnStatusSelect = (e: any) => {
+        setStatus(e.target.value);
 
-  useEffect(() => {
-    setStatus(props.value);
-  }, []);
+        props.handleOnSelectChange(e); 
+    }
+
+    useEffect(() => {
+        setStatus(props.value);
+    }, []);
   
-  const statusMap = new Map();
+    const itemStyle = {
+        
+    } 
 
-  statusMap.set('backlog', <span>📇 Backlog</span>);
-  statusMap.set('todo', <span>📝 Todo</span>);
-  statusMap.set('inProgress', <span>⏳ In Progress</span>);
-  statusMap.set('done', <span>✅ Done</span>);
+    const getStatus = (text: string) => {
+        return <span style={{ fontSize: "21px", fontFamily: "'Caveat', cursive" }}>{ text }</span>
+    }
 
-  const statuses = [
-    'backlog',
-    'todo', 
-    'inProgress',
-    'done'
-  ];
+    const statusMap = new Map();
 
-  // ------------------ Html template ------------------
-  return (
-    <section>
-      <FormControl 
-        variant="standard" 
-        sx={{ minWidth: "140px" }}>
-        <InputLabel>Status</InputLabel>
+    statusMap.set("backlog", getStatus("Backlog"));
+    statusMap.set("todo", getStatus("To Do"));
+    statusMap.set("inProgress", getStatus("In Progress"));
+    statusMap.set("done", getStatus("Done"));
 
-        <Select
-          label="status"
-          value={ status }
-          onChange={ (e) => handleOnStatusSelect(e) }>
-          {
-            statuses.map(status => (
-            <MenuItem value={ status }>{ statusMap.get(status) }</MenuItem>
-            ))
-          }
+    const statuses = [
+        "backlog",
+        "todo", 
+        "inProgress",
+        "done"
+    ];
 
-          <MenuItem
-            style={{ display: props.showArchive? "block": "none" }}
-            value={ "archive" } >
-            🗳️ Archive
-          </MenuItem>
-        </Select>
-      </FormControl>
-    </section>
-  )
+    // ------------------ Html template ------------------
+    return (
+    
+        <FormControl 
+            variant="standard" 
+            
+            sx={{ 
+            ...props?.style,
+            }}>
+            <InputLabel>Status</InputLabel>
+
+            <Select
+                label="status"
+                value={ status }
+                
+                onChange={ (e) => handleOnStatusSelect(e) }>
+                {
+                    statuses.map(status => (
+                        <MenuItem value={ status }>{ statusMap.get(status) }</MenuItem>
+                    ))
+                }
+
+                <MenuItem
+                    value={ "archive" }
+                    style={{ display: props.showArchive? "block": "none" }}>
+                    { getStatus("Archive") }
+                </MenuItem>
+            </Select>
+        </FormControl>
+    
+    )
 }
 
 export default StatusSelect;

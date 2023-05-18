@@ -4,11 +4,11 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
 import { Provider } from 'react-redux';
-import TagArea from './tag-area';
+import TagChip from './tag-chip';
 
 const mockStore = configureMockStore([thunk]);
 
-describe('TagArea', () => {
+describe('TagChip', () => {
     let store: any = mockStore({ });
 
     let props: {
@@ -35,7 +35,7 @@ describe('TagArea', () => {
     it('renders correctly', () => {
         render(
             <Provider store={ store }>
-                <TagArea {...props } />
+                <TagChip {...props } />
             </Provider>
         );
 
@@ -47,7 +47,7 @@ describe('TagArea', () => {
     it('close button should not render when showDelete is false"', () => {
         render(
             <Provider store={ store }>
-                <TagArea { ...props } showDelete={ false } />
+                <TagChip { ...props } showDelete={ false } />
             </Provider>
         );
 
@@ -59,7 +59,7 @@ describe('TagArea', () => {
     it('clicking close button should call onDeleteClick', () => {
         render(
             <Provider store={ store }>
-                <TagArea { ...props } />
+                <TagChip { ...props } />
             </Provider>
         );
 
