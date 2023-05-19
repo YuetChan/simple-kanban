@@ -31,41 +31,19 @@ export interface AppState {
     _activeProject: Project | undefined,
     _allProjects: Array<Project>
   },
-  
-  TagsSearchResultPanel: { _mouseOver: boolean },
 
   TaskCreate: {
-    _tagsEditAreaFocused: boolean,
-    _tagsEditAreaSearchStr: string,
-    _tagsEditAreaRef: any,
-
     _activeTags: Array<string>,
   
     _task: Task | undefined,
-  
-    _searchResultPanelMouseOver: boolean,
-
-    _lastFocusedArea: string
   },
 
-  TaskUpdate: {
-    _tagsEditAreaFocused: boolean,
-    _tagsEditAreaSearchStr: string,
-    _tagsEditAreaRef: any,
-  
+  TaskUpdate: {  
     _task: Task | undefined,
-  
-    _searchResultPanelMouseOver: boolean,
-
-    _lastFocusedArea: string
   },
 
   TasksSearch: {
     _activeTab: string,
-
-    _tagsEditAreaFocused: boolean,
-    _tagsEditAreaRef: any,
-    _tagsEditAreaSearchStr: string,
 
     _activeTags: Array<string>,
     _activePriorities: Array<string>,
@@ -82,7 +60,6 @@ export interface AppState {
   },
 
   UserCache: {
-    _loginedUserSecret: string,
     _loginedUserEmail: string,
   }
 }

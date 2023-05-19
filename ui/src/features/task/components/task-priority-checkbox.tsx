@@ -1,15 +1,22 @@
-import { Checkbox, FormControl, FormControlLabel, FormGroup, Stack } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import EqualizerIcon from '@mui/icons-material/Equalizer';
+import { Checkbox, FormControl, FormControlLabel, FormGroup } from "@mui/material";
+
+import EqualizerIcon from "@mui/icons-material/Equalizer";
 import KanbanIconTitle from "../../../components/kanban-Icon-title";
 
 interface TaskPriorityCheckBoxProps {
+    checkedValues?: Array<string>,
+
     handleOnPrioritiesCheck?: Function
 }
 
 const TaskPriorityCheckbox = (props: TaskPriorityCheckBoxProps) => {
-    const [ checkedValues, setCheckedValues ] = useState<Array<string>>([]);
+    const [ checkedValues, setCheckedValues ] = useState<Array<string>>(props.checkedValues || []);
+
+    useEffect(() => {
+        setCheckedValues(props.checkedValues || []);
+      }, [ props.checkedValues ]);
 
     const handleCheckboxChange = (e: any) => {
         const { value } = e.target;
@@ -46,10 +53,10 @@ const TaskPriorityCheckbox = (props: TaskPriorityCheckBoxProps) => {
                 <FormControlLabel
                     control={
                         <Checkbox 
-                            checked={ checkedValues.includes('low') } 
+                            checked={ checkedValues.includes("low") } 
                             onChange={ handleCheckboxChange } 
                             value="low" 
-                            sx={{ '& .MuiSvgIcon-root': { fontSize: "18px" } }}
+                            sx={{ "& .MuiSvgIcon-root": { fontSize: "18px" } }}
                             />}
                     style={{ fontSize: "12px" }}
                     label="Low"
@@ -58,10 +65,10 @@ const TaskPriorityCheckbox = (props: TaskPriorityCheckBoxProps) => {
                 <FormControlLabel
                     control={
                         <Checkbox 
-                            checked={ checkedValues.includes('medium') } 
+                            checked={ checkedValues.includes("medium") } 
                             onChange={ handleCheckboxChange } 
                             value="medium" 
-                            sx={{ '& .MuiSvgIcon-root': { fontSize: "18px" } }}
+                            sx={{ "& .MuiSvgIcon-root": { fontSize: "18px" } }}
                             />}
                     style={{ fontSize: "12px" }}
                     label="Medium"
@@ -70,10 +77,10 @@ const TaskPriorityCheckbox = (props: TaskPriorityCheckBoxProps) => {
                 <FormControlLabel
                     control={
                         <Checkbox 
-                            checked={ checkedValues.includes('high') } 
+                            checked={ checkedValues.includes("high") } 
                             onChange={ handleCheckboxChange } 
                             value="high" 
-                            sx={{ '& .MuiSvgIcon-root': { fontSize: "18px" } }}
+                            sx={{ "& .MuiSvgIcon-root": { fontSize: "18px" } }}
                             />}
                     style={{ fontSize: "12px" }}
                     label="High"

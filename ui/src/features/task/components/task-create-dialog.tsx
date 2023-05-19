@@ -23,39 +23,43 @@ import TagsArea from '../../tag/components/tags-area';
 import { Tag } from '../../../types/Tag';
 
 interface TaskCreateDialogProps {
-  label?: string,
-  open?: boolean,
+    label?: string,
+    open?: boolean,
 
-  handleOnApply?: Function,
-  handleOnClose?: Function
+    handleOnApply?: Function,
+    handleOnClose?: Function
 }
 
 const TaskCreateDialog = (props: TaskCreateDialogProps) => {
-  // ------------------ Dispatch ------------------
-  const dispatch = useDispatch();
+    // ------------------ Dispatch ------------------
+    const dispatch = useDispatch();
 
-  // ------------------ Projects cache ------------------
-  const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-  // ------------------ User cache ------------------
-  const userCacheState = useSelector((state: AppState) => state.UserCache);
+    // ------------------ Projects cache ------------------
+    const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-  // ------------------ Tasks cache ------------------
-  const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
 
-  const { 
-    updateActiveTags, 
-    setTagsEditAreaRef,
-  } = taskCreateActions;
+    // ------------------ User cache ------------------
+    const userCacheState = useSelector((state: AppState) => state.UserCache);
+
+
+    // ------------------ Tasks cache ------------------
+    const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
+
+    const { 
+        updateActiveTags, 
+    } = taskCreateActions;
  
-  // ------------------ Dates cache ------------------
-  const datesState = useSelector((state: AppState) => state.DatesCache);
-  const { dueDateUpdate } = datesCacheActions;
+  
+    // ------------------ Dates cache ------------------
+    const datesState = useSelector((state: AppState) => state.DatesCache);
 
-  // ------------------ Task create dialog ------------------
-  const defaultTask = {
-    id: 'pseudo-task-id',
-    projectId: '',
+    const { dueDateUpdate } = datesCacheActions;
+
+    // ------------------ Task create dialog ------------------
+    const defaultTask = {
+        id: 'pseudo-task-id',
+        projectId: '',
 
     title: '',
     description: '',
@@ -131,13 +135,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
     setTask(defaultTask);
   }
 
-  // ------------------ Tags edit area ------------------
-  const tagsEditAreaRef = React.useRef<HTMLInputElement | undefined>(undefined);
-
-  useEffect(() => {
-    dispatch(setTagsEditAreaRef(tagsEditAreaRef));
-  }, [ tagsEditAreaRef ]);
-
+  // ------------------ Tags area ------------------
   const handleOnTagsChange = (tags: Array<string>) => {
     setTask({
       ... task, 

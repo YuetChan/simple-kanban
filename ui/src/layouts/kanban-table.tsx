@@ -217,6 +217,10 @@ const KanbanTable = (props: KanbanTableProps) => {
                         handleOnCardClick={ handleOnCardClick }
 
                         style={{
+                            // height: "",
+                            flexShrink: "0",
+                            display: "block",
+                            
                             width: "80%"
                         }} />
                         );
@@ -503,6 +507,12 @@ const KanbanTable = (props: KanbanTableProps) => {
         setTaskSearchFilterMenuAnchorEl(null);
     }
 
+    const handleOnTaskSearchFilterMenuClear = () => {
+        dispatch(selectActivePriorities([]));
+        dispatch(updateActiveTags([]));
+    }
+
+
     const handleOnTaskSearchFilterMenuIconClick = (e: any) => {
         setTaskSearchFilterMenuAnchorEl(e.currentTarget);
         setTaskSearchFilterMenuOpen(true);
@@ -601,7 +611,8 @@ const KanbanTable = (props: KanbanTableProps) => {
                 children={ children }
 
                 style={{
-                    height: "calc(100vh - 33px)",
+                    height: "calc(100vh - 178px)",
+                    // background: "red",
                     paddingTop: "18px",
                     borderRight: category === "done"? "none" : "2px solid rgba(48, 48, 48, 0.5)",
                     overflow: "auto",
@@ -707,6 +718,8 @@ const KanbanTable = (props: KanbanTableProps) => {
                                             handleOnTaskSearchFilterMenuTagsChange(tags) }
 
                                         handleOnClose= { handleOnTaskSearchFilterMenuShallowClose }
+
+                                        handleOnClear= { handleOnTaskSearchFilterMenuClear }
                                         />
                                 )
                                 : null

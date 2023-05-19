@@ -71,12 +71,6 @@ function App() {
     removeCookie('jwt', '/');
   }
 
-  // ------------------ Tag search result panel ------------------
-  const tagsSearchResultPanelState = useSelector((state: AppState) => state.TagsSearchResultPanel);
-
-  // ------------------ Tasks search ------------------
-  const tasksSearchState = useSelector((state: AppState) => state.TasksSearch);
-
   // ------------------ Kanban table ------------------
   const { refreshTable } = kanbanTableActions;
   

@@ -28,6 +28,7 @@ interface KanbanCardProps {
     task: Task,
 
     handleOnCardClick?: Function,
+
     style?: any
 }
 
@@ -171,10 +172,28 @@ const KanbanCard = (props: KanbanCardProps) => {
             ref={ mergeRefs([ drag, drop ]) }
 
             sx={{ 
-                width: "100%", 
+                width: "100%",
+                position: "relative", 
+                borderRadius: "3px",
+                
+                
                 background: props.highlight? "ghostwhite": getColorByPriority(), 
                 ... props.style
                 }}>
+
+            {/* Circle ui */}
+            <div style={{
+                position: "absolute",
+                width: "8px",
+                height: "8px",
+                top: "6px",
+                right: "5px",
+                boxShadow: "inset 0px 0px 1px rgba(0, 0, 0, 0.2)",
+                borderRadius: "100px",
+                background: "white"
+
+            }}></div>
+
             <CardActionArea 
                 href="javascript:void(0)" 
                 onClick={ handleOnCardClick }

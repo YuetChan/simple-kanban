@@ -356,11 +356,13 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     <div style={{
                         color: "rgb(47, 47, 47)" 
                         }}>
-                     <b>Yours/You joined: </b>
+                        <b>Yours/You joined: </b>
                     </div>  
                </ListItem>
 
-                <ListItem>
+                <ListItem sx={{
+                    marginBottom: "12px"
+                }}>
                     <List sx={{ 
                         width: "100%",
                         overflow: "auto",

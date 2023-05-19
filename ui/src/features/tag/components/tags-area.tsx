@@ -15,11 +15,11 @@ interface TagsAreaProps {
 }
 
 const TagsArea = (props: TagsAreaProps) => {
-    const [ tags, setTags ] = useState<Array<string>>([]);
+    const [ tags, setTags ] = useState<Array<string>>(props.tags || []);
 
     useEffect(() => {
-        setTags(props.tags? props.tags : []);
-    }, [ ])
+        setTags(props.tags || [])
+    }, [ props.tags ])
 
     const handleOnEnter = (tag: string) => {
         if(!tags.includes(tag)) {
