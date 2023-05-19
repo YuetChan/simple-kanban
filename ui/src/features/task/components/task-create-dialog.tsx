@@ -21,6 +21,7 @@ import { actions as taskCreateActions } from "../../../stores/task-create-slice"
 import { actions as datesCacheActions } from "../../../stores/dates-cache-slice";
 import TagsArea from '../../tag/components/tags-area';
 import { Tag } from '../../../types/Tag';
+import SubtaskListArea from './Subtask-list';
 
 interface TaskCreateDialogProps {
     label?: string,
@@ -386,7 +387,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
               </Stack>
   
               
-                <TaskPrioritySelect
+              <TaskPrioritySelect
                   value={ 'low' }
 
                   handleOnPriorityChange={ (e: any) => handleOnPriorityChange(e) } 
@@ -406,6 +407,10 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                                             />)
                                     : null
                                 }
+
+              
+
+              <SubtaskListArea />                  
 
               <br></br>
 

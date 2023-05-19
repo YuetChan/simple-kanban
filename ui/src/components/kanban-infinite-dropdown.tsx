@@ -11,7 +11,9 @@ interface KanbanInfiniteDropdownProps {
     handleOnInputFocus?: Function,
     handleOnDropdownClose?: Function,
     handleOnInputEnter?: Function,
-    handleOnItemClick?: Function
+    handleOnItemClick?: Function,
+
+    style?: any
 }
 
 const KanbanInfiniteDropdown = (props: KanbanInfiniteDropdownProps) => {
@@ -171,7 +173,8 @@ const KanbanInfiniteDropdown = (props: KanbanInfiniteDropdownProps) => {
   
     return (
         <div style={{ 
-            position: "relative",
+            ... props.style,
+            position: "relative"
             }}>
             <TextField 
                 variant="standard"

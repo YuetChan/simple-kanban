@@ -45,17 +45,18 @@ const TagsDropdown = (props: TagsDropdownProps) => {
     }
 
     return (
-        <div style={{ padding: "0px 8px 0px 8px" }}>
-            <KanbanInfiniteDropdown  
-                fetchByPageFunc={ searchTagsByProjectId }
-                fetchSuccess={ (res: any) => fetchSuccess(res)} 
+        <KanbanInfiniteDropdown  
+            fetchByPageFunc={ searchTagsByProjectId }
+            fetchSuccess={ (res: any) => fetchSuccess(res)} 
 
-                handleOnScrollBottom={ handleOnScrollBottom }
-                handleOnInputEnter={ (tag: string) => handleOnEnter(tag) }
-                handleOnItemClick={ (tag: string) =>  handleOnItemClick(tag)}     
-                />
-        </div>
-
+            handleOnScrollBottom={ handleOnScrollBottom }
+            handleOnInputEnter={ (tag: string) => handleOnEnter(tag) }
+            handleOnItemClick={ (tag: string) =>  handleOnItemClick(tag)}  
+        
+            style={{
+                padding: "0px 8px 0px 8px"
+            }}
+            />
     )
 }
 
