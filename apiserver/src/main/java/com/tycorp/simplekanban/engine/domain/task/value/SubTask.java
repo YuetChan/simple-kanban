@@ -12,7 +12,7 @@ public class SubTask {
    @Expose
    private String title;
    @Expose
-   private String description;
+   private String description = "";
    @Expose
    private boolean completed;
 

@@ -2,36 +2,19 @@ import { createSlice } from '@reduxjs/toolkit';
 import { Task } from '../types/Task';
 
 interface TaskUpdateState {
-  _tagsEditAreaFocused: boolean,
-  _tagsEditAreaSearchStr: string,
-
-  _tagsEditAreaRef: any,
-
-  _task: Task | undefined,
-
-  _searchResultPanelMouseOver: boolean,
-  
-  _lastFocusedArea: string
+    _task: Task | undefined,
 }
 
 const { reducer, actions } = createSlice({
-  name: 'TaskUpdate',
+    name: 'TaskUpdate',
 
-  initialState: {
-    _tagsEditAreaFocused: false,
-    _tagsEditAreaSearchStr: '',
-    _tagsEditAreaRef: undefined,
+    initialState: {
+        _task: undefined,
+    } as TaskUpdateState,
   
-    _task: undefined,
-  
-    _searchResultPanelMouseOver: false,
+    reducers: {
 
-    _lastFocusedArea: ''
-  } as TaskUpdateState,
-  
-  reducers: {
-
-  }
+    }
 });
 
 export { reducer, actions }

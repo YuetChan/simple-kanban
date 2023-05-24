@@ -120,7 +120,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
         });
     }
 
-  // ------------------ HTML template ------------------
+    // ------------------ HTML template ------------------
     return (
         <Stack 
             direction="column"

@@ -23,8 +23,11 @@ class PersistTaskStage implements PersistenceStageI<Task> {
         tmpTask.setDescription(task.getDescription());
         tmpTask.setNote(task.getNote());
 
-        tmpTask.setAssigneeEmail(task.getAssigneeEmail());
         tmpTask.setPriority(task.getPriority());
+
+        tmpTask.setSubTaskList(task.getSubTaskList());
+
+        tmpTask.setAssigneeEmail(task.getAssigneeEmail());
         tmpTask.setDueAt(task.getDueAt());
 
         Task orgTask = taskRepository.save(tmpTask);

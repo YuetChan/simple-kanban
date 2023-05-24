@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -20,17 +20,16 @@ import { AppState } from "../stores/app-reducers";
 
 import { actions as kanbanTableActions } from "../stores/kanban-table-slice";
 import { actions as TasksCacheActions } from "../stores/tasks-cache-slice";
-import { actions as projectsCacheActions } from '../stores/projects-cache-slice';
-import { actions as projectDeleteDialogActions } from '../stores/project-delete-dialog-slice';
-import { actions as usersCacheActions } from '../stores/user-cache-slice';
-import { actions as tasksSearchActions } from '../stores/tasks-search-slice';
+import { actions as projectsCacheActions } from "../stores/projects-cache-slice";
+import { actions as projectDeleteDialogActions } from "../stores/project-delete-dialog-slice";
+import { actions as tasksSearchActions } from "../stores/tasks-search-slice";
 
 import { stringToEnum } from "../services/backend-enum-service";
 import { deleteTask, searchTasksByFilterParams, updateTask } from "../features/task/services/tasks-service";
-import { getProjectById, updateProjectById } from '../features/project/services/projects-service';
+import { getProjectById, updateProjectById } from "../features/project/services/projects-service";
 
-import TuneIcon from '@mui/icons-material/Tune';
-import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import TuneIcon from "@mui/icons-material/Tune";
+import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 
 interface KanbanTableProps { }
 
@@ -38,14 +37,13 @@ const KanbanTable = (props: KanbanTableProps) => {
     // ------------------ Dispatch ------------------
     const dispatch = useDispatch();
 
+    // ------------------ User cache ------------------
+    const userCacheState = useSelector((state: AppState) => state.UserCache);
+
     // ------------------ Project cache ------------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-    const { selectActiveProject, updateActiveProject } = projectsCacheActions;
-
-
-    // ------------------ Project delete dialog ------------------
-    const { showProjectDeleteDialog } = projectDeleteDialogActions;
+    const { updateActiveProject } = projectsCacheActions;
 
     // ------------------ Task cache ------------------
     const tasksState = useSelector((state: AppState) => state.TasksCache);
@@ -61,18 +59,11 @@ const KanbanTable = (props: KanbanTableProps) => {
         addActiveUserEmail, removeActiveUserEmail
     } = tasksSearchActions;
 
-    // ------------------ Table ------------------
-    const tableState = useSelector((state: AppState) => state.KanbanTable);
-
-    const { refreshTable } = kanbanTableActions;
-
-    // -------------- User cache --------------
-    const userCacheState = useSelector((state: AppState) => state.UserCache);
-
-    const { updateLoginedUserEmail, updateLoginedUserSecret } = usersCacheActions;
+    // ------------------ Project delete dialog ------------------
+    const { showProjectDeleteDialog } = projectDeleteDialogActions;
 
     // ------------------ Task update dialog ------------------
-    const [ taskToUpdate, setTaskToUpdate ] = React.useState<Task | undefined >(undefined);
+    const [ taskToUpdate, setTaskToUpdate ] = useState<Task | undefined >(undefined);
 
     const handleOnCardClick = (task: Task) => {
         setTaskToUpdate(task);
@@ -85,7 +76,7 @@ const KanbanTable = (props: KanbanTableProps) => {
     const handleOnCardUpdateDialogApply = (task: Task) => {
         updateTask(task).then(res => {
             dispatch(refreshTable());
-        })
+        });
 
         setTaskToUpdate(undefined);
     }
@@ -98,16 +89,18 @@ const KanbanTable = (props: KanbanTableProps) => {
         setTaskToUpdate(undefined);
     }
 
+    // ------------------ Table ------------------
+    const tableState = useSelector((state: AppState) => state.KanbanTable);
 
-    // ------------------ Meta ------------------
-    const [ metaMp, setMetaMp ] = React.useState<Map<string, { headUUID: string, tailUUID: string }> | undefined>(undefined);
+    const { refreshTable } = kanbanTableActions;
 
+    const [ metaMp, setMetaMp ] = useState<Map<string, { headUUID: string, tailUUID: string }> | undefined>(undefined);
 
-    // ------------------ Column html ------------------
-    const [ columnMp, setColumnMp ] = React.useState<Map<string, any> | undefined>(undefined);
+    const [ columnMp, setColumnMp ] = useState<Map<string, any> | undefined>(undefined);
 
     useEffect(() => {
         const projectId = projectsCacheState._activeProject?.id;
+
         if(projectId && metaMp) {
             fetchTasks(projectId, 0);
         }
@@ -117,10 +110,10 @@ const KanbanTable = (props: KanbanTableProps) => {
     ]);
 
     useEffect(() => {
-        const backlogMeta = metaMp?.get('backlog');
-        const todoMeta = metaMp?.get('todo');
-        const inProgressMeta = metaMp?.get('inProgress');
-        const doneMeta = metaMp?.get('done');
+        const backlogMeta = metaMp?.get("backlog");
+        const todoMeta = metaMp?.get("todo");
+        const inProgressMeta = metaMp?.get("inProgress");
+        const doneMeta = metaMp?.get("done");
 
         if(backlogMeta && todoMeta && inProgressMeta && doneMeta) {
             const columnMp = new Map();
@@ -167,6 +160,9 @@ const KanbanTable = (props: KanbanTableProps) => {
                         handleOnCardClick={ handleOnCardClick }
 
                         style={{
+                            flexShrink: "0",
+                            display: "block",
+                            
                             width: "80%"
                         }}/>
                     )
@@ -183,6 +179,9 @@ const KanbanTable = (props: KanbanTableProps) => {
                     
                         handleOnCardClick={ handleOnCardClick }
                         style={{
+                            flexShrink: "0",
+                            display: "block",
+                            
                             width: "80%"
                         }}/>
                         );
@@ -200,6 +199,9 @@ const KanbanTable = (props: KanbanTableProps) => {
                         handleOnCardClick={ handleOnCardClick }
                         
                         style={{
+                            flexShrink: "0",
+                            display: "block",
+                            
                             width: "80%"
                         }}/>
                         );
@@ -217,7 +219,6 @@ const KanbanTable = (props: KanbanTableProps) => {
                         handleOnCardClick={ handleOnCardClick }
 
                         style={{
-                            // height: "",
                             flexShrink: "0",
                             display: "block",
                             
@@ -246,22 +247,22 @@ const KanbanTable = (props: KanbanTableProps) => {
 
             const metaMp = new Map();
     
-            metaMp.set('backlog', {
+            metaMp.set("backlog", {
                 headUUID: projectUUID.uuid1,
                 tailUUID: projectUUID.uuid2
             });
   
-            metaMp.set('todo', {
+            metaMp.set("todo", {
                 headUUID: projectUUID.uuid3,
                 tailUUID: projectUUID.uuid4
             });
   
-            metaMp.set('inProgress', {
+            metaMp.set("inProgress", {
                 headUUID: projectUUID.uuid5,
                 tailUUID: projectUUID.uuid6
             });
   
-            metaMp.set('done', {
+            metaMp.set("done", {
                 headUUID: projectUUID.uuid7,
                 tailUUID: projectUUID.uuid8
             });
@@ -269,7 +270,6 @@ const KanbanTable = (props: KanbanTableProps) => {
             setMetaMp(metaMp);
         }
     }, [ projectsCacheState._activeProject ]);
-
 
     // ------------------ Task utils ------------------
     const fetchTasks = (projectId: string, page: number) => {
@@ -282,18 +282,18 @@ const KanbanTable = (props: KanbanTableProps) => {
                     tasksSearchState._activeTags).then(res => {
                         const tasks = res.tasks;
 
-                        const backlogMeta = metaMp?.get('backlog');
-                        const todoMeta = metaMp?.get('todo');
-                        const inProgressMeta = metaMp?.get('inProgress');
-                        const doneMeta = metaMp?.get('done');
+                        const backlogMeta = metaMp?.get("backlog");
+                        const todoMeta = metaMp?.get("todo");
+                        const inProgressMeta = metaMp?.get("inProgress");
+                        const doneMeta = metaMp?.get("done");
 
                         if(backlogMeta && todoMeta && inProgressMeta && doneMeta) {
                             dispatch(
                                 allTasksUpdate({
-                                    backlog: extractTasksForCategory(tasks, 'backlog', backlogMeta),
-                                    todo: extractTasksForCategory(tasks, 'todo', todoMeta),
-                                    inProgress: extractTasksForCategory(tasks, 'inProgress', inProgressMeta),
-                                    done: extractTasksForCategory(tasks, 'done', doneMeta)
+                                    backlog: extractTasksForCategory(tasks, "backlog", backlogMeta),
+                                    todo: extractTasksForCategory(tasks, "todo", todoMeta),
+                                    inProgress: extractTasksForCategory(tasks, "inProgress", inProgressMeta),
+                                    done: extractTasksForCategory(tasks, "done", doneMeta)
                                 }));
                         }
                     });
@@ -347,14 +347,6 @@ const KanbanTable = (props: KanbanTableProps) => {
     // ------------------ Owner menu ------------------
     const [ ownerMenuAnchorEl, setOwnerMenuAnchorEl ] = useState(null);
 
-    const handleOnOwnerMenuOpen = (e:any) => {
-        setOwnerMenuAnchorEl(e.currentTarget);
-    }
-
-    const handleOnOwnerMenuClose = () => {
-        setOwnerMenuAnchorEl(null);
-    }
-
     const [ isOwner, setIsOwner ] = useState(false);
 
     useEffect(() => {
@@ -363,13 +355,21 @@ const KanbanTable = (props: KanbanTableProps) => {
         }else {
             setIsOwner(false);
         }
-    }, [ userCacheState ]);
+    }, [ userCacheState, projectsCacheState ]);
+
+    const handleOnOwnerMenuOpen = (e:any) => {
+        setOwnerMenuAnchorEl(e.currentTarget);
+    }
+
+    const handleOnOwnerMenuClose = () => {
+        setOwnerMenuAnchorEl(null);
+    }
 
     const handleOnCollaboratorAdd = (collaboratorToAddEmail: string) => {
         const activeProject = projectsCacheState._activeProject;
 
         if(activeProject) {
-            const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
+            const collaboratorEmails = activeProject.collaboratorList.map(collaborator => collaborator.email);
 
             if(collaboratorEmails.indexOf(collaboratorToAddEmail) !== -1) {
                 alert("Collaborator already added to the project");
@@ -377,70 +377,70 @@ const KanbanTable = (props: KanbanTableProps) => {
                 return;
             }
  
-        const updatedCollaborators = [ ...collaboratorEmails, collaboratorToAddEmail ].map(email => {
-            return { 
-                email: email 
-            } as User;
-        })
- 
-        const updatedProject = {
-            ... activeProject,
-            collaboratorList: updatedCollaborators
-        }
- 
-        updateProjectById(activeProject.id, updatedProject).then(res => {
-            alert("Collaborator added");
- 
-            getProjectById(activeProject.id).then(res => {
-                dispatch(updateActiveProject(res));
-            });
-        }).catch(err => {
-            console.log(err);
-
-            alert("Opps, failed to add collaborator")
-        });
-    }
-}
-
- const handleOnCollaboratorRemove = (collaboratorToRemoveEmail: string) => {
-    const activeProject = projectsCacheState._activeProject;
-
-    if(activeProject) {
-        const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
-
-        const updatedCollaboratorEmails = collaboratorEmails.filter(email => {
-            return email !== collaboratorToRemoveEmail;
-        })
- 
-        if(updatedCollaboratorEmails.length === collaboratorEmails.length) {
-            alert("Collaborator not in project");
-            return;
-        }
- 
-        const updatedCollaborators = updatedCollaboratorEmails.map(email => {
-            return { 
-                email: email 
-            } as User;
-        })
- 
-        const updatedProject = {
-            ... activeProject,
-            collaboratorList: updatedCollaborators
-        }
- 
-        updateProjectById(activeProject.id, updatedProject).then(res => {
-            alert("Collaborator removed");
- 
-            getProjectById(activeProject.id).then(res => {
-                dispatch(updateActiveProject(res));
+            const updatedCollaborators = [ ...collaboratorEmails, collaboratorToAddEmail ].map(email => {
+                return { 
+                    email: email 
+                } as User;
             })
-        }).catch(err => {
-            console.log(err);
+ 
+            const updatedProject = {
+                ... activeProject,
+                collaboratorList: updatedCollaborators
+            }
+ 
+            updateProjectById(activeProject.id, updatedProject).then(res => {
+                alert("Collaborator added");
+ 
+                getProjectById(activeProject.id).then(res => {
+                    dispatch(updateActiveProject(res));
+                });
+            }).catch(err => {
+                console.log(err);
 
-            alert("Opps, failed to remove collaborator")
-        });
+                alert("Opps, failed to add collaborator")
+            });
+        }
     }
- }
+
+    const handleOnCollaboratorRemove = (collaboratorToRemoveEmail: string) => {
+        const activeProject = projectsCacheState._activeProject;
+
+        if(activeProject) {
+            const collaboratorEmails = activeProject.collaboratorList.map(collaborator =>  collaborator.email);
+
+            const updatedCollaboratorEmails = collaboratorEmails.filter(email => {
+                return email !== collaboratorToRemoveEmail;
+            })
+ 
+            if(updatedCollaboratorEmails.length === collaboratorEmails.length) {
+                alert("Collaborator not in project");
+                return;
+            }
+ 
+            const updatedCollaborators = updatedCollaboratorEmails.map(email => {
+                return { 
+                    email: email 
+                } as User;
+            })
+ 
+            const updatedProject = {
+                ... activeProject,
+                collaboratorList: updatedCollaborators
+            }
+ 
+            updateProjectById(activeProject.id, updatedProject).then(res => {
+                alert("Collaborator removed");
+ 
+                getProjectById(activeProject.id).then(res => {
+                    dispatch(updateActiveProject(res));
+                })
+            }).catch(err => {
+                console.log(err);
+
+                alert("Opps, failed to remove collaborator")
+            });
+        }
+    }
 
     const handleOnProjectDelete = (e: any) => {
         dispatch(showProjectDeleteDialog())
@@ -559,42 +559,42 @@ const KanbanTable = (props: KanbanTableProps) => {
             }
  
             updateProjectById(updatedProject.id, updatedProject).then(res => {
-                alert('You are removed from project');
+                alert("You are removed from project");
 
                 dispatch(updateActiveProject(undefined));
             }).catch(err => {
                 console.log(err);
 
-                alert('Opps, failed to remove yourself from project')
+                alert("Opps, failed to remove yourself from project")
             });
         }
     }
 
 
 
-  // ------------------ Style ------------------
-  const columnContainerStyle = {
-    flexBasis: "25%",
-    padding: "8px"
-  }
+    // ------------------ Style ------------------
+    const columnContainerStyle = {
+        flexBasis: "25%",
+        padding: "8px"
+    }
 
-  // ------------------ Column ------------------
-  const getHeader = (text: string) => {
-    return (
-      <div style={{
-        width: "100%",
-        marginTop: "4px",
+    // ------------------ Column ------------------
+    const getHeader = (text: string) => {
+        return (
+            <div style={{
+                width: "100%",
+                marginTop: "4px",
 
-        borderRight: text === "Done"? "none" : "2px solid rgba(48, 48, 48, 0.5)",
+                borderRight: text === "Done"? "none" : "2px solid rgba(48, 48, 48, 0.5)",
 
-        fontSize: "24px",
-        fontFamily: "'Caveat', cursive",
-        textAlign: "center"
-        }}>
-        <b>{ text }</b>
-      </div>
-    )
-  }
+                fontSize: "24px",
+                fontFamily: "'Caveat', cursive",
+                textAlign: "center"
+                }}>
+                <b>{ text }</b>
+            </div>
+        )
+    }
 
     const getColumn = (
         children: any, 
@@ -611,8 +611,9 @@ const KanbanTable = (props: KanbanTableProps) => {
                 children={ children }
 
                 style={{
-                    height: "calc(100vh - 178px)",
-                    // background: "red",
+                    height: "calc(100vh - 348px)",
+                    paddingBottom: "100px",
+
                     paddingTop: "18px",
                     borderRight: category === "done"? "none" : "2px solid rgba(48, 48, 48, 0.5)",
                     overflow: "auto",
@@ -735,7 +736,6 @@ const KanbanTable = (props: KanbanTableProps) => {
                             <IconButton 
                                 onClick={ (e: any) => {
                                     if(isOwner) {
-                                        // handleOnCollaboratorsMenuOpen(e)
                                         handleOnOwnerMenuOpen(e)
                                     }else {
                                         handleOnCollaboratorsMenuOpen(e)
@@ -786,25 +786,25 @@ const KanbanTable = (props: KanbanTableProps) => {
                 <div style={ columnContainerStyle }>
                     { getHeader("Backlog") }
 
-                    { columnMp?.get('backlog') } 
+                    { columnMp?.get("backlog") } 
                 </div>
 
                 <div style={ columnContainerStyle }>
                     { getHeader("To Do") }
 
-                    { columnMp?.get('todo') } 
+                    { columnMp?.get("todo") } 
                 </div>
 
                 <div style={ columnContainerStyle }>
                     { getHeader("In Progress") }
                 
-                    { columnMp?.get('inProgress') }   
+                    { columnMp?.get("inProgress") }   
                 </div>
 
                 <div style={ columnContainerStyle }>
                     { getHeader("Done") }
 
-                    { columnMp?.get('done') } 
+                    { columnMp?.get("done") } 
                 </div>
 
                 {

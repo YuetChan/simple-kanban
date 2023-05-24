@@ -13,6 +13,7 @@ import com.tycorp.simplekanban.engine.domain.task.repository.TaskRepository;
 import com.tycorp.simplekanban.engine.domain.task.validation.validator.*;
 import com.tycorp.simplekanban.engine.domain.task.value.Priority;
 import com.tycorp.simplekanban.engine.domain.task.value.Status;
+import com.tycorp.simplekanban.engine.domain.task.value.SubTask;
 import com.tycorp.simplekanban.engine.pattern.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,13 +127,11 @@ public class TaskController {
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
 
-      try {
-         System.out.println(new ObjectMapper().readValue(taskJson.get("tagList").toString(), Tag[].class));
-      } catch (JsonProcessingException e) {
-         throw new RuntimeException(e);
-      }
+      var subTaskList = new ArrayList<SubTask>();
 
       try {
+         subTaskList.addAll(Arrays.asList(new ObjectMapper().readValue(taskJson.get("subTaskList").toString(), SubTask[].class)));
+
          TaskService.CreateModel model  = new TaskService.CreateModel(
                  taskJson.get("title").getAsString(),
                  taskJson.get("description").getAsString(),
@@ -143,6 +142,7 @@ public class TaskController {
                  taskJson.get("dueAt").getAsLong(),
 
                  Arrays.asList(new ObjectMapper().readValue(taskJson.get("tagList").toString(), Tag[].class)),
+                 subTaskList,
 
                  taskJson.get("taskNode").getAsJsonObject().get("headUUID").getAsString(),
                  taskJson.get("taskNode").getAsJsonObject().get("tailUUID").getAsString(),
@@ -176,7 +176,11 @@ public class TaskController {
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
 
+      var subTaskList = new ArrayList<SubTask>();
+
       try {
+         subTaskList.addAll(Arrays.asList(new ObjectMapper().readValue(taskJson.get("subTaskList").toString(), SubTask[].class)));
+
          taskService.update(new TaskService.UpdateModel(
                  id,
                  taskJson.get("title").getAsString(),
@@ -188,6 +192,8 @@ public class TaskController {
                  taskJson.get("dueAt").getAsLong(),
 
                  Arrays.asList(new ObjectMapper().readValue(taskJson.get("tagList").toString(), Tag[].class)),
+
+                 subTaskList,
 
                  taskJson.get("taskNode").getAsJsonObject().get("headUUID").getAsString(),
                  taskJson.get("taskNode").getAsJsonObject().get("tailUUID").getAsString(),

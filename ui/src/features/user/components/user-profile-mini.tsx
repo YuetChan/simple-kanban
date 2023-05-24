@@ -5,10 +5,17 @@ import { textToAvatar } from "../../../services/avatar-service";
 
 interface UserProfileMiniProps {
     size: number,
-    email: string
+    email: string,
+    handleOnSignout?: Function,
 }
 
 const UserProfileMini = (props: UserProfileMiniProps) => {
+    const handleOnSignout = (e: any) => {
+        if(props.handleOnSignout) {
+            props.handleOnSignout();
+        }
+    }
+
     return (
         <Stack 
             direction="row" 
@@ -27,15 +34,18 @@ const UserProfileMini = (props: UserProfileMiniProps) => {
                 <div>
                     <a 
                         href="javascript:void(0)" 
+
+                        onClick={ handleOnSignout }
+
                         style={{
                             textDecoration: "none",
                             color: "rgb(47, 47, 47)"
                         }}> 
-                    <span style={{
-                        fontSize: "14px"
-                        }}>
-                            SIGN OUT 🖐️
-                    </span> 
+                        <span style={{
+                            fontSize: "14px"
+                            }}>
+                                SIGN OUT 🖐️
+                        </span> 
                     </a>
                 </div>
 

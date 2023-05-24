@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField, Tooltip } from "@mui/material";
 
@@ -21,33 +21,33 @@ import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 
+import TaskSubtaskListArea from "./task-subtask-list-area";
+
 interface TaskUpdateDialog {
-  open?: boolean,
-  label?: string,
+    open?: boolean,
+    label?: string,
 
-  task: Task,
+    task: Task,
 
-  handleOnClose?: Function,
-  handleOnApply?: Function,
-  handleOnDelete?: Function
+    handleOnClose?: Function,
+    handleOnApply?: Function,
+    handleOnDelete?: Function
 }
 
 const TaskUpdateDialog = (props: TaskUpdateDialog) => {  
     // ------------------ Projects cache ------------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-
     // ------------------ User cache ------------------
     const userCacheState = useSelector((state: AppState) => state.UserCache);
-
 
     // ------------------ Tasks cache------------------
     const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
 
-
     // ------------------ Task update dialog ------------------
     const [ task, setTask ] = React.useState(props.task);
 
+    // prefix 'o' stand for 'original'
     const [ oStatus, ] = React.useState(props.task.taskNode.status);
     const [ oTaskNode, ] = React.useState(props.task.taskNode);
 
@@ -69,7 +69,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
         }
     }
 
-
     // ------------------ Title ------------------
     const handleOnTitleChange = (e: any) => {
         setTask({
@@ -77,7 +76,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
             title: e.target.value
         });
     }
-
 
     // ------------------ Status ------------------
     const getStatus = (status: string): string => {
@@ -241,7 +239,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
         }
     }
 
-
     // ------------------ Note ------------------
     const handleOnNoteChange = (e: any) => {
         setTask({
@@ -249,7 +246,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
             note: e.target.value
         });
     }
-
 
     // ------------------ Description ------------------
     const handleOnDescriptionChange = (e: any) => {
@@ -292,7 +288,7 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
         setPriority(priority);
     }
 
-    // ------------------ Tag -------------------
+    // ------------------ Tag ------------------
     const handleOnTagsChange = (tags: Array<string>) => {
         setTask({
             ... task, 
@@ -302,6 +298,31 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
         });
     }
 
+    // ------------------ Subtask ------------------
+    const handleOnSubtaskCheck = (checkedValues: Array<string>) => {
+        setTask({
+            ... task,
+            subTaskList: task.subTaskList.map(subtask => {
+                return {
+                    title: subtask.title,
+                    completed: checkedValues.includes(subtask.title),
+                }
+            })
+        });
+    }
+
+    const handleOnSubtaskChange = (subtasks: Array<string>, checkedValues: Array<string>) => {
+        setTask({
+            ... task,
+            subTaskList: subtasks.map(subtask => {
+                return {
+                    title: subtask,
+                    completed: checkedValues.includes(subtask),
+                }
+            })
+        });
+    }
+        
     // ------------------ Due date ------------------
     const handleOnDueDateChange = (date: Date) => {
         setTask({
@@ -334,165 +355,165 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
         }
     }, [ projectsCacheState._activeProject ]);
 
-
     // ------------------ Html template ------------------
     return (
-        
-            <Dialog
-                open={ props.open? props.open : false }
-                scroll={ "paper" }
+        <Dialog
+            open={ props.open? props.open : false }
+            scroll={ "paper" }
 
-                onClose={ handleOnClose } 
-                
-                // sx={{
-                //     "& .MuiDialog-container": {
-                //         "& .MuiPaper-root": {
-                //             width: "100%"
-                //         }
-                //     }}}
+            onClose={ handleOnClose } 
+            >
+            <DialogTitle>
+                <Stack 
+                    direction="row" 
+                    justifyContent="space-between"
                     >
-                <DialogTitle>
-                    <Stack 
-                        direction="row" 
-                        justifyContent="space-between"
-                        >
-                        <div>
-                            { props.label? props.label : "" }
-                        </div>
+                    <div>
+                        { props.label? props.label : "" }
+                    </div>
 
-                        <Tooltip title="Permanently delete task">
-                            <Button 
-                                color="error" 
-                                variant="outlined"
+                    <Tooltip title="Permanently delete task">
+                        <Button 
+                            color="error" 
+                            variant="outlined"
                             
-                                onClick={ handleOnDelete }
-                                >
-                                Delete
-                            </Button>
-                        </Tooltip>
-                    </Stack>
-                </DialogTitle>
-  
-                <DialogContent dividers={ true } >
-                    <DialogContentText
-                        tabIndex={ -1 }
-
-                        sx={{ 
-                            marginBottom:"12px" 
-                            }}>
-                        <Stack 
-                            direction="column" 
-                            spacing={ 1.5 } 
+                            onClick={ handleOnDelete }
                             >
-                            <TextField 
-                                label="Title" 
-                                variant="standard"
-                                value={ task?.title }
-
-                                onChange={ (e) => handleOnTitleChange(e) } 
-                                
-                                sx={{ 
-                                    marginBottom: "12px" 
-                                }} 
-                                
-                                inputProps={{
-                                    style: { 
-                                      fontSize: "24px", 
-                                      fontFamily: "'Caveat', cursive"
-                                    }
-                                  }}
-                                />
+                            Delete
+                        </Button>
+                    </Tooltip>
+                </Stack>
+            </DialogTitle>
   
-                            <Stack 
-                                direction="row" 
-                                spacing={ 6 }
-                                >
-                                <StatusSelect 
-                                    showArchive={ true } 
-                                    value={ status }
+            <DialogContent dividers={ true } >
+                <DialogContentText
+                    tabIndex={ -1 }
 
-                                    handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } 
+                    sx={{ 
+                        marginBottom:"12px" 
+                        }}>
+                    <Stack 
+                        direction="column" 
+                        spacing={ 1.5 } 
+                        >
+                        <TextField 
+                            label="Title" 
+                            variant="standard"
+                            value={ task?.title }
 
-                                    style={{
-                                        width: "120px"
-                                    }} />  
-  
-                                <Stack 
-                                    direction="column" 
-                                    justifyContent="flex-end" 
-                                    spacing={ 0.2 }
-                                    >
-                                    <div style={{ fontSize: "13px" }}>Due date</div>
-
-                                    <DatePicker 
-                                        selected={ getDueAtInDate(task.dueAt) } 
-
-                                        onChange={ (date: Date) => handleOnDueDateChange(date) } 
-                                        />
-                                </Stack>
-                            </Stack>
-  
-                            <TaskPrioritySelect 
-                                value={ priority }
-
-                                handleOnPriorityChange={ (e: any) => handleOnPriorityChange(e) }
+                            onChange={ (e: any) => handleOnTitleChange(e) } 
                                 
+                            sx={{ 
+                                marginBottom: "12px" 
+                            }} 
+                                
+                            inputProps={{
+                                style: { 
+                                    fontSize: "24px", 
+                                    fontFamily: "'Caveat', cursive"
+                                }
+                            }} />
+  
+                        <Stack 
+                            direction="row" 
+                            spacing={ 6 }
+                            >
+                            <StatusSelect 
+                                showArchive={ true } 
+                                value={ status }
+
+                                handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } 
+
                                 style={{
                                     width: "120px"
-                                }}/>
-                                {
-                                    projectsCacheState._activeProject?.id
-                                    ? (
-                                        <TagsArea 
-                                            projectId={ projectsCacheState._activeProject.id } 
-                                            tags={ task.tagList.map((tag: Tag) => tag.name) }
-
-                                            handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
-                                            />)
-                                    : null
-                                }
-
-                            <br></br>
-
+                                }} />  
+  
                             <Stack 
                                 direction="column" 
-                                spacing={ 0.5 }
+                                justifyContent="flex-end" 
+                                spacing={ 0.2 }
                                 >
-                                <KanbanAutosizeTextarea 
-                                    value={ task?.description }
-                                    label="Description" 
-                                    placeholder="Enter the description"
+                                <div style={{ fontSize: "13px" }}>Due date</div>
 
-                                    handleOnTextareaChange={ (e: any) => handleOnDescriptionChange(e) } 
-                                    />
-  
-                                <KanbanAutosizeTextarea 
-                                    value={ task?.note }
-                                    label="Note" 
-                                    placeholder="Enter the note"
+                                <DatePicker 
+                                    selected={ getDueAtInDate(task.dueAt) } 
 
-                                    handleOnTextareaChange={ (e: any) => handleOnNoteChange(e) } 
-                                    /> 
-                            </Stack>
-  
-                            <Stack direction="row" justifyContent="start" >
-                                <KanbanCardAssignee  
-                                    assignee={ task?.assigneeEmail }
-                                    allAssignees={ allAssignees }
-
-                                    handleOnSelectChange={ (e: any) => handleOnAssigneeChange(e) } 
+                                    onChange={ (date: Date) => handleOnDueDateChange(date) } 
                                     />
                             </Stack>
                         </Stack>
-                    </DialogContentText>
-                </DialogContent>
   
-                <DialogActions>
-                    <Button onClick={ handleOnClose } >Cancel</Button>
-                    <Button onClick={ handleOnApply } >Apply</Button>
-                </DialogActions>
-            </Dialog>
-       
+                        <TaskPrioritySelect 
+                            value={ priority }
+
+                            handleOnPriorityChange={ (e: any) => handleOnPriorityChange(e) }
+                                
+                            style={{
+                                width: "120px"
+                            }}/>
+
+                        {
+                            projectsCacheState._activeProject?.id
+                            ? (
+                                <TagsArea 
+                                    projectId={ projectsCacheState._activeProject.id } 
+                                    tags={ task.tagList.map((tag: Tag) => tag.name) }
+
+                                    handleOnTagsChange={ (tags: Array<string>) => handleOnTagsChange(tags) }
+                                    />)
+                            : null
+                        }
+
+                        <TaskSubtaskListArea 
+                            subtasks={ task.subTaskList.map(subtask => subtask.title) } 
+                            checkedValues={ task.subTaskList.filter(subtask => subtask.completed).map(subtask => subtask.title) } 
+
+                            handleOnSubtaskCheck={ (checkedValues: Array<string>) => handleOnSubtaskCheck(checkedValues) }
+
+                            handleOnSubtaskChange={ (subtasks: Array<string>, checkedValues: Array<string>) => 
+                                handleOnSubtaskChange(subtasks, checkedValues)}
+                            />
+
+                        <br></br>
+
+                        <Stack 
+                            direction="column" 
+                            spacing={ 0.5 }
+                            >
+                            <KanbanAutosizeTextarea 
+                                value={ task?.description }
+                                label="Description" 
+                                placeholder="Enter the description"
+
+                                handleOnTextareaChange={ (e: any) => handleOnDescriptionChange(e) } 
+                                />
+  
+                            <KanbanAutosizeTextarea 
+                                value={ task?.note }
+                                label="Note" 
+                                placeholder="Enter the note"
+
+                                handleOnTextareaChange={ (e: any) => handleOnNoteChange(e) } 
+                                /> 
+                        </Stack>
+  
+                        <Stack direction="row" justifyContent="start" >
+                            <KanbanCardAssignee  
+                                assignee={ task?.assigneeEmail }
+                                allAssignees={ allAssignees }
+
+                                handleOnSelectChange={ (e: any) => handleOnAssigneeChange(e) } 
+                                />
+                        </Stack>
+                    </Stack>
+                </DialogContentText>
+            </DialogContent>
+  
+            <DialogActions>
+                <Button onClick={ handleOnClose } >Cancel</Button>
+                <Button onClick={ handleOnApply } >Apply</Button>
+            </DialogActions>
+        </Dialog>
     )
 }
 

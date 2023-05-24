@@ -2,10 +2,10 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import { reducer as DatesCacheReducers }  from "../src/stores/dates-cache-slice";
 import { reducer as KanbanTableReducers }  from "../src/stores/kanban-table-slice";
+import { reducer as KanbanDrawerReducers }  from "../src/stores/kanban-drawer-slice";
 import { reducer as ProjectCreateDialogReducers } from "../src/stores/project-create-dialog-slice";
 import { reducer as ProjectDeleteDialogReducers } from "../src/stores/project-delete-dialog-slice";
 import { reducer as ProjectsCacheReducers } from "../src/stores/projects-cache-slice";
-import { reducer as TagsSearchResultPanelReducers } from "../src/stores/tags-search-result-panel-slice";
 import { reducer as TaskCreateReducers } from "../src/stores/task-create-slice";
 import { reducer as TaskUpdateReducers} from "../src/stores/task-update-slice";
 import { reducer as TasksCacheReducers} from "../src/stores/tasks-cache-slice";
@@ -19,12 +19,11 @@ export const store = configureStore({
     DatesCache: DatesCacheReducers, 
     
     KanbanTable: KanbanTableReducers, 
+    KanbanDrawer: KanbanDrawerReducers, 
     
     ProjectCreateDialog: ProjectCreateDialogReducers, 
     ProjectDeleteDialog: ProjectDeleteDialogReducers, 
     ProjectsCache: ProjectsCacheReducers,
-    
-    TagsSearchResultPanel: TagsSearchResultPanelReducers,
     
     TaskCreate: TaskCreateReducers,
     TaskUpdate: TaskUpdateReducers, 

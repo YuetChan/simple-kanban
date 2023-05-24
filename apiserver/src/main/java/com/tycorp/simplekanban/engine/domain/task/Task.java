@@ -51,7 +51,6 @@ public class Task {
    @Expose
    @ElementCollection(fetch = FetchType.LAZY)
    @CollectionTable(name = "sub_tasks_task_join", joinColumns = @JoinColumn(name = "task_id"))
-   @Column(name = "sub_tasks")
    @AttributeOverrides({
            @AttributeOverride(name = "title", column = @Column(name = "title")),
            @AttributeOverride(name = "description", column = @Column(name = "description")),

@@ -3,9 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 interface TasksSearchState {
 	_activeTab: string,
 
-  	_tagsEditAreaFocused: boolean,
-  	_tagsEditAreaRef: any,
-  	_tagsEditAreaSearchStr: string,
 
   	_activeTags: Array<string>,
   	_activePriorities: Array<string>,
@@ -17,10 +14,6 @@ const { reducer, actions } = createSlice({
 
   initialState: {
     _activeTab: '',
-
-    _tagsEditAreaFocused: false,
-    _tagsEditAreaRef: undefined,
-    _tagsEditAreaSearchStr: '',
 
     _activeTags: [],
     _activePriorities: [],

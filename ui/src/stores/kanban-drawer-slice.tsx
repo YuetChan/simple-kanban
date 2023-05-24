@@ -1,14 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface TableState { tick: boolean }
+interface DrawerState { tick: boolean }
 
 const { reducer, actions } = createSlice({
-    name: "KanbanTable",
+    name: "KanbanDrawer",
 
-    initialState: { tick: false } as TableState,
+    initialState: { tick: false } as DrawerState,
   
     reducers: {
-        refreshTable: (state) => {
+        refreshDrawer: (state) => {
             state.tick = !state.tick;
         },
     }

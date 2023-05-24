@@ -1,21 +1,32 @@
 import { useEffect } from "react";
 import { redirectToLoginPage } from "../services/auth.services";
 
-const KanbanOauthPage = () => {
+interface KanbanOauthPageProps {
+    style?: any
+}
+
+const KanbanOauthPage = (props: KanbanOauthPageProps) => {
 	useEffect(() => { }, []);
 
     const handleOnGoogleSignInClick = () => {
-      redirectToLoginPage()
+        redirectToLoginPage()
     }
 
     return (
-        <button 
-          onClick={ handleOnGoogleSignInClick } 
-          type="button" 
-          className="login-with-google-btn" >
-            Sign in with Google
-        </button>
-      
+        <div style={{                
+            height: "100vh",
+            alignItems: "center",
+            justifyContent: "center",
+
+            ...props.style
+            }}>
+            <button 
+                onClick={ handleOnGoogleSignInClick } 
+                type="button" 
+                className="login-with-google-btn">
+                    Sign in with Google
+            </button>
+        </div>
     )
 }
 

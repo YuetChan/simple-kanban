@@ -59,7 +59,10 @@ const TaskSearchFilterMenu = (props: TaskSearchFilterMenuProps) => {
                 padding: "8px 0px 8px 0px",
                 display: props.shallowOpen? "block": "none"
             }}>
-                <Stack direction="row" justifyContent="space-between" paddingRight="8px">
+                <Stack 
+                    direction="row" 
+                    justifyContent="space-between" 
+                    paddingRight="8px">
                     <TaskPriorityCheckbox 
                         checkedValues={checkedValues}
                         

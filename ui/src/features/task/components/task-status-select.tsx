@@ -69,11 +69,11 @@ const StatusSelect = (props: TaskStatusSelectProps) => {
                     ))
                 }
 
-                <MenuItem
+                {/* <MenuItem
                     value={ "archive" }
                     style={{ display: props.showArchive? "block": "none" }}>
                     { getStatus("Archive") }
-                </MenuItem>
+                </MenuItem> */}
             </Select>
         </FormControl>
     

@@ -11,6 +11,7 @@ import com.tycorp.simplekanban.engine.domain.project.repository.ProjectRepositor
 import com.tycorp.simplekanban.engine.domain.project.repository.ProjectUUIDRepository;
 import com.tycorp.simplekanban.engine.domain.tag.Tag;
 import com.tycorp.simplekanban.engine.domain.tag.TagService;
+import com.tycorp.simplekanban.engine.domain.task.value.SubTask;
 import com.tycorp.simplekanban.engine.pattern.observer.TaskServiceObserver;
 import com.tycorp.simplekanban.engine.pattern.persistence.PersistencePipeline;
 import com.tycorp.simplekanban.engine.pattern.validation.ValidationResult;
@@ -112,6 +113,8 @@ public class TaskService {
 
       task.setPriority(model.priority);
 
+      task.setSubTaskList(model.subTaskList);
+
       task.setAssigneeEmail(model.assigneeEmail);
       task.setDueAt(model.dueAt);
 
@@ -169,6 +172,8 @@ public class TaskService {
       updatedTask.setNote(model.note);
 
       updatedTask.setPriority(model.priority);
+
+      updatedTask.setSubTaskList(model.subTaskList);
 
       updatedTask.setDueAt(model.dueAt);
       updatedTask.setAssigneeEmail(model.assigneeEmail);
@@ -840,6 +845,8 @@ public class TaskService {
 
       private List<Tag> tagList;
 
+      private List<SubTask> subTaskList;
+
       private String headUUID;
       private String tailUUID;
       private Status status;
@@ -861,6 +868,8 @@ public class TaskService {
       private Long dueAt;
 
       private List<Tag> tagList;
+
+      private List<SubTask> subTaskList;
 
       private String headUUID;
       private String tailUUID;
