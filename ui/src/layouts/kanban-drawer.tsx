@@ -20,7 +20,9 @@ import UserProfileMini from '../features/user/components/user-profile-mini';
 import ProjectWithOwnerIcon from '../features/project/components/project-with-owner-icon';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 
-interface KanbanDrawerProps { }
+interface KanbanDrawerProps { 
+    style?: any
+}
 
 const KanbanDrawer = (props: KanbanDrawerProps) => {
     // ------------------ Dispatch ------------------
@@ -42,6 +44,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
     // ------------------ Kanban drawer ------------------
     const listRef = useRef<any>(null);
+
     const activeProjectRef = useRef<any>(null);
 
     useEffect(() => {
@@ -94,7 +97,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     return (
         <div style={{
             width: "240px",
-            background: "whitesmoke"
+            height: "100%",
+            background: "whitesmoke",
+            ... props.style
             }}>
             <List>
                 <ListItem>
@@ -155,6 +160,13 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                             borderLeft: "2px solid rgba(48, 48, 48, 0.25)",
                             borderRight: "2px solid rgba(48, 48, 48, 0.25)"
                         }}>
+                        <ListItem sx={{ 
+                            padding: "0px 16px",
+                            display: projectsCacheState._allProjects.length === 0
+                            ? "block"
+                            : "none" }}>
+                                Empty ...
+                        </ListItem>
                         {
                             projectsCacheState._allProjects.map(project => 
                                 (

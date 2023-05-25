@@ -34,6 +34,7 @@ import { actions as projectCreateDialogActions } from "./stores/project-create-d
 import { actions as kanbanTableActions } from "./stores/kanban-table-slice";
 
 import KanbanOauthPage from "./layouts/kanban-oauth-page";
+import KanbanEmptyPage from "./layouts/kanban-empty-page";
 
 function App() {
     // ------------------ Dispatch ------------------
@@ -45,7 +46,10 @@ function App() {
     // ------------------ Projects cache ------------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-    const { updateActiveProject, updateProjects, updateNotProjects, updateShareProjects } = projectsCacheActions;
+    const { 
+        updateActiveProject, 
+        updateProjects, updateNotProjects, updateShareProjects 
+    } = projectsCacheActions;
 
     // ------------------ User cache ------------------
     const userCacheState = useSelector((state: AppState) => state.UserCache);
@@ -55,7 +59,7 @@ function App() {
     // ------------------ Project delete dialog ------------------
     const projectDeleteDialogState = useSelector((state: AppState) => state.ProjectDeleteDialog);
 
-    const { hideProjectDeleteDialog } = projectDeleteDialogActions;
+    const {  hideProjectDeleteDialog } = projectDeleteDialogActions;
 
     const [ projectDeleteDialogOpen, setProjectDeleteDialogOpen ] = useState(false);
 
@@ -72,10 +76,9 @@ function App() {
     
         if(activeProject) {
             deleteProject(activeProject.id).then(res => {
-                setProjectDeleteDialogOpen(false);
-  
                 searchProjectsByUserEmail(userCacheState._loginedUserEmail, 0).then(res => {
                     dispatch(updateProjects(res.projects));
+                    dispatch(hideProjectDeleteDialog())
                 });
             }).catch(err => {
                 console.log(err);
@@ -86,10 +89,7 @@ function App() {
     // ------------------ Project create dialog ------------------
     const projectCreateDialogState = useSelector((state: AppState) => state.ProjectCreateDialog);
 
-    const { 
-        showProjectCreateDialog, 
-        hideProjectCreateDialog 
-    } = projectCreateDialogActions;
+    const { showProjectCreateDialog, hideProjectCreateDialog } = projectCreateDialogActions;
 
     const handleOnProjectCreate = (name: string, description: string) => {
         const project = {
@@ -100,9 +100,8 @@ function App() {
 
         createProject(project).then(res => {
             getProjectById(res.id).then(res => {
-                dispatch(updateProjects([... projectsCacheState._allProjects, res]));
-
-                dispatch(updateActiveProject(res))
+                dispatch(updateProjects([ ... projectsCacheState._allProjects, res ]));
+                dispatch(updateActiveProject(res));
             }).catch(err => {
                 console.log(err);
             });
@@ -112,18 +111,8 @@ function App() {
     }
 
     const handleOnProjectCreateDialogClose = () => {
-        if(projectsCacheState._allProjects.length > 0) {
-            dispatch(hideProjectCreateDialog());
-        }
+        dispatch(hideProjectCreateDialog());
     }
-
-    useEffect(() => {
-        if(projectsCacheState._allProjects.length === 0 && authed) {
-            dispatch(showProjectCreateDialog());
-        }else {
-            dispatch(hideProjectCreateDialog());
-        }
-    }, [ projectsCacheState._allProjects ]);
 
     // ------------------ Task create dialog ------------------ 
     const [ taskCreateDialogOpen, setTaskCreateDialogOpen ] = useState(false);
@@ -150,8 +139,9 @@ function App() {
     // ------------------ Kanban table ------------------
     const { refreshTable } = kanbanTableActions;
 
-    const handleOnLogoutClick = () => {
-        removeCookie("jwt", "/");
+    // ------------------ Kanban empty page ------------------
+    const handleOnCreateProjectClick = () => {
+        dispatch(showProjectCreateDialog())
     }
 
     // ------------------ Auth ------------------
@@ -179,8 +169,6 @@ function App() {
                 console.log(err);
             });
         } 
-
-        console.log("authed",authed)
     }, [ authed ]);
 
     useEffect(() => {
@@ -216,9 +204,13 @@ function App() {
                     display: authed? "block": "none"
                 }}>    
                 <Stack direction="row">
-                    <KanbanDrawer />
-               
-                    <KanbanTable />
+                    <KanbanDrawer style={{ height: "100vh" }}/>
+
+                    {
+                        projectsCacheState._allProjects.length === 0
+                        ? <KanbanEmptyPage handleOnCreateProjectClick={ handleOnCreateProjectClick } />
+                        : <KanbanTable />
+                    }
                 </Stack>
             </Stack>
 
@@ -231,7 +223,7 @@ function App() {
                     position: "fixed",
                     bottom: "4px",
                     left: "244px",
-                    display: authed? "block": "none"
+                    display: authed && projectsCacheState._activeProject? "block": "none"
                     }}/>
 
             <TaskCreateDialog 
@@ -246,7 +238,6 @@ function App() {
                 title="Create Project"
                 description="Please enter the project name to create your project."
                 open={ projectCreateDialogState.show } 
-                showLogout={ projectsCacheState._allProjects.length === 0 }
 
                 handleOnProjectCreate = { (name: string, description: string) => 
                     handleOnProjectCreate(name, description) } 

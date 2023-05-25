@@ -357,6 +357,10 @@ const KanbanTable = (props: KanbanTableProps) => {
         }
     }, [ userCacheState, projectsCacheState ]);
 
+    useEffect(() => {
+        setOwnerMenuAnchorEl(null);
+    },  [ projectsCacheState._activeProject ])
+
     const handleOnOwnerMenuOpen = (e:any) => {
         setOwnerMenuAnchorEl(e.currentTarget);
     }
