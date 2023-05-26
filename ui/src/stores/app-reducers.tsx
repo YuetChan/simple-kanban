@@ -64,6 +64,10 @@ export interface AppState {
 
     UserCache: {
       _loginedUserEmail: string,
+    },
+
+    CrudEventCache: {
+      crudEvent: { }
     }
 }
 

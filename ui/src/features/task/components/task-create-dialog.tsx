@@ -52,7 +52,11 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
 
     const { dueDateUpdate } = datesCacheActions;
 
+
+
     // ------------------ Task create dialog ------------------
+
+
     const defaultTask = {
         id: "pseudo-task-id",
         projectId: "",
@@ -433,6 +437,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                             subtasks={ task.subTaskList.map(subtask => subtask.title) } 
                             checkedValues={ task.subTaskList.filter(subtask => subtask.completed).map(subtask => subtask.title) } 
                             
+                            showDelete={ true }
+
                             handleOnSubtaskChange={(subtasks: Array<string>, checkedValues: Array<string>) => 
                                 handleOnSubtaskChange(subtasks, checkedValues) }
                             

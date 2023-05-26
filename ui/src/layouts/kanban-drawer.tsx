@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 
 import { useCookies } from 'react-cookie';
 
-import { Stack, List, Divider, ListItem, ListItemButton, IconButton } from '@mui/material';
+import { Stack, List, Divider, ListItem, ListItemButton, IconButton, Fab } from '@mui/material';
 
 import { AppState } from '../stores/app-reducers';
 
@@ -13,12 +13,13 @@ import { actions as projectsCacheActions } from '../stores/projects-cache-slice'
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
 
 import { redirectToLoginPage } from '../services/auth.services';
-import { createProject, getProjectById } from '../features/project/services/projects-service';
 
 import UserProfileMini from '../features/user/components/user-profile-mini';
 
 import ProjectWithOwnerIcon from '../features/project/components/project-with-owner-icon';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 interface KanbanDrawerProps { 
     style?: any
@@ -43,6 +44,16 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     const { showProjectCreateDialog } = projectCreateDialogActions;
 
     // ------------------ Kanban drawer ------------------
+    const [ minimized, setMinimized ] = useState(false);
+
+    const handleOnMinimize = (e: any) => {
+        setMinimized(true)
+    }
+
+    const handleOnMaximize = (e: any) => {
+        setMinimized(false);
+    }
+
     const listRef = useRef<any>(null);
 
     const activeProjectRef = useRef<any>(null);
@@ -85,10 +96,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
           const targetElement = targetProjectRef.parentElement;
       
           // Calculate the scroll position
-          const scrollPosition =
-            targetElement.offsetTop - listElement.offsetTop;
+          const scrollPosition = targetElement.offsetTop - listElement.offsetTop;
       
-          // Scroll to the position
           listElement.scrollTop = scrollPosition;
         }
     }
@@ -96,20 +105,76 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     // ------------------ Html template ------------------
     return (
         <div style={{
-            width: "240px",
+            width: minimized? "0px" : "240px",
             height: "100%",
             background: "whitesmoke",
+            position: "relative",
+
             ... props.style
             }}>
-            <List>
+            <div style={{ 
+                    top: "268px",
+                    right: "-8px",
+            
+                    position: "absolute",
+                }}>
+                <Fab
+                    onClick={ handleOnMinimize }
+
+                    sx={{
+                        display: minimized? "none": null,
+
+                        color: "white",
+                        background: "rgb(47, 47, 47)",
+
+                        width: "42px",
+                        height: "42px",
+
+                        "&:hover": {
+                            backgroundColor: "white", 
+                            color:"rgb(47, 47, 47)"
+                        }}}>
+                    { <ArrowBackIcon /> }
+                </Fab>
+            </div>   
+
+            <div style={{ 
+                    top: "268px",
+                    right: "-40px",
+            
+                    position: "absolute",
+                }}>
+                <Fab
+                    onClick={ handleOnMaximize }
+
+                    sx={{
+                        display: minimized? null: "none",
+
+                        color: "white",
+                        background: "rgb(47, 47, 47)",
+
+                        width: "42px",
+                        height: "42px",
+
+                        "&:hover": {
+                            backgroundColor: "white", 
+                            color:"rgb(47, 47, 47)"
+                        }}}>
+                    { <ArrowForwardIcon /> }
+                </Fab>
+            </div> 
+
+            <List sx={{
+                display: minimized? "none": null
+            }}>
                 <ListItem>
                     <div style={{ 
-                        padding: "8px"
+                        width: "210px"
                         }}>
                         <img 
                             src="https://i.ibb.co/NjWwY0t/Screenshot-from-2023-05-17-19-03-10.png" 
-                            width={ 180 } 
-                            height={ 60 } 
+                            width={ 200 } 
+                            height={ 65} 
                             />
                     </div>
                 </ListItem>
@@ -157,8 +222,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                             maxHeight: "180px",
                             overflow: "auto",
                             background: "white",
-                            borderLeft: "2px solid rgba(48, 48, 48, 0.25)",
-                            borderRight: "2px solid rgba(48, 48, 48, 0.25)"
+                            padding: "16px 0px"
                         }}>
                         <ListItem sx={{ 
                             padding: "0px 16px",
@@ -172,15 +236,18 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                 (
                                     <ListItem sx={{  padding: "0px" }}>
                                         <ListItemButton  
-                                            ref={ projectsCacheState._activeProject?.name ===  project.name? activeProjectRef: null }
+                                            ref={ 
+                                                projectsCacheState._activeProject?.name ===  project.name
+                                                ? activeProjectRef
+                                                : null 
+                                            }
 
                                             onClick={ (e: any) => handleOnProjectChange(project.id) }
                                         
                                             sx={{ 
                                                 paddingTop: "0px", 
                                                 paddingBottom: "0px",
-                                                background: projectsCacheState._activeProject?.name ===  project.name? "orange": null,
-                                                borderRadius: "2px"
+                                                background: projectsCacheState._activeProject?.name ===  project.name? "rgba(255, 165, 0, 0.75)": null,
                                                 }}>
 
                                             <ProjectWithOwnerIcon 
@@ -218,8 +285,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                             maxHeight: "180px",
                             overflow: "auto",
                             background: "white",
-                            borderLeft: "2px solid rgba(48, 48, 48, 0.25)",
-                            borderRight: "2px solid rgba(48, 48, 48, 0.25)"
+                            padding: "16px 0px"
                         }}>
                         <ListItem sx={{ 
                             padding: "0px 16px",
@@ -241,7 +307,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                             sx={{ 
                                                 paddingTop: "0px", 
                                                 paddingBottom: "0px",
-                                                background: projectsCacheState._activeProject?.name ===  project.name? "orange": null,
+                                                background: projectsCacheState._activeProject?.name ===  project.name? "rgba(255, 165, 0, 0.75)": null,
                                                 borderRadius: "2px"
                                                 }}>
 
@@ -280,8 +346,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                             maxHeight: "180px",
                             overflow: "auto",
                             background: "white",
-                            borderLeft: "2px solid rgba(48, 48, 48, 0.25)",
-                            borderRight: "2px solid rgba(48, 48, 48, 0.25)"
+                            padding: "16px 0px"
                         }}>
                         <ListItem sx={{ 
                             padding: "0px 16px",
@@ -303,7 +368,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                             sx={{ 
                                                 paddingTop: "0px", 
                                                 paddingBottom: "0px",
-                                                background: projectsCacheState._activeProject?.name ===  project.name? "orange": null,
+                                                background: projectsCacheState._activeProject?.name ===  project.name? "rgba(255, 165, 0, 0.75)": null,
                                                 borderRadius: "2px"
                                                 }}>
 

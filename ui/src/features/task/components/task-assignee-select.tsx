@@ -29,7 +29,7 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
         direction="row" 
         alignItems="center" 
         spacing={ 3 }>
-        <Avatar style={{ height: "24px", width: "24px"}} >
+        <Avatar style={{ height: "24px", width: "24px", background: "white"}} >
           { textToAvatar(assignee) }
         </Avatar>
 

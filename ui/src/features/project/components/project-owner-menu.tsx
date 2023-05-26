@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { Button, Divider, IconButton, Menu, Stack, TextField } from "@mui/material";
 
@@ -10,14 +10,20 @@ import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined
 import GamepadIcon from '@mui/icons-material/Gamepad';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import DescriptionIcon from '@mui/icons-material/Description';
+import UpgradeIcon from '@mui/icons-material/Upgrade';
 
 interface ProjectOwnerMenuProps {
     anchorEl: any,
     open: boolean,
 
     handleOnOwnerMenuClose?: Function,
+
     handleOnCollaboratorAdd?: Function,
     handleOnCollaboratorRemove?: Function,
+
+    handleOnNewProjectNameUpdate?: Function,
+    handleOnNewProjectDescriptionUpdate?: Function,
 
     handleOnProjectDelete?: Function
 }
@@ -27,8 +33,14 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     const [ collaboratorToAddEmail, setCollaboratorToAddEmail ] = useState("");
     const [ collaboratorToRemoveEmail, setCollaboratorToRemoveEmail ] = useState("");
 
-    const collaboratorAddRef = useRef(undefined);
-    const collaboratorRemoveRef = useRef(undefined);
+    const collaboratorAddRef = useRef<any>(undefined);
+    const collaboratorRemoveRef = useRef<any>(undefined);
+
+    const [ newProjectName, setNewProjectName ] = useState("");
+    const [ newProjectDescription, setNewProjectDescription ] = useState("");
+
+    const projectNameRef = useRef<any>(undefined);
+    const projectDescriptionRef = useRef<any>(undefined);
 
     const handleOnClose = (e: any) => {
         if(props.handleOnOwnerMenuClose) {
@@ -38,7 +50,13 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
 
     const handleOnCollaboratorAddKeyPress = (e: any) => {
         if(e.key === "Tab") {
-            e.stopPropagation();
+            e.preventDefault();
+        }
+    }
+
+    const handleOnCollaboratorRemoveKeyPress = (e: any) => {
+        if(e.key === "Tab") {
+            e.preventDefault();
         }
     }
 
@@ -59,6 +77,38 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     const handleOnCollaboratorRemove = (e: any) => {
         if(props.handleOnCollaboratorRemove) {
             props.handleOnCollaboratorRemove(collaboratorToRemoveEmail)
+        }
+    }
+
+    const handleOnNewProjectNameUpdateChange = (e: any) => {
+        setNewProjectName(e.target.value);
+    }
+
+    const handleOnNewProjectDescriptionUpdateChange = (e: any) => {
+        setNewProjectDescription(e.target.value);
+    }
+
+    const handleOnNewProjectNameUpdateKeyPress = (e: any) => {
+        if(e.key === "Tab") {
+            e.preventDefault();
+        }
+    }
+
+    const handleOnNewProjectDescriptionUpdateKeyPress = (e: any) => {
+        if(e.key === "Tab") {
+            e.preventDefault();
+        }
+    }
+
+    const handleOnNewProjectNameUpdate = () => {
+        if(props.handleOnNewProjectNameUpdate) {
+            props.handleOnNewProjectNameUpdate(newProjectName)
+        }
+    }
+
+    const handleOnNewProjectDescriptionUpdate = () => {
+        if(props.handleOnNewProjectDescriptionUpdate) {
+            props.handleOnNewProjectDescriptionUpdate(newProjectDescription);
         }
     }
 
@@ -108,6 +158,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                         placeholder="Email"
                         inputRef={ collaboratorAddRef }  
         
+
                         onKeyDown={ (e) => handleOnCollaboratorAddKeyPress(e) }
                         onChange={ (e) => handleOnCollaboratorToAddEmailChange(e) } 
 
@@ -134,7 +185,7 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                         placeholder="Email"
                         inputRef={ collaboratorRemoveRef }  
         
-                        onKeyDown={ (e) => handleOnCollaboratorAddKeyPress(e) }
+                        onKeyDown={ (e) => handleOnCollaboratorRemoveKeyPress(e) }
                         onChange={ (e) => handleOnCollaboratorToRemoveEmailChange(e) } 
 
                         sx={{
@@ -145,6 +196,58 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                         <PersonRemoveAlt1OutlinedIcon />
                     </IconButton>
                 </Stack> 
+
+                <Stack 
+                    direction="row"
+                    alignItems="center"
+                    spacing={ 1.2 }  
+
+                    sx={{ 
+                        padding: "0px 12px 0px 12px" 
+                    }}>
+                    <TextField 
+                        label="Project name" 
+                        variant="standard" 
+                        placeholder="Name"
+                        inputRef={ projectNameRef }  
+        
+                        onKeyDown={ (e) => handleOnNewProjectNameUpdateKeyPress(e) }
+                        onChange={ (e) => handleOnNewProjectNameUpdateChange(e) } 
+
+                        sx={{
+                            width: "240px"
+                        }} />
+
+                    <IconButton onClick={ handleOnNewProjectNameUpdate }> 
+                        <UpgradeIcon />
+                    </IconButton>
+                </Stack>
+
+                <Stack 
+                    direction="row"
+                    alignItems="center"
+                    spacing={ 1.2 }  
+
+                    sx={{ 
+                        padding: "0px 12px 0px 12px" 
+                    }}>
+                    <TextField 
+                        label="Project description" 
+                        variant="standard" 
+                        placeholder="Description"
+                        inputRef={ projectDescriptionRef }  
+        
+                        onKeyDown={ (e) => handleOnNewProjectDescriptionUpdateKeyPress(e) }
+                        onChange={ (e) => handleOnNewProjectDescriptionUpdateChange(e) } 
+
+                        sx={{
+                            width: "240px"
+                        }} />
+
+                    <IconButton onClick={ handleOnNewProjectDescriptionUpdate }> 
+                        <DescriptionIcon />
+                    </IconButton>
+                </Stack>
             </Stack> 
 
 

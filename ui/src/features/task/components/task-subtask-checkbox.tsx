@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { Checkbox, FormControl, FormControlLabel, FormGroup } from "@mui/material";
+import { Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, Stack } from "@mui/material";
+
+import CloseIcon from '@mui/icons-material/Close';
 
 interface TaskSubtaskCheckboxProps {
     subtaskList: Array<string>,
     checkedValues: Array<string>,
 
+    showDelete?: boolean,
+
     handleOnSubtaskCheck?: Function,
+    handleOnSubtaskDelete?: Function,
 }
 
 const TaskSubtaskCheckbox = (props: TaskSubtaskCheckboxProps) => {
@@ -29,6 +34,12 @@ const TaskSubtaskCheckbox = (props: TaskSubtaskCheckboxProps) => {
         }
     };
 
+    const handleOnSubtaskDelete = (subtask: string) => {
+        if(props.handleOnSubtaskDelete){
+            props.handleOnSubtaskDelete(subtask);
+        }
+    }
+
     return (
         <FormControl sx={{ 
             display:"flex",
@@ -45,23 +56,31 @@ const TaskSubtaskCheckbox = (props: TaskSubtaskCheckboxProps) => {
                 {
                     props.subtaskList.map(subtask => {
                         return (
-                            <FormControlLabel
-                                label={ subtask }
-                                control={
-                                    <Checkbox 
-                                        checked={ checkedValues.includes(subtask) } 
-                                        value={ subtask } 
+                            <Stack direction="row" alignItems="center">
+                                <FormControlLabel
+                                    label={ subtask }
+                                    control={
+                                    
+                                        <Checkbox 
+                                            checked={ checkedValues.includes(subtask) } 
+                                            value={ subtask } 
                                         
-                                        onChange={ handleCheckboxChange } 
+                                            onChange={ handleCheckboxChange } 
 
-                                        sx={{ 
-                                            "& .MuiSvgIcon-root": { 
-                                                fontSize: "18px",
-                                                fontFamily: "'Caveat', cursive"
-                                            } 
-                                        }}/>
-                                    }
-                                />
+                                            sx={{ 
+                                                "& .MuiSvgIcon-root": { 
+                                                    fontSize: "18px",
+                                                    fontFamily: "'Caveat', cursive"
+                                                } 
+                                            }}/>
+                                        }/>
+
+                                <IconButton 
+                                    onClick={ (e: any) => handleOnSubtaskDelete(subtask) }
+                                    sx={{ display: props.showDelete? null: "none" }}>
+                                    <CloseIcon />
+                                </IconButton>
+                            </Stack>
                         )
                     })
 

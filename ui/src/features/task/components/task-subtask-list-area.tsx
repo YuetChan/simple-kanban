@@ -10,6 +10,8 @@ interface TaskSubtaskListAreaProps {
     subtasks?: Array<string>,
     checkedValues?: Array<string>
 
+    showDelete?: boolean,
+
     handleOnSubtaskCheck?: Function,
     handleOnSubtaskChange?: Function
 }
@@ -48,6 +50,18 @@ const TaskSubtaskListArea = (props: TaskSubtaskListAreaProps) => {
         }
     }
     
+    const handleOnSubtaskDelete = (subtask: string) => {
+        const newSubtasks = subtasks.filter(_subtask => _subtask !== subtask);
+        const newCheckedValues = checkedValues.filter(checkedValue => checkedValue != subtask)
+
+        setSubTasks([ ... newSubtasks ]);
+        setCheckedValues([ ... newCheckedValues ])
+
+        if(props.handleOnSubtaskChange) {
+            props.handleOnSubtaskChange(newSubtasks, newCheckedValues)
+        }
+    }
+
     return (
         <Stack 
             direction="column" 
@@ -86,7 +100,10 @@ const TaskSubtaskListArea = (props: TaskSubtaskListAreaProps) => {
                 subtaskList={ subtasks }
                 checkedValues={ checkedValues } 
 
+                showDelete={ props.showDelete }
+
                 handleOnSubtaskCheck={ (checkedValues: Array<string>) => handleOnSubtaskCheck(checkedValues) } 
+                handleOnSubtaskDelete={ (subtask: string) => handleOnSubtaskDelete(subtask) }
                 />
         </Stack>
         

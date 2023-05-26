@@ -17,7 +17,8 @@ const KanbanAutosizeTextarea = (props: AutosizeTextareaProps) => {
 
   const focusedStyle = {
     color: theme.palette.primary.main,
-    borderColor: theme.palette.primary.main,
+    borderColor: "orange",
+    border: "0xp solid orange"
   }
 
   const handleOnTextareaChange = (e: any) => {
@@ -38,8 +39,8 @@ const KanbanAutosizeTextarea = (props: AutosizeTextareaProps) => {
 
   return (
     <section>
-      <Stack direction="column" spacing={0.5}>
-        <div style={ focused? focusedStyle : {} } >{ props.label? props.label : "" }</div>
+      <Stack direction="column" spacing={ 0.5 }>
+        <div >{ props.label? props.label : "" }</div>
 
         <TextareaAutosize
           value={ value }
@@ -48,7 +49,7 @@ const KanbanAutosizeTextarea = (props: AutosizeTextareaProps) => {
           placeholder={ props.placeholder? props.placeholder : "" }
           style={
             { 
-              ... focused? focusedStyle: {},
+              // ... focused? focusedStyle: {},
               width: "100%", 
               marginBottom: "12px",
             }}

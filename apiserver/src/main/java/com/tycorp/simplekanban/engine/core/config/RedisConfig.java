@@ -26,7 +26,7 @@ public class RedisConfig {
 
         template.setConnectionFactory(redisConnectionFactory());
         template.setValueSerializer(new GenericToStringSerializer<>(Object.class));
-        
+
         return template;
     }
 }

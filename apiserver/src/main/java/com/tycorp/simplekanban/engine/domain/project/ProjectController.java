@@ -2,6 +2,7 @@ package com.tycorp.simplekanban.engine.domain.project;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tycorp.simplekanban.engine.core.GsonHelper;
@@ -200,20 +201,24 @@ public class ProjectController {
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject projectJson = dataJson.get("project").getAsJsonObject();
 
-      ProjectService.UpdateModel model = null;
-      try {
-         model = new ProjectService.UpdateModel(
-                 projectJson.get("id").getAsString(),
-                 projectJson.get("name").getAsString(),
-                 projectJson.get("description").getAsString(),
-                 Arrays.asList(new ObjectMapper().readValue((DataInput) projectJson.get("collaboratorList"), User[].class)));
+      List<User> updatedCollaboratorList = new ArrayList<>();
 
-         projectService.update(model);
+      updatedCollaboratorList.addAll(
+              Arrays.asList(
+                      new Gson().fromJson(
+                              projectJson.get("collaboratorList").getAsJsonArray(),
+                              User[].class)));
 
-         return new ResponseEntity(HttpStatus.NO_CONTENT);
-      } catch (IOException e) {
-         throw new RuntimeException(e);
-      }
+      ProjectService.UpdateModel model = new ProjectService.UpdateModel(
+              projectJson.get("id").getAsString(),
+              projectJson.get("name").getAsString(),
+              projectJson.get("description").getAsString(),
+              updatedCollaboratorList
+              );
+
+      projectService.update(model);
+
+      return new ResponseEntity(HttpStatus.NO_CONTENT);
    }
 
    @DeleteMapping(value = "/{id}", produces = "application/json")

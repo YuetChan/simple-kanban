@@ -25,11 +25,13 @@ import { actions as projectDeleteDialogActions } from "../stores/project-delete-
 import { actions as tasksSearchActions } from "../stores/tasks-search-slice";
 
 import { stringToEnum } from "../services/backend-enum-service";
-import { deleteTask, searchTasksByFilterParams, updateTask } from "../features/task/services/tasks-service";
+import { createTask, deleteTask, searchTasksByFilterParams, updateTask } from "../features/task/services/tasks-service";
 import { getProjectById, updateProjectById } from "../features/project/services/projects-service";
 
 import TuneIcon from "@mui/icons-material/Tune";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
+import TaskAddButton from "../features/task/components/task-add-button";
+import TaskCreateDialog from "../features/task/components/task-create-dialog";
 
 interface KanbanTableProps { }
 
@@ -61,6 +63,28 @@ const KanbanTable = (props: KanbanTableProps) => {
 
     // ------------------ Project delete dialog ------------------
     const { showProjectDeleteDialog } = projectDeleteDialogActions;
+
+    // ------------------ Task create dialog ------------------ 
+    const [ taskCreateDialogOpen, setTaskCreateDialogOpen ] = useState(false);
+ 
+    const handleOnCardCreateDialogApply = (task: Task) => {
+        createTaskAndRefresh(task);
+        setTaskCreateDialogOpen(false);
+    }
+
+    const handleOnCardCreateDialogClose = () => {
+        setTaskCreateDialogOpen(false);
+    }
+
+    const handleOnTaskAddClick = () => {
+        setTaskCreateDialogOpen(true);
+    }
+
+    const createTaskAndRefresh = (task: Task) => {
+        createTask(task).then((task) => {
+            dispatch(refreshTable());
+        });
+    }
 
     // ------------------ Task update dialog ------------------
     const [ taskToUpdate, setTaskToUpdate ] = useState<Task | undefined >(undefined);
@@ -446,6 +470,54 @@ const KanbanTable = (props: KanbanTableProps) => {
         }
     }
 
+    const handleOnNewProjectNameUpdate = (name: string) => {
+        const activeProject = projectsCacheState._activeProject;
+
+        if(activeProject) { 
+            const updatedProject = {
+                ... activeProject,
+                name: name
+            }
+
+            console.log(updatedProject)
+ 
+            updateProjectById(activeProject.id, updatedProject).then(res => {
+                alert("Project name updated");
+ 
+                getProjectById(activeProject.id).then(res => {
+                    dispatch(updateActiveProject(res));
+                })
+            }).catch(err => {
+                console.log(err);
+
+                alert("Opps, failed to update project name")
+            });
+        }
+    }
+
+    const handleOnNewProjectDescriptionUpdate = (name: string) => {
+        const activeProject = projectsCacheState._activeProject;
+
+        if(activeProject) { 
+            const updatedProject = {
+                ... activeProject,
+                description: name
+            }
+ 
+            updateProjectById(activeProject.id, updatedProject).then(res => {
+                alert("Project description updated");
+ 
+                getProjectById(activeProject.id).then(res => {
+                    dispatch(updateActiveProject(res));
+                })
+            }).catch(err => {
+                console.log(err);
+
+                alert("Opps, failed to update project description")
+            });
+        }
+    }
+
     const handleOnProjectDelete = (e: any) => {
         dispatch(showProjectDeleteDialog())
     }
@@ -626,29 +698,31 @@ const KanbanTable = (props: KanbanTableProps) => {
     }
 
     return (
-        <div style={{ width: "100%" }}>
-            <Stack direction="column">
+        <div style={{ width: "100%", position: "relative" }}>
+            <Stack direction="column" >
                 <Stack 
                     direction="column" 
                     sx={{ 
                         background: "whitesmoke", 
-                        paddingLeft: "32px", 
+                        paddingLeft: "16px", 
                     }}>
                     <div style={{ padding: "8px" }}>
-                        <h1 style={{ 
+                        <h2 style={{ 
                             textAlign: "left", 
-                            padding: "12px", 
+                            padding: "12px 2px", 
                             margin: "0px" 
                             }}>
                             Project:&nbsp;&nbsp;{ projectsCacheState._activeProject?.name }  
-                        </h1>
+                        </h2>
 
                         <h3 style={{ 
                             textAlign: "left", 
-                            padding: "12px", 
+                            padding: "12px 0px", 
                             margin: "0px" 
                             }}>
-                            Description: 
+                            <i style={{ fontWeight: "normal" }}>
+                                Description: &nbsp;&nbsp;{ projectsCacheState._activeProject?.description }
+                            </i>  
                         </h3>
                     </div>
 
@@ -660,7 +734,7 @@ const KanbanTable = (props: KanbanTableProps) => {
                         spacing={ 18 }
 
                         sx={{ 
-                            padding: "12px",
+                            padding: "8px",
                         }}>
                     <Stack 
                         direction="row" 
@@ -766,6 +840,9 @@ const KanbanTable = (props: KanbanTableProps) => {
                                 handleOnCollaboratorRemove={ (collaboratorToRemoveEmail: string) => 
                                     handleOnCollaboratorRemove(collaboratorToRemoveEmail) }
 
+                                handleOnNewProjectNameUpdate={ (name: string) => handleOnNewProjectNameUpdate(name) }    
+                                handleOnNewProjectDescriptionUpdate={ (name: string) => handleOnNewProjectDescriptionUpdate(name) }     
+
                                 handleOnProjectDelete={ handleOnProjectDelete }    
                                 />
 
@@ -829,6 +906,23 @@ const KanbanTable = (props: KanbanTableProps) => {
                 }
             </Stack>
         </Stack>
+
+        <TaskAddButton 
+            handleOnClick={ handleOnTaskAddClick }
+                         
+            style={{
+                position: "absolute",
+                bottom: "8px",
+                left: "16px",
+                }}/>
+
+        <TaskCreateDialog 
+            label="Create Kanban Card"
+            open={ taskCreateDialogOpen }
+                    
+            handleOnApply={ (task: Task) => handleOnCardCreateDialogApply(task) }
+            handleOnClose={ handleOnCardCreateDialogClose } 
+            />
     </div>
     )
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, TextField, Tooltip } from "@mui/material";
 
@@ -23,6 +23,8 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import TaskSubtaskListArea from "./task-subtask-list-area";
 
+import { actions as UiEventCacheActions } from "../../../stores/ui-events-cache-slice"
+
 interface TaskUpdateDialog {
     open?: boolean,
     label?: string,
@@ -35,6 +37,9 @@ interface TaskUpdateDialog {
 }
 
 const TaskUpdateDialog = (props: TaskUpdateDialog) => {  
+    // ------------------ Dispatch ------------------
+    const dispatch = useDispatch();
+
     // ------------------ Projects cache ------------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
@@ -44,7 +49,19 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     // ------------------ Tasks cache------------------
     const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
 
+    // ------------------ Ui event cache ------------------
+    const { updateUiEvent } = UiEventCacheActions;
+
     // ------------------ Task update dialog ------------------
+    useEffect(() => {
+        if(props.open) {
+            dispatch(updateUiEvent({
+                subject: `task:${ props.task.id }`,
+                event: "update-dialog-focus",
+            }));
+        }
+    }, [ props.open ]);
+
     const [ task, setTask ] = React.useState(props.task);
 
     // prefix 'o' stand for 'original'
@@ -467,6 +484,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
                         <TaskSubtaskListArea 
                             subtasks={ task.subTaskList.map(subtask => subtask.title) } 
                             checkedValues={ task.subTaskList.filter(subtask => subtask.completed).map(subtask => subtask.title) } 
+
+                            showDelete={ true }
 
                             handleOnSubtaskCheck={ (checkedValues: Array<string>) => handleOnSubtaskCheck(checkedValues) }
 

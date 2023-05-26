@@ -11,6 +11,7 @@ import { reducer as TaskUpdateReducers} from "../src/stores/task-update-slice";
 import { reducer as TasksCacheReducers} from "../src/stores/tasks-cache-slice";
 import { reducer as TasksSearchReducers} from "../src/stores/tasks-search-slice";
 import { reducer as UserCacheReducers} from "../src/stores/user-cache-slice";
+import { reducer as UiEventsCacheReducers } from "../src/stores/ui-events-cache-slice"
 
 import logger from 'redux-logger'
 
@@ -30,7 +31,9 @@ export const store = configureStore({
     TasksSearch: TasksSearchReducers, 
     TasksCache: TasksCacheReducers,
     
-    UserCache: UserCacheReducers
+    UserCache: UserCacheReducers,
+  
+    UiEventCache: UiEventsCacheReducers
   },
   
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger)

@@ -35,6 +35,8 @@ import { actions as kanbanTableActions } from "./stores/kanban-table-slice";
 
 import KanbanOauthPage from "./layouts/kanban-oauth-page";
 import KanbanEmptyPage from "./layouts/kanban-empty-page";
+import CrudEventsPolling from "./features/crud-event/components/crud-events-polling";
+import KanbanEventNotifier from "./layouts/kanban-event-notifier";
 
 function App() {
     // ------------------ Dispatch ------------------
@@ -114,35 +116,17 @@ function App() {
         dispatch(hideProjectCreateDialog());
     }
 
-    // ------------------ Task create dialog ------------------ 
-    const [ taskCreateDialogOpen, setTaskCreateDialogOpen ] = useState(false);
- 
-    const handleOnCardCreateDialogApply = (task: Task) => {
-        createTaskAndRefresh(task);
-        setTaskCreateDialogOpen(false);
-    }
-
-    const handleOnCardCreateDialogClose = () => {
-        setTaskCreateDialogOpen(false);
-    }
-
-    const handleOnTaskAddClick = () => {
-        setTaskCreateDialogOpen(true);
-    }
-
-    const createTaskAndRefresh = (task: Task) => {
-        createTask(task).then((task) => {
-            dispatch(refreshTable());
-        });
-    }
-
-    // ------------------ Kanban table ------------------
+    // ------------------ Table ------------------
     const { refreshTable } = kanbanTableActions;
 
-    // ------------------ Kanban empty page ------------------
+    // ------------------ Empty page ------------------
     const handleOnCreateProjectClick = () => {
         dispatch(showProjectCreateDialog())
     }
+
+    // ------------------ Ui events ------------------
+
+
 
     // ------------------ Auth ------------------
     const [ authed, setAuthed ] = useState(false);
@@ -215,24 +199,6 @@ function App() {
             </Stack>
 
             <KanbanOauthPage style={{ display: authed? "none": "flex" }}/>
-
-            <TaskAddButton 
-                handleOnClick={ handleOnTaskAddClick }
-                         
-                style={{
-                    position: "fixed",
-                    bottom: "4px",
-                    left: "244px",
-                    display: authed && projectsCacheState._activeProject? "block": "none"
-                    }}/>
-
-            <TaskCreateDialog 
-                label="Create Kanban Card"
-                open={ taskCreateDialogOpen }
-                    
-                handleOnApply={ (task: Task) => handleOnCardCreateDialogApply(task) }
-                handleOnClose={ handleOnCardCreateDialogClose } 
-                />
  
             <ProjectCreateDialog 
                 title="Create Project"
@@ -245,7 +211,6 @@ function App() {
                 handleOnClose={ handleOnProjectCreateDialogClose } 
                 /> 
 
-
             <ProjectDeleteDialog 
                 label="Delete Project"
                 open={ projectDeleteDialogOpen }
@@ -253,6 +218,18 @@ function App() {
                 handleOnClose={ handleOnProjectDeleteDialogClose }
                 handleOnDelete={ handleOnProjectDeleteDialogDelete } 
                 />
+
+            {/* Real time event notification feature, in progress */}
+            {/* {
+                projectsCacheState._activeProject
+                ?(
+                    <CrudEventsPolling projectId={projectsCacheState._activeProject.id}/>
+                )
+                : null
+            }
+
+            <KanbanEventNotifier />         */}
+                
         </div>
     );
 }

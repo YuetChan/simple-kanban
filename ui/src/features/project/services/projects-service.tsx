@@ -69,7 +69,6 @@ const updateProjectById = (id: string, project: Project) => {
     }).then(res => res)
 }
 
-
 export {
     getProjectById, 
     searchProjectsByUserEmail, searchProjectsByNotUserEmail,

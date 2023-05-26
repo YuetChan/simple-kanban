@@ -1,15 +1,15 @@
-package com.tycorp.simplekanban.engine.domain.ui_event;
+package com.tycorp.simplekanban.engine.domain.crud_event;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UiEventService {
+public class CrudEventService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public UiEventService(RedisTemplate<String, Object> redisTemplate) {
+    public CrudEventService(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

@@ -1,12 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 interface TasksSearchState {
-	_activeTab: string,
+	  _activeTab: string,
 
 
   	_activeTags: Array<string>,
   	_activePriorities: Array<string>,
-  _activeUserEmails: Array<string>
+    _activeUserEmails: Array<string>
 }
 
 const { reducer, actions } = createSlice({

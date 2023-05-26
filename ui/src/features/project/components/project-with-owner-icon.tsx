@@ -1,4 +1,5 @@
 import { Stack } from "@mui/material";
+import { truncate } from "../../../libs/text-lib";
 import { textToAvatar } from "../../../services/avatar-service";
 
 interface ProjectWithOwnerIconProps {
@@ -17,7 +18,7 @@ const ProjectWithOwnerIcon = (props: ProjectWithOwnerIconProps) => {
                 padding: "2px"
             }}>
             <div>
-                { props.projectName }
+                { truncate(props.projectName, 18) }
             </div>
 
             <div>

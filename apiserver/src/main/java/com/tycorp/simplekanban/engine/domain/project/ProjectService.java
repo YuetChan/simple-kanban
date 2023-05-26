@@ -8,8 +8,6 @@ import com.tycorp.simplekanban.engine.domain.user.User;
 import com.tycorp.simplekanban.engine.pattern.observer.TaskServiceObserver;
 import com.tycorp.simplekanban.engine.pattern.persistence.PersistencePipeline;
 import com.tycorp.simplekanban.engine.pattern.validation.ValidationResult;
-import com.tycorp.simplekanban.plugin.PluginConfig;
-import com.tycorp.simplekanban.plugin.repository.PluginConfigRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +20,6 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -36,9 +32,6 @@ public class ProjectService {
    // Repositories
    @Autowired
    private ProjectRepository projectRepository;
-
-   @Autowired
-   private PluginConfigRepository pluginConfigRepository;
 
    // Persistence pipeline stages
    @Autowired
