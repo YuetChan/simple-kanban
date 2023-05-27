@@ -76,6 +76,7 @@ const TaskSubtaskCheckbox = (props: TaskSubtaskCheckboxProps) => {
                                         }/>
 
                                 <IconButton 
+                                    data-testid={ subtask+ "-subtask-close-icon-button" }
                                     onClick={ (e: any) => handleOnSubtaskDelete(subtask) }
                                     sx={{ display: props.showDelete? null: "none" }}>
                                     <CloseIcon />

@@ -41,7 +41,7 @@ const TagsDropdown = (props: TagsDropdownProps) => {
     const handleOnItemClick = (tag: string) => {
         if(props.handleOnItemClick) {
             props.handleOnItemClick(tag)
-        }
+        } 
     }
 
     return (

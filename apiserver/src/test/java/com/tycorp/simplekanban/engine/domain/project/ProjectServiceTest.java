@@ -144,8 +144,7 @@ public class ProjectServiceTest {
       ProjectService.UpdateModel model = new ProjectService.UpdateModel(
               "dummy-id",
               "title",
-              "description",
-              new HashMap<>());
+              "description");
 
       when(defaultProjectUpdateValidator.validate(Mockito.any()))
               .thenReturn(ValidationResult.invalid("Collaborator list count exceed maximum"));
@@ -175,19 +174,22 @@ public class ProjectServiceTest {
       // Updated project
       Project dummyUpdatedProject = new Project();
 
-      Map<String, String> collaboratorEmailSecretMap = new HashMap();
+      List<User> collboratorList = new ArrayList<>();
 
-      collaboratorEmailSecretMap.put("collaborator_1@simplekanban.com", "");
-      collaboratorEmailSecretMap.put("collaborator_2@simplekanban.com", "");
+      User user1 = new User();
+      User user2 = new User();
+
+      user1.setEmail("collaborator_1@simplekanban.com");
+      user2.setEmail("collaborator_2@simplekanban.com");
+
+      collboratorList.add(user1);
+      collboratorList.add(user2);
 
       ProjectService.UpdateModel model = new ProjectService.UpdateModel(
               "dummy-id",
               "name",
               "description",
-              collaboratorEmailSecretMap);
-
-      when(configCache.get("collaboratorEmailToSecretMap"))
-              .thenReturn(collaboratorEmailSecretMap);
+              collboratorList);
 
       when(defaultProjectUpdateValidator.validate(Mockito.any()))
               .thenReturn(ValidationResult.valid());
@@ -208,19 +210,22 @@ public class ProjectServiceTest {
       // Updated project
       Project dummyUpdatedProject = new Project();
 
-      Map<String, String> collaboratorEmailSecretMap = new HashMap();
+      List<User> collboratorList = new ArrayList<>();
 
-      collaboratorEmailSecretMap.put("collaborator_1@simplekanban.com", "");
-      collaboratorEmailSecretMap.put("collaborator_2@simplekanban.com", "");
+      User user1 = new User();
+      User user2 = new User();
+
+      user1.setEmail("collaborator_1@simplekanban.com");
+      user2.setEmail("collaborator_2@simplekanban.com");
+
+      collboratorList.add(user1);
+      collboratorList.add(user2);
 
       ProjectService.UpdateModel model = new ProjectService.UpdateModel(
               "dummy-id",
               "name",
               "description",
-              collaboratorEmailSecretMap);
-
-      when(configCache.get("collaboratorEmailToSecretMap"))
-              .thenReturn(collaboratorEmailSecretMap);
+              collboratorList);
 
       when(defaultProjectUpdateValidator.validate(Mockito.any()))
               .thenReturn(ValidationResult.valid());

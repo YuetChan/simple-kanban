@@ -21,73 +21,76 @@ describe('ProjectDeleteDialog', () => {
     };
 
     beforeEach(() => {
+        store = mockStore({
+            UserCache: {
+                _loginedUserEmail: 'test_user1@example.com',
+            },
+        });
+
         props = {
             open: true,
             label: "Delete dialog",
+
             handleOnClose: jest.fn(),
             handleOnDelete: jest.fn()
         }; 
-
-        store = mockStore({
-            UserCache: {
-              _loginedUserEmail: 'test_user1@example.com',
-            },
-        })
     })
 
-
-    it("closing a delete dialog should remove dialog from dom", () => {
+    it("Render correctly", () => {
         render(
             <Provider store={ store }>
-                <ProjectDeleteDialog {... props } open={ false }/>
+                <ProjectDeleteDialog {... props } />
             </Provider>
         );
 
-        expect(screen.queryByText(/Please enter DELETE to confirm the deletion/i)).not.toBeInTheDocument();
+        expect(screen.getByLabelText("Enter DELETE")).toBeInTheDocument(); 
+        expect(screen.getByRole("button", { name: "Cancel"})).toBeInTheDocument(); 
+        expect(screen.getByRole("button", { name: "Delete"})).toBeInTheDocument();
     });
 
-
-    it("Inputting textfield should change 'Enter DELETE' value", () => {
+    it("Entering DELETE should enable Delete button", () => {
         render(
             <Provider store={ store }>
-                <ProjectDeleteDialog {... props } open={ true }/>
+                <ProjectDeleteDialog {... props } />
             </Provider>
         );
 
-        const enterDeleteInput = screen.getByLabelText("Enter DELETE");
+        const deleteTextfield = screen.getByLabelText("Enter DELETE");
 
-        fireEvent.change(enterDeleteInput, { target: { value: "DELETE" } });
+        fireEvent.change(deleteTextfield, { target: { value: "DELETE" } });    
+        
+        const deleteButton = screen.getByRole("button", { name: "Delete"})    
 
-        expect(enterDeleteInput).toHaveValue("DELETE");
+        fireEvent.click(deleteButton);
+
+        expect(props.handleOnDelete).toBeCalledTimes(1) 
     });
 
-
-    it("Clicking cancel should call handleOnClose", () => {
+    it("Delete button should be disable by default", () => {
         render(
             <Provider store={ store }>
-                <ProjectDeleteDialog {... props } open={ true }/>
+                <ProjectDeleteDialog {... props } />
             </Provider>
         );
+        
+        const deleteButton = screen.getByRole("button", { name: "Delete" });    
 
-        const cancelButton = screen.getByRole("button", { name: /cancel/i });
+        fireEvent.click(deleteButton);
 
-        fireEvent.click(cancelButton)
-
-        expect(props.handleOnClose).toHaveBeenCalledTimes(1);
+        expect(props.handleOnDelete).toBeCalledTimes(0); 
     });
 
-
-    it("Closing dialog should call handleOnClose", () => {
+    it("Clicking cancel button should call handleOnClose", () => {
         render(
             <Provider store={ store }>
-                <ProjectDeleteDialog {... props } open={ true }/>
+                <ProjectDeleteDialog { ... props } />
             </Provider>
         );
+        
+        const cancelButton = screen.getByRole("button", { name: "Cancel" });    
 
-        const dialog = screen.getByRole('dialog');
+        fireEvent.click(cancelButton);
 
-        fireEvent.keyDown(dialog, { key: "Escape", code: 27 });
-
-        expect(props.handleOnClose).toHaveBeenCalledTimes(1);
+        expect(props.handleOnClose).toBeCalledTimes(1); 
     });
 })

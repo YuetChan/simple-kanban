@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 
@@ -6,7 +6,6 @@ interface ProjectCreateDialogProps {
     open?: boolean,
     title?: string,
     description?: string,
-    showLogout?: boolean,
 
     handleOnProjectCreate?: Function,
     handleOnLogout?: Function,
@@ -26,9 +25,9 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
         setProjectDescription(e.target.value);
     }  
   
-    const handleOnProjectCreate = () => {
+    const handleOnProjectCreate = (name: string, description: string) => {
         if(props.handleOnProjectCreate) {
-            props.handleOnProjectCreate(projectName, projectDescription);
+            props.handleOnProjectCreate(name, description);
         } 
 
         setProjectName("");
@@ -60,30 +59,30 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Name"
+                    label="Enter name"
                     fullWidth
                     variant="standard" 
                     value={ projectName }
                     
-                    onChange={ (e) => handleOnProjectNameChange(e) } 
+                    onChange={ (e: any) => handleOnProjectNameChange(e) } 
                     />
 
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Description"
+                    label="Enter description"
                     fullWidth
                     variant="standard" 
                     value={ projectDescription }
                     
-                    onChange={ (e) => handleOnProjectDescriptionChange(e) } 
+                    onChange={ (e: any) => handleOnProjectDescriptionChange(e) } 
                     />    
             </DialogContent>
 
             <DialogActions>
                 <Button 
                     variant="text" 
-                    onClick={ handleOnProjectCreate }>
+                    onClick={ (e: any) => handleOnProjectCreate(projectName, projectDescription) }>
                     Create
                 </Button>
             </DialogActions>

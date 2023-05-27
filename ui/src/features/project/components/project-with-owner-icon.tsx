@@ -1,4 +1,5 @@
 import { Stack } from "@mui/material";
+
 import { truncate } from "../../../libs/text-lib";
 import { textToAvatar } from "../../../services/avatar-service";
 
@@ -21,8 +22,8 @@ const ProjectWithOwnerIcon = (props: ProjectWithOwnerIconProps) => {
                 { truncate(props.projectName, 18) }
             </div>
 
-            <div>
-                 { textToAvatar(props.ownerEmail, 21) }
+            <div data-testid="project-owner-avatar">
+                { textToAvatar(props.ownerEmail, 21) }
             </div>
         </Stack>
     )

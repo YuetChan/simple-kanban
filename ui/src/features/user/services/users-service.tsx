@@ -1,21 +1,21 @@
 import axios from "axios"
 
-const localhost = "http://localhost:8080/users";
+const url = `${process.env.REACT_APP_API_SERVER}/users`;
 
 const getUserSecretById = (id: string) => {
-  return axios.get(`${localhost}/${id}/userSecret`).then(res => {
+  return axios.get(`${url}/${id}/userSecret`).then(res => {
     return res.data.data.secret;
   });
 }
 
 const getUserByEmail = (email: string) => {
-  return axios.get(`${localhost}?email=${email}`).then(res => {
+  return axios.get(`${url}?email=${email}`).then(res => {
     return res.data.data.user;
   })
 }
 
 const generateUserSecretById = (id: string) => {
-  return axios.put(`${localhost}/${id}/userSecret`).then(res => {
+  return axios.put(`${url}/${id}/userSecret`).then(res => {
     return res.data.data.secret;
   })
 }

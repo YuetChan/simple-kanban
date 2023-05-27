@@ -5,7 +5,7 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 interface TaskPrioritySelectProps {
     value: string,
     
-    handleOnPriorityChange: Function,
+    handleOnSelectChange: Function,
 
     style?: any
 }
@@ -17,7 +17,7 @@ const TaskPrioritySelect = (props: TaskPrioritySelectProps) => {
     const handleOnPrioritySelect = (e: any) =>{
         setPriority(e.target.value);
     
-        props.handleOnPriorityChange(e);
+        props.handleOnSelectChange(e);
     }
 
     useEffect(() => {
@@ -32,10 +32,10 @@ const TaskPrioritySelect = (props: TaskPrioritySelectProps) => {
             sx={{ 
                 ... props?.style, 
             }} >
-            <InputLabel>Priority</InputLabel>
+            <InputLabel id="priority-select">Priority</InputLabel>
       
             <Select
-                label="Priority"
+                labelId="priority-select"
                 value={ priority }
                 
                 onChange={ handleOnPrioritySelect }

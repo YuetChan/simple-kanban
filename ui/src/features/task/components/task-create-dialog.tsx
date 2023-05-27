@@ -10,7 +10,7 @@ import { stringToEnum } from "../../../services/backend-enum-service";
 
 import KanbanAutosizeTextarea from "../../../components/kanban-autosize-textarea";
 import KanbanCardAssignee from "./task-assignee-select";
-import StatusSelect from "./task-status-select";
+import TaskStatusSelect from "./task-status-select";
 import TaskPrioritySelect from "./task-priority-select";
 import TagsArea from "../../tag/components/tags-area";
 import TaskSubtaskListArea from "./task-subtask-list-area";
@@ -388,7 +388,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                             direction="row" 
                             spacing={ 6 } 
                             >
-                            <StatusSelect 
+                            <TaskStatusSelect 
                                 value={ "backlog" }
 
                                 handleOnSelectChange={ (e: any) => handleOnStatusChange(e) } 
@@ -415,7 +415,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                         <TaskPrioritySelect
                             value={ "low" }
 
-                            handleOnPriorityChange={ (e: any) => handleOnPriorityChange(e) } 
+                            handleOnSelectChange={ (e: any) => handleOnPriorityChange(e) } 
 
                             style={{
                                 width: "120px"

@@ -646,8 +646,6 @@ const KanbanTable = (props: KanbanTableProps) => {
         }
     }
 
-
-
     // ------------------ Style ------------------
     const columnContainerStyle = {
         flexBasis: "25%",
@@ -850,7 +848,7 @@ const KanbanTable = (props: KanbanTableProps) => {
                                 anchorEl={ collaboratorsMenuAnchorEl }
                                 open={ Boolean(collaboratorsMenuAnchorEl) }
 
-                                handleOnMenuClose={ handleOnCollaboratorsMenuClose }
+                                handleOnClose={ handleOnCollaboratorsMenuClose }
 
                                 handleOnQuitProject={ handleOnQuitProject }
                                 />

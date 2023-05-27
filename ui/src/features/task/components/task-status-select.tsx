@@ -4,18 +4,15 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 interface TaskStatusSelectProps {
     value: string,
-    showArchive?: boolean,
-  
     handleOnSelectChange: Function,
-
     style?: any
 }
 
-const StatusSelect = (props: TaskStatusSelectProps) => {
+const TaskStatusSelect = (props: TaskStatusSelectProps) => {
     // ------------------ Status select ------------------
     const [ status, setStatus ] = React.useState<string>(props.value);
 
-    const handleOnStatusSelect = (e: any) => {
+    const handleOnTaskStatusSelect = (e: any) => {
         setStatus(e.target.value);
 
         props.handleOnSelectChange(e); 
@@ -24,13 +21,16 @@ const StatusSelect = (props: TaskStatusSelectProps) => {
     useEffect(() => {
         setStatus(props.value);
     }, []);
-  
-    const itemStyle = {
-        
-    } 
 
     const getStatus = (text: string) => {
-        return <span style={{ fontSize: "21px", fontFamily: "'Caveat', cursive" }}>{ text }</span>
+        return (
+            <span style={{ 
+                fontSize: "21px", 
+                fontFamily: "'Caveat', cursive" 
+            }}>
+                { text }
+            </span>
+        )
     }
 
     const statusMap = new Map();
@@ -49,35 +49,27 @@ const StatusSelect = (props: TaskStatusSelectProps) => {
 
     // ------------------ Html template ------------------
     return (
-    
         <FormControl 
             variant="standard" 
             
             sx={{ 
             ...props?.style,
             }}>
-            <InputLabel>Status</InputLabel>
+            <InputLabel id="status-select">Status</InputLabel>
 
             <Select
-                label="status"
+                labelId="status-select"
                 value={ status }
                 
-                onChange={ (e) => handleOnStatusSelect(e) }>
+                onChange={ (e) => handleOnTaskStatusSelect(e) }>
                 {
                     statuses.map(status => (
                         <MenuItem value={ status }>{ statusMap.get(status) }</MenuItem>
                     ))
                 }
-
-                {/* <MenuItem
-                    value={ "archive" }
-                    style={{ display: props.showArchive? "block": "none" }}>
-                    { getStatus("Archive") }
-                </MenuItem> */}
             </Select>
         </FormControl>
-    
     )
 }
 
-export default StatusSelect;
+export default TaskStatusSelect;

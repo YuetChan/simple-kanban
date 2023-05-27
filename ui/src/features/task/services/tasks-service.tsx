@@ -1,10 +1,10 @@
 import axios from "axios"
 import { Task } from "../../../types/Task";
 
-const localhost = "http://localhost:8080/tasks";
+const url = `${process.env.REACT_APP_API_SERVER}/tasks`;
 
 const createTask = (task: Task) => {
-    return axios.post(`${localhost}`, {
+    return axios.post(`${url}`, {
         data: {
             task: task
         }
@@ -15,7 +15,7 @@ const createTask = (task: Task) => {
 }
 
 const updateTask = (updatedTask: Task) => {
-    return axios.patch(`${localhost}/${updatedTask.id}`, {
+    return axios.patch(`${url}/${updatedTask.id}`, {
         data: {
             task: updatedTask
         }
@@ -23,11 +23,11 @@ const updateTask = (updatedTask: Task) => {
 };
 
 const deleteTask = (id: string) => {
-    return axios.delete(`${localhost}/${id}`).then(res => res);
+    return axios.delete(`${url}/${id}`).then(res => res);
 }
 
 const searchTasksByFilterParams = (start: number, pageSize: number, projectId: string, tags: Array<string>) => {
-    return axios.get(`${localhost}?start=${start}&pageSize=${pageSize}&projectId=${projectId}&tags=`).then(res => {
+    return axios.get(`${url}?start=${start}&pageSize=${pageSize}&projectId=${projectId}&tags=`).then(res => {
         const data = res.data.data;
 
         return {

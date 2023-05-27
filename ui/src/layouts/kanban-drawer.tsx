@@ -12,8 +12,6 @@ import { actions as usersCacheActions } from '../stores/user-cache-slice';
 import { actions as projectsCacheActions } from '../stores/projects-cache-slice';
 import { actions as projectCreateDialogActions } from '../stores/project-create-dialog-slice';
 
-import { redirectToLoginPage } from '../services/auth.services';
-
 import UserProfileMini from '../features/user/components/user-profile-mini';
 
 import ProjectWithOwnerIcon from '../features/project/components/project-with-owner-icon';
@@ -139,10 +137,10 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
             </div>   
 
             <div style={{ 
-                    top: "268px",
-                    right: "-40px",
+                top: "268px",
+                right: "-36px",
             
-                    position: "absolute",
+                position: "absolute",
                 }}>
                 <Fab
                     onClick={ handleOnMaximize }

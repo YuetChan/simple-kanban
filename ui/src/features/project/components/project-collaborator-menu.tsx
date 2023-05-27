@@ -1,7 +1,6 @@
 import { Button, Menu,  Stack } from "@mui/material";
 
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import AssistantIcon from '@mui/icons-material/Assistant';
 import KanbanIconTitle from "../../../components/kanban-Icon-title";
 import WarningIcon from '@mui/icons-material/Warning';
 
@@ -9,15 +8,15 @@ interface ProjectCollaboratorMenuProps {
     anchorEl: any,
     open: boolean,
   
-    handleOnMenuClose?: Function,
+    handleOnClose?: Function,
     handleOnQuitProject?: Function
 }
 
 const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
   // ------------------ Collaborator menu ------------------
   const handleOnClose = () => {
-    if(props.handleOnMenuClose){
-      props.handleOnMenuClose();
+    if(props.handleOnClose){
+      props.handleOnClose();
     }
   }
 
@@ -45,36 +44,27 @@ const ProjectCollaboratorMenu = (props: ProjectCollaboratorMenuProps) => {
                 sx={{  
                     padding: "8px" 
                     }}>
-                {/* <KanbanIconTitle 
-                    icon={ <AssistantIcon /> }
-                    label="Member setting"
-                    /> */}
-
                     <Stack direction="column">
-                    <KanbanIconTitle 
-                    icon={ <WarningIcon /> }
-                    label="Warning"
-                    />
+                        <KanbanIconTitle 
+                            icon={ <WarningIcon /> }
+                            label="Warning"
+                            />
 
                         <Button 
-                    startIcon={<ExitToAppIcon />} 
-                    variant="text"
-                    color="error"
+                            startIcon={<ExitToAppIcon />} 
+                            variant="text"
+                            color="error"
 
-                    onClick={ handleOnQuitProject }
+                            onClick={ handleOnQuitProject }
 
-                    sx={{
-                        padding: "0px 12px",
-                        marginTop: "12px"
-                    }}>
-                    Quit project
-                </Button>
+                            sx={{
+                                padding: "0px 12px",
+                                marginTop: "12px"
+                            }}>
+                            Quit project
+                        </Button>
                     </Stack>
-
-
             </Stack>
-
- 
     </Menu>     
   )
 }

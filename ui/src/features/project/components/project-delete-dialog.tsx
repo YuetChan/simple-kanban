@@ -43,6 +43,8 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
     return (
         <Dialog
             scroll={ "paper" }
+            open={ props.open? props.open : false }
+            onClose={ handleOnClose }
             sx={{
                 "& .MuiDialog-container": {
                     "& .MuiPaper-root": {
@@ -50,9 +52,7 @@ const ProjectDeleteDialog = (props: ProjectDeleteDialogProps) => {
                         width: "350px"
                     },
                 },
-            }}
-            open={ props.open? props.open : false }
-            onClose={ handleOnClose }>
+            }}>
             <DialogTitle>
                 <Stack direction="row" justifyContent="space-between">
                     <div>{ props.label? props.label : "" }</div>

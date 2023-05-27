@@ -6,11 +6,11 @@ import thunk from "redux-thunk";
 
 import { Provider } from "react-redux";
 
-import TaskPrioritySelect from "./task-priority-select";
+import TaskStatusSelect from "./task-status-select";
 
 const mockStore = configureMockStore([thunk]);
 
-describe("TaskPrioritySelect", () => {
+describe("TaskStatusSelect", () => {
     let store: any = mockStore({ 
         UserCache: {
           _loginedUserEmail: "test_user1@example.com",
@@ -19,46 +19,46 @@ describe("TaskPrioritySelect", () => {
 
     let props: { 
         value: string,
-        handleOnSelectChange: Function
+        handleOnSelectChange: Function,
     }
 
     beforeEach(() => {
         props = { 
-            value: "low",
+            value: "todo",
             handleOnSelectChange: jest.fn()
         }
     });
 
-
     it("should render correctly", () => {
         render(
             <Provider store={ store }>
-                <TaskPrioritySelect { ... props } />
+                <TaskStatusSelect { ... props } />
             </Provider>
         );
 
-        const prioritySelect = screen.getByLabelText("Priority")
+        const statusSelect = screen.getByLabelText("Status")
 
-        expect(prioritySelect).toBeInTheDocument();
+        expect(statusSelect).toBeInTheDocument();
     });
+
 
     // // Not sure why this following test case fails
 
     // it("clicking menu item should call handleOnPrioritySelect with value of menu item ", () => {
     //     render(
     //         <Provider store={ store }>
-    //             <TaskPrioritySelect { ... props } />
+    //             <TaskStatusSelect { ... props } />
     //         </Provider>
     //     );
 
-    //     const prioritySelect = screen.getByLabelText("Priority")
+    //     const prioritySelect = screen.getByLabelText("Status")
 
     //     fireEvent.mouseDown(prioritySelect);
 
-    //     const menuItem = screen.getByRole("option", { name: "Low" });
+    //     const menuItem = screen.getByRole("option", { name: "To Do" });
 
     //     fireEvent.click(menuItem);
-      
-    //     expect(props.handleOnPriorityChange).toBeCalledTimes(1)
+
+    //     expect(props.handleOnSelectChange).toBeCalledTimes(1)
     // });
-});
+})

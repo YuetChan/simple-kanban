@@ -1,9 +1,9 @@
 import axios from "axios"
 
-const localhost = "http://localhost:8080/tags";
+const url = `${process.env.REACT_APP_API_SERVER}/tags`;
 
 const searchTagsByProjectIdAndPrefix = (projectId: string, prefix: string, start: number) => {
-  return axios.get(`${localhost}?projectId=${projectId}&prefix=${prefix}&start=${start}`).then(res => {
+  return axios.get(`${url}?projectId=${projectId}&prefix=${prefix}&start=${start}`).then(res => {
     const data = res.data.data;
 
     return {

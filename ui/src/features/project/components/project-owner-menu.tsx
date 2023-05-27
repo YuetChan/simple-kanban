@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-import { Button, Divider, IconButton, Menu, Stack, TextField } from "@mui/material";
+import { Button, IconButton, Menu, Stack, TextField } from "@mui/material";
 
 import KanbanIconTitle from "../../../components/kanban-Icon-title";
 
@@ -133,7 +133,6 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
 
             <Stack direction="column" spacing={ 1.4 } >
                 
-       
             <Stack 
                 direction="column"
  
@@ -157,7 +156,6 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                         variant="standard" 
                         placeholder="Email"
                         inputRef={ collaboratorAddRef }  
-        
 
                         onKeyDown={ (e) => handleOnCollaboratorAddKeyPress(e) }
                         onChange={ (e) => handleOnCollaboratorToAddEmailChange(e) } 
@@ -166,7 +164,9 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                             width: "240px"
                         }} />
 
-                    <IconButton onClick={ handleOnCollaboratorAdd }> 
+                    <IconButton 
+                        data-testid="collaborator-add-icon-button"
+                        onClick={ handleOnCollaboratorAdd }> 
                         <PersonAddAlt1OutlinedIcon />
                     </IconButton>
                 </Stack>
@@ -192,7 +192,9 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                             width: "240px"
                         }} />
 
-                    <IconButton onClick={ handleOnCollaboratorRemove }> 
+                    <IconButton 
+                        data-testid="collaborator-remove-icon-button"
+                        onClick={ handleOnCollaboratorRemove }> 
                         <PersonRemoveAlt1OutlinedIcon />
                     </IconButton>
                 </Stack> 
@@ -218,7 +220,9 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                             width: "240px"
                         }} />
 
-                    <IconButton onClick={ handleOnNewProjectNameUpdate }> 
+                    <IconButton 
+                        data-testid="project-name-update-icon-button"
+                        onClick={ handleOnNewProjectNameUpdate }> 
                         <UpgradeIcon />
                     </IconButton>
                 </Stack>
@@ -244,7 +248,9 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
                             width: "240px"
                         }} />
 
-                    <IconButton onClick={ handleOnNewProjectDescriptionUpdate }> 
+                    <IconButton 
+                        data-testid="project-description-update-icon-button"
+                        onClick={ handleOnNewProjectDescriptionUpdate }> 
                         <DescriptionIcon />
                     </IconButton>
                 </Stack>

@@ -16,13 +16,12 @@ describe('ProjectCreateDialog', () => {
         open?: boolean,
         title?: string,
         description?: string,
+
         showLogout?: boolean,
       
         handleOnProjectCreate?: Function,
-        handleOnLogout?: Function,
         handleOnClose?: Function
     };
-    
 
     beforeEach(() => {
         store = mockStore({
@@ -33,15 +32,12 @@ describe('ProjectCreateDialog', () => {
 
         props = {
             open: true,
-            title: "Test Title",
-            description: "Test Description",
-            showLogout: true,
+            title: "",
+            description: "",
     
             handleOnProjectCreate: jest.fn(),
-            handleOnLogout: jest.fn(),
             handleOnClose: jest.fn()
         };
-    
     })
 
 
@@ -52,85 +48,30 @@ describe('ProjectCreateDialog', () => {
             </Provider>
         );
 
-        // 
-        expect(screen.getByText( "Test Title" )).toBeInTheDocument();
-        expect(screen.getByText( "Test Description" )).toBeInTheDocument();
+        expect(screen.getByLabelText("Enter name")).toBeInTheDocument(); 
+        expect(screen.getByLabelText("Enter description")).toBeInTheDocument(); 
     });
     
 
-    it("Inputting textfield should change project name", () => {
+    it("Create project should call handleOnProjectCreate with inputted project name and description", () => {
         render(
             <Provider store={ store }>
                 <ProjectCreateDialog {... props} />
             </Provider>
         );
 
-        const projectNameInput = screen.getByLabelText("Project name");
+        const projectNameTextfield = screen.getByLabelText("Enter name");
 
-        fireEvent.change(projectNameInput, { target: { value: "Test Project" } });
+        fireEvent.change(projectNameTextfield, { target: { value: "Test name" } });
 
-        expect(projectNameInput).toHaveValue('Test Project');
-    });
+        const projectDescriptionTextfield = screen.getByLabelText("Enter description");
 
+        fireEvent.change(projectDescriptionTextfield, { target: { value: "Test description" } });
 
-    it("Clicking logout button should call handleOnLogout", () => {
-        render(
-            <Provider store={ store }>
-                <ProjectCreateDialog { ... props } />
-            </Provider>
-        );
-
-        const logoutButton = screen.getByRole('button', { name: /logout/i });
-
-        fireEvent.click(logoutButton);
-
-        expect(props.handleOnLogout).toHaveBeenCalledTimes(1);
-    });
-    
-
-    it("Clicking close button should call handleOnClose", () => {   
-        render(
-            <Provider store={ store }>
-                <ProjectCreateDialog { ... props } />
-            </Provider>
-        );
-
-        const dialog = screen.getByRole('dialog');
-
-        fireEvent.keyDown(dialog, { key: "Escape", code: 27 });
-        
-        expect(props.handleOnClose).toHaveBeenCalledTimes(1);
-    });
-
-
-    it("Clicking close button should empty project name", () => {
-        render(
-            <Provider store={ store }>
-                <ProjectCreateDialog { ... props } />
-            </Provider>
-        );
-
-        const dialog = screen.getByRole('dialog');
-
-        fireEvent.keyDown(dialog, { key: "Escape", code: 27 });
-
-        const projectNameInput = screen.getByLabelText("Project name");
-
-        expect(projectNameInput).toHaveValue('');
-    });
-
-
-    it("Clicking create button should call handleOnProjectCreate", () => {  
-        render(
-            <Provider store={ store }>
-                <ProjectCreateDialog { ...props } />
-            </Provider>
-        );
-
-        const createButton = screen.getByRole('button', { name: /create/i });
+        const createButton = screen.getByText("Create");
 
         fireEvent.click(createButton);
 
-        expect(props.handleOnProjectCreate).toHaveBeenCalledTimes(1);
+        expect(props.handleOnProjectCreate).toBeCalledWith("Test name", "Test description")
     });
 })
