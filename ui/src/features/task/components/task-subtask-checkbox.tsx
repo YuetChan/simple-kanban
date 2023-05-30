@@ -56,11 +56,14 @@ const TaskSubtaskCheckbox = (props: TaskSubtaskCheckboxProps) => {
                 {
                     props.subtaskList.map(subtask => {
                         return (
-                            <Stack direction="row" alignItems="center">
+                            <Stack 
+                                direction="row" 
+                                alignItems="center"
+                                key={ "subtask-" +  subtask}
+                                >
                                 <FormControlLabel
                                     label={ subtask }
                                     control={
-                                    
                                         <Checkbox 
                                             checked={ checkedValues.includes(subtask) } 
                                             value={ subtask } 

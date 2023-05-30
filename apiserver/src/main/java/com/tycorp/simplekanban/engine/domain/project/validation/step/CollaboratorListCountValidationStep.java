@@ -6,8 +6,7 @@ import com.tycorp.simplekanban.engine.pattern.validation.ValidationStep;
 import org.springframework.beans.factory.annotation.Value;
 
 public class CollaboratorListCountValidationStep extends ValidationStep<Project> {
-    @Value("${project.max-collaborator-count}")
-    private int MAX_COLLABORATOR_COUNT = 20;
+    private int MAX_COLLABORATOR_COUNT = 50;
 
     @Override
     public ValidationResult validate(Project project) {

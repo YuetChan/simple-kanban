@@ -46,15 +46,17 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
                 minWidth: "256px", 
                 maxWidth: "256px" 
                 }}>
-            <InputLabel>Assignee</InputLabel>
+            <InputLabel id="assignee-select">Assignee</InputLabel>
 
             <Select
+                labelId="assignee-select"
                 value={ assignee }
-                label="Assignee"
 
                 onChange={ (e) => handlOnAssigneeSelect(e) }
                 >
                 <MenuItem 
+                    key={ "assignee-select" + assignee }
+
                     value={ "none" }
                     style={{
                         minWidth: "256px", 

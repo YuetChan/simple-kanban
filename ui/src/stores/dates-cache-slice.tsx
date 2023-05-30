@@ -1,18 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface DatesCacheState {
-    _fromDate: Date,
-    _toDate: Date,
-    _dueDate: Date
+    _fromDate: string,
+    _toDate: string,
+    _dueDate: string
 }
 
 const { reducer, actions } = createSlice({
     name: "DatesCache",
 
     initialState: {
-        _fromDate: new Date(),
-        _toDate: new Date(),
-        _dueDate: new Date()
+        _fromDate: new Date().toISOString(),
+        _toDate: new Date().toISOString(),
+        _dueDate: new Date().toISOString(),
     } as DatesCacheState,
   
     reducers: {

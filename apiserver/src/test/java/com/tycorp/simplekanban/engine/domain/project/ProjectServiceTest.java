@@ -138,13 +138,21 @@ public class ProjectServiceTest {
 
    @Test
    public void shouldThrowResponseStatusExceptionWhenUpdateProjectWithCollaboratorListCountExceedMaximum() throws Exception {
-      when(configCache.get("collaboratorEmailToSecretMap"))
-              .thenReturn(new HashMap<>());
+      User collaborator_1 = new User();
+      collaborator_1.setEmail("collaborator_1@simplekanban.com");
 
+      User collaborator_2 = new User();
+      collaborator_1.setEmail("collaborator_2@simplekanban.com");
+
+      List<User> collaboratorList = new ArrayList<>();
+
+      collaboratorList.add(collaborator_1);
+      collaboratorList.add(collaborator_2);
       ProjectService.UpdateModel model = new ProjectService.UpdateModel(
               "dummy-id",
               "title",
-              "description");
+              "description",
+              collaboratorList);
 
       when(defaultProjectUpdateValidator.validate(Mockito.any()))
               .thenReturn(ValidationResult.invalid("Collaborator list count exceed maximum"));
@@ -154,14 +162,22 @@ public class ProjectServiceTest {
 
    @Test
    public void shouldThrowResponseStatusExceptionWhenUpdateProjectWithCollaboratorListInvalid() throws Exception {
-      when(configCache.get("collaboratorEmailToSecretMap"))
-              .thenReturn(new HashMap<>());
+      User collaborator_1 = new User();
+      collaborator_1.setEmail("collaborator_1@simplekanban.com");
+
+      User collaborator_2 = new User();
+      collaborator_1.setEmail("collaborator_2@simplekanban.com");
+
+      List<User> collaboratorList = new ArrayList<>();
+
+      collaboratorList.add(collaborator_1);
+      collaboratorList.add(collaborator_2);
 
       ProjectService.UpdateModel model = new ProjectService.UpdateModel(
               "dummy-id",
               "title",
               "description",
-              new HashMap<>());
+              collaboratorList);
 
       when(defaultProjectUpdateValidator.validate(Mockito.any()))
               .thenReturn(ValidationResult.invalid("Some of the collaborators are invalid"));

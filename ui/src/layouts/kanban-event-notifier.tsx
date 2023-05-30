@@ -1,5 +1,5 @@
 import { Snackbar } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../stores/app-reducers";
 
@@ -14,14 +14,11 @@ const KanbanEventNotifier = (props: KanbanEventNotifierProps) => {
 
     const crudEventCacheState = useSelector((state: AppState) => state.CrudEventCache);
 
-    // useEffect(() => {
-    // }, [ crudEventCacheState ]);
-
     return (
         <div>
             <Snackbar
-                open={open}
-                autoHideDuration={6000}
+                open={ open }
+                autoHideDuration={ 6000 }
                 onClose={ handleOnClose }
                 message="Note archived"
                 />

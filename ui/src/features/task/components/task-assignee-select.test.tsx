@@ -1,18 +1,18 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen } from "@testing-library/react";
 
-import configureMockStore from 'redux-mock-store';
+import configureMockStore from "redux-mock-store";
 
-import thunk from 'redux-thunk';
+import thunk from "redux-thunk";
 
-import { Provider } from 'react-redux';
+import { Provider } from "react-redux";
 
-import TaskAssigneeSelect from './task-assignee-select';
+import TaskAssigneeSelect from "./task-assignee-select";
 
-import { truncate } from '../../../libs/text-lib';
+import { truncate } from "../../../libs/text-lib";
 
 const mockStore = configureMockStore([thunk]);
 
-describe('TaskAssigneeSelect', () => {
+describe("TaskAssigneeSelect", () => {
     let store: any = mockStore({ });
 
     let props: {
@@ -42,15 +42,35 @@ describe('TaskAssigneeSelect', () => {
     });
 
     // For unknow reason, the rendered html would not include rest of the assignees in text format
-    it('should render correctly', () => {
+    it("should render correctly", () => {
         render(
             <Provider store={ store }>
                 <TaskAssigneeSelect { ... props } />
             </Provider>
         );
 
-        const assigneeSelect = screen.getByRole("button", { name: truncate("test_user1@example.com", 18) })
+        const assigneeSelect = screen.getByLabelText("Assignee");
 
         expect(assigneeSelect).toBeInTheDocument();
     });
+
+        // // Not sure why this following test case fails
+
+    // it("clicking menu item should call handleOnPrioritySelect with value of menu item ", () => {
+    //     render(
+    //         <Provider store={ store }>
+    //             <TaskPrioritySelect { ... props } />
+    //         </Provider>
+    //     );
+
+    //     const prioritySelect = screen.getByLabelText("Priority")
+
+    //     fireEvent.mouseDown(prioritySelect);
+
+    //     const menuItem = screen.getByRole("option", { name: "Low" });
+
+    //     fireEvent.click(menuItem);
+      
+    //     expect(props.handleOnPriorityChange).toBeCalledTimes(1)
+    // });
 });

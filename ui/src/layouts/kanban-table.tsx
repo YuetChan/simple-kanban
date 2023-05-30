@@ -33,6 +33,8 @@ import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import TaskAddButton from "../features/task/components/task-add-button";
 import TaskCreateDialog from "../features/task/components/task-create-dialog";
 
+// import { v4 as uuidv4 } from 'uuid';
+
 interface KanbanTableProps { }
 
 const KanbanTable = (props: KanbanTableProps) => {
@@ -177,6 +179,8 @@ const KanbanTable = (props: KanbanTableProps) => {
             const backlogCardStacks = tasksState._allTasks?.backlog.map(task => {
                 return (
                     <KanbanCard 
+                        key={ "kanban-card-backlog-" +  task.title }
+
                         highlight={ matchAll(task) } 
                         task={ task } 
                         category={ backlog }
@@ -197,6 +201,8 @@ const KanbanTable = (props: KanbanTableProps) => {
             const todoCardStacks = tasksState._allTasks?.todo.map(task => {
                 return (
                     <KanbanCard 
+                        key={ "kanban-card-todo-" + task.title }
+
                         highlight={ matchAll(task) } 
                         task={ task } 
                         category={ todo }  
@@ -216,6 +222,8 @@ const KanbanTable = (props: KanbanTableProps) => {
             const inProgressCardStacks = tasksState._allTasks?.inProgress.map(task => {
                 return (
                     <KanbanCard 
+                        key={ "kanban-card-in-progress-" + task.title }
+
                         highlight={ matchAll(task) } 
                         task={ task } 
                         category={ inProgress } 
@@ -236,6 +244,8 @@ const KanbanTable = (props: KanbanTableProps) => {
             const doneCardStacks = tasksState._allTasks?.done.map(task => {
                 return (
                     <KanbanCard 
+                        key={ "kanban-card-done-" + task.title }
+
                         highlight={ matchAll(task) } 
                         task={ task } 
                         category={ done } 

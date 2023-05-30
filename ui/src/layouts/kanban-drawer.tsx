@@ -165,7 +165,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
             <List sx={{
                 display: minimized? "none": null
             }}>
-                <ListItem>
+                <ListItem key={ "kanban-drawer-icon" }>
                     <div style={{ 
                         width: "210px"
                         }}>
@@ -177,7 +177,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </div>
                 </ListItem>
 
-                <ListItem>
+                <ListItem key={ "kanban-drawer-project-select" }>
                     <Stack 
                         direction="row" 
                         justifyContent="space-between" 
@@ -198,7 +198,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </Stack>
                 </ListItem>
 
-               <ListItem>
+               <ListItem key={ "kanban-drawer-yours-label" }>
                     <div style={{
                         color: "rgb(47, 47, 47)" 
                         }}>
@@ -206,7 +206,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </div>  
                </ListItem>
 
-               <ListItem sx={{
+               <ListItem 
+                    key={ "kanban-drawer-yours-list" }
+                    sx={{
                         marginBottom: "12px"
                     }}>
                     <List 
@@ -222,17 +224,22 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                             background: "white",
                             padding: "16px 0px"
                         }}>
-                        <ListItem sx={{ 
-                            padding: "0px 16px",
-                            display: projectsCacheState._allProjects.length === 0
-                            ? "block"
-                            : "none" }}>
+                        <ListItem
+                            key={ "kanban-drawer-yours-list-placeholder" }
+
+                            sx={{ 
+                                padding: "0px 16px",
+                                display: projectsCacheState._allProjects.length === 0
+                                ? "block"
+                                : "none" }}>
                                 Empty ...
                         </ListItem>
                         {
                             projectsCacheState._allProjects.map(project => 
                                 (
-                                    <ListItem sx={{  padding: "0px" }}>
+                                    <ListItem 
+                                        key={ "kanban-drawer-yours-" + project.name }
+                                        sx={{  padding: "0px" }}>
                                         <ListItemButton  
                                             ref={ 
                                                 projectsCacheState._activeProject?.name ===  project.name
@@ -260,7 +267,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </List>
                 </ListItem> 
 
-                <ListItem>
+                <ListItem key={ "kanban-drawer-your-are-in-label" }>
                     <div style={{
                         color: "rgb(47, 47, 47)" 
                         }}>
@@ -268,7 +275,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </div>  
                 </ListItem>
 
-                <ListItem sx={{
+                <ListItem 
+                    key={ "kanban-drawer-your-are-in-list" }
+                    sx={{
                         marginBottom: "12px"
                     }}>
                     <List 
@@ -285,7 +294,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                             background: "white",
                             padding: "16px 0px"
                         }}>
-                        <ListItem sx={{ 
+                        <ListItem 
+                            key={ "kanban-drawer-your-are-in-placeholder" }
+                            sx={{ 
                             padding: "0px 16px",
                             display: projectsCacheState._allShareProjects.length === 0
                             ? "block"
@@ -296,7 +307,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                         {
                             projectsCacheState._allShareProjects.map(project => 
                                 (
-                                    <ListItem >
+                                    <ListItem key={ "kanban-drawer-your-are-in-" + project.name }>
                                         <ListItemButton  
                                             ref={ projectsCacheState._activeProject?.name ===  project.name? activeProjectRef: null }
 
@@ -321,7 +332,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </List>
                 </ListItem>         
 
-                <ListItem>
+                <ListItem key={ "kanban-drawer-your-are-not-in-label" }>
                     <div style={{
                         color: "rgb(47, 47, 47)" 
                         }}>
@@ -329,7 +340,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </div>  
                 </ListItem>
 
-                <ListItem sx={{
+                <ListItem 
+                    key={ "kanban-drawer-your-are-not-in-list" }
+                    sx={{
                         marginBottom: "12px"
                     }}>
                     <List 
@@ -346,18 +359,20 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                             background: "white",
                             padding: "16px 0px"
                         }}>
-                        <ListItem sx={{ 
-                            padding: "0px 16px",
-                            display: projectsCacheState._allNotProjects.length === 0
-                            ? "block"
-                            : "none" }}>
+                        <ListItem 
+                            key={ "kanban-drawer-your-are-not-in-placeholder" }
+                            sx={{ 
+                                padding: "0px 16px",
+                                display: projectsCacheState._allNotProjects.length === 0
+                                ? "block"
+                                : "none" }}>
                                 Empty ...
                         </ListItem>
 
                         {
                             projectsCacheState._allNotProjects.map(project => 
                                 (
-                                    <ListItem >
+                                    <ListItem key={ "kanban-drawer-your-are-not-in-" + project.name }>
                                         <ListItemButton  
                                             ref={ projectsCacheState._activeProject?.name ===  project.name? activeProjectRef: null }
 
@@ -385,7 +400,9 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
                 <Divider />
 
-                <ListItem sx={{ marginTop: "12px"}}>
+                <ListItem 
+                    key={ "kanban-drawer-mini-profile" }
+                    sx={{ marginTop: "12px"}}>
                     <UserProfileMini 
                         email="yuetcheukchan@gmail.com" 
                         size={ 36 }

@@ -1,16 +1,14 @@
 package com.tycorp.simplekanban.engine.domain.task;
 
-import com.tycorp.simplekanban.engine.core.AppContextUtils;
 import com.tycorp.simplekanban.engine.domain.project.Project;
 import com.tycorp.simplekanban.engine.domain.task.repository.TaskRepository;
 import com.tycorp.simplekanban.engine.domain.tag.Tag;
-import com.tycorp.simplekanban.engine.domain.tag.TagService;
 import com.tycorp.simplekanban.engine.domain.task.validation.validator.DefaultTaskCreateValidator;
 import com.tycorp.simplekanban.engine.domain.task.validation.validator.DefaultTaskDeleteValidator;
 import com.tycorp.simplekanban.engine.domain.task.validation.validator.DefaultTaskUpdateValidator;
 import com.tycorp.simplekanban.engine.domain.task.value.Priority;
 import com.tycorp.simplekanban.engine.domain.task.value.Status;
-import com.tycorp.simplekanban.engine.pattern.observer.TaskServiceObserver;
+import com.tycorp.simplekanban.engine.domain.task.value.SubTask;
 import com.tycorp.simplekanban.engine.pattern.validation.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +31,6 @@ public class TaskServiceTest {
    @Spy
    @InjectMocks
    private TaskService taskService;
-
-   @Mock
-   private AppContextUtils appContextUtils;
 
    // Repositories
    @Mock
@@ -82,6 +76,8 @@ public class TaskServiceTest {
       tagList.add(tag_1);
       tagList.add(tag_2);
 
+      List<SubTask> subTaskList = new ArrayList<>();
+
       dummyCreatedTask.setTaskNode(new TaskNode());
       dummyCreatedTask.setTagList(tagList);
 
@@ -93,6 +89,7 @@ public class TaskServiceTest {
               "yuetchany@simplekanban.com",
               -1l,
               tagList,
+              subTaskList,
               "", "", Status.BACKLOG,
               "project_id_1");
 
@@ -127,6 +124,7 @@ public class TaskServiceTest {
               "yuetchany@simplekanban.com",
               -1l,
               new ArrayList<>(),
+              new ArrayList<>(),
               "", "", Status.BACKLOG,
               "project_id_1");
 
@@ -145,6 +143,7 @@ public class TaskServiceTest {
               Priority.LOW,
               "yuetchany@simplekanban.com",
               -1l,
+              new ArrayList<>(),
               new ArrayList<>(),
               "", "", Status.BACKLOG,
               "project_id_1");
@@ -193,9 +192,10 @@ public class TaskServiceTest {
               "yuetchany@simplekanban.com",
               -1l,
               new ArrayList<>(),
+              new ArrayList<>(),
               "", "", Status.BACKLOG);
 
-      taskService.update(model);
+      taskService.update(model, defaultTaskUpdateValidator);
 
       verify(mergePropertiesToTaskStage).process(Mockito.any());
    }
@@ -238,9 +238,10 @@ public class TaskServiceTest {
               "yuetchany@simplekanban.com",
               -1l,
               new ArrayList<>(),
+              new ArrayList<>(),
               "", "", Status.BACKLOG);
 
-      taskService.update(model);
+      taskService.update(model, defaultTaskUpdateValidator);
 
       // Verifies the attachment of new tags and removal of old tags
       verify(taskService).attachTagListToTask(eq(dummyOrgTask), Mockito.any());
