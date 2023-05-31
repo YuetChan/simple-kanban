@@ -105,17 +105,6 @@ const KanbanCard = (props: KanbanCardProps) => {
                         }
                     }
 
-                    if(props.task?.taskNode.headUUID === item.id) {
-                        updatedTask = {
-                            ... item,
-                            taskNode: {
-                                ... item.taskNode,
-                                headUUID: props.task.id,
-                                tailUUID: props.task.taskNode.tailUUID
-                            }
-                        }
-                    }
-
                     if(props.task?.taskNode.tailUUID === item.id) {
                         updatedTask = {
                             ... item,
