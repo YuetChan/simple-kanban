@@ -177,6 +177,7 @@ const KanbanTable = (props: KanbanTableProps) => {
             const backlog = "backlog";
 
             const backlogCardStacks = tasksState._allTasks?.backlog.map(task => {
+                console.log(task.id, task.taskNode)
                 return (
                     <KanbanCard 
                         key={ "kanban-card-backlog-" +  task.title }

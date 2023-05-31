@@ -189,19 +189,10 @@ public class TaskService {
          if(detachTaskNodeFromLinkedList(updatedTask.getId())) {
             LOGGER.debug("Task is detached from linkedlist");
 
-            if(updatedNode.getStatus().equals(Status.ARCHIVE)) {
-               LOGGER.debug("Task status is archived");
-
-               updatedNode.setTailUUID("");
-               updatedNode.setHeadUUID("");
-
-               taskNodeRepository.save(updatedNode);
-            }else {
-               // Attachs task node to linkedList
-               if(!updateTaskNodeOnLinkedList(updatedTask.getId(), updatedNode)) {
-                  LOGGER.debug("Failed to reinsert task node to linkedlist");
-                  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to reinsert task node to linkedlist");
-               }
+            // Attachs task node to linkedList
+            if(!updateTaskNodeOnLinkedList(updatedTask.getId(), updatedNode)) {
+               LOGGER.debug("Failed to reinsert task node to linkedlist");
+               throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to reinsert task node to linkedlist");
             }
          }else {
             LOGGER.debug("Failed to detach task node from linkedlist");
@@ -515,7 +506,7 @@ public class TaskService {
       Task orgTask = taskRepository.findById(updatedTask.getId()).get();
       TaskNode orgNode = orgTask .getTaskNode();
 
-      String projectId = orgTask .getProject().getId();
+      String projectId = orgTask.getProject().getId();
 
       // When zero node with given project id and status
       if(taskNodeRepository.countByProjectIdAndStatus(projectId, updatedNode.getStatus()) == 0) {
@@ -667,6 +658,12 @@ public class TaskService {
          // Gets the consecutiveness of head and tail nodes
          boolean areHeadAndTailNodesConsecutive = headTask.getId().equals(tailNode.getHeadUUID())
                  && headNode.getTailUUID().equals(tailTask.getId());
+
+         System.out.println(headTask.getId());
+         System.out.println(tailTask.getId());
+
+         System.out.println(tailNode.getHeadUUID());
+         System.out.println(headNode.getTailUUID());
 
          // Validates node against head node and check the consecutiveness
          if(checkIfTaskNodeValid(updatedNode, headNode) && areHeadAndTailNodesConsecutive) {

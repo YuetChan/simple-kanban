@@ -173,6 +173,8 @@ public class TaskController {
    @PatchMapping(value = "/{id}", produces = "application/json")
    public ResponseEntity<String> updateTaskById(@PathVariable(name = "id") String id,
                                                 @RequestBody String reqJsonStr) {
+      System.out.println(reqJsonStr);
+
       JsonObject dataJson = GsonHelper.decodeJsonStrForData(reqJsonStr);
       JsonObject taskJson = dataJson.get("task").getAsJsonObject();
 

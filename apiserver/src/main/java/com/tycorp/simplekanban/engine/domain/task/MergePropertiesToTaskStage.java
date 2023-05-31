@@ -25,8 +25,6 @@ class MergePropertiesToTaskStage implements PersistenceStageI<Task>  {
 
         orgTask.setPriority(task.getPriority());
         orgTask.setSubTaskList(task.getSubTaskList());
-        System.out.println("hello");
-        System.out.println(orgTask.getSubTaskList().size());
 
         orgTask.setDueAt(task.getDueAt());
         orgTask.setAssigneeEmail(task.getAssigneeEmail());

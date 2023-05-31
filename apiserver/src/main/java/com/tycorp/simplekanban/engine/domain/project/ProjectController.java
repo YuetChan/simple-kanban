@@ -1,7 +1,5 @@
 package com.tycorp.simplekanban.engine.domain.project;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -21,10 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import java.io.DataInput;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
