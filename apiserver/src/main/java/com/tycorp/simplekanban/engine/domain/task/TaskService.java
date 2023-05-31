@@ -624,6 +624,7 @@ public class TaskService {
          LOGGER.debug("Head task is not present while tail task is present");
 
          TaskNode tailNode = tailTaskMaybe.get().getTaskNode();
+
          boolean areHeadAndTailNodesConsecutive = tailNode.getHeadUUID().equals(updatedNode.getHeadUUID());
 
          // Validates node against tail node and util uuid
@@ -645,9 +646,8 @@ public class TaskService {
          return false;
       }
 
-      if(headTaskMaybe.isPresent()
-              && tailTaskMaybe.isPresent() && !orgNode.getHeadUUID().equals(updatedNode.getTailUUID())) {
-         LOGGER.debug("Both head and tail tasks are present while head and tail UUIDs are not equal");
+      if(headTaskMaybe.isPresent() && tailTaskMaybe.isPresent() ) {
+         LOGGER.debug("Both head and tail tasks are present");
 
          Task headTask = headTaskMaybe.get();
          Task tailTask = tailTaskMaybe.get();
@@ -658,12 +658,6 @@ public class TaskService {
          // Gets the consecutiveness of head and tail nodes
          boolean areHeadAndTailNodesConsecutive = headTask.getId().equals(tailNode.getHeadUUID())
                  && headNode.getTailUUID().equals(tailTask.getId());
-
-         System.out.println(headTask.getId());
-         System.out.println(tailTask.getId());
-
-         System.out.println(tailNode.getHeadUUID());
-         System.out.println(headNode.getTailUUID());
 
          // Validates node against head node and check the consecutiveness
          if(checkIfTaskNodeValid(updatedNode, headNode) && areHeadAndTailNodesConsecutive) {

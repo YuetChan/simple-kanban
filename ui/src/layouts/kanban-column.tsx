@@ -41,10 +41,10 @@ const KanbanColumn = (props: KanbanColumnProps) => {
 
     useEffect(() => {
         if(tasksCacheState._allTasks) {
-            if(props.category === 'backlog' 
-            || props.category === 'todo' 
-            || props.category === 'inProgress' 
-            || props.category === 'done') {
+            if(props.category === "backlog" 
+            || props.category === "todo" 
+            || props.category === "inProgress" 
+            || props.category === "done") {
                 setTasks(tasksCacheState._allTasks[ props.category ]);
             }
         }
@@ -52,7 +52,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
 
     const [ , drop ] = useDrop(() => {
         return { 
-            accept: 'card',
+            accept: "card",
             
             drop: (item: Task, monitor) => {
                 if(!monitor.didDrop() && props.meta) {
