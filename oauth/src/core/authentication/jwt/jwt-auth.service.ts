@@ -1,51 +1,47 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 
-import { JwtService } from '@nestjs/jwt';
-import { RegisterService } from '../../../registration/register.service';
+import { JwtService } from "@nestjs/jwt";
+import { RegisterService } from "../../../registration/register.service";
 
 @Injectable()
 export class JwtAuthService {
   
-  constructor(
-    private jwtSvc: JwtService,
-    private registerSvc: RegisterService) { }
+    constructor(
+        private jwtSvc: JwtService,
+        private registerSvc: RegisterService) { }
 
-  async getJwt(user, loginType: LoginType) {
-    console.trace('Enter getJwt(user, loginType');
+    async getJwt(user, loginType: LoginType) {
+        if(loginType === LoginType.GOOGLE) {
+            console.debug("Google signin");
 
-    if(loginType === LoginType.GOOGLE) {
-      try {
-        console.debug('Register or get user');
-
-        const registeredUser = await this.registerSvc.register({
-          email: user.email,
-          name: user.name
-        });
-  
-        console.debug('Sign jwt');
+            try {
+                const registeredUser = await this.registerSvc.register({
+                    email: user.email,
+                    name: user.name
+                });
         
-        return this.jwtSvc.sign({ 
-          provider: user.provider,
+                return this.jwtSvc.sign({ 
+                    provider: user.provider,
   
-          id: registeredUser.id,
-          email: registeredUser.email,
-          name: registeredUser.name,
-        }) ;
-      }catch(e) {
-        console.error('Err', e);
-        throw new InternalServerErrorException();
-      }
-    }
+                    id: registeredUser.id,
+                    email: registeredUser.email,
+                    name: registeredUser.name,
+                }) ;
+            }catch(e) {
+                console.error("Err", e);
+                throw new InternalServerErrorException();
+            }
+        }
 
-    return this.jwtSvc.sign({ 
-      provider: 'simple_kanban',
+        return this.jwtSvc.sign({ 
+            provider: "simple_kanban",
 
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    });
+            id: user.id,
+            email: user.email,
+            name: user.name,
+        });
     
-  }
+    }
 }
 
 export enum LoginType { GOOGLE }

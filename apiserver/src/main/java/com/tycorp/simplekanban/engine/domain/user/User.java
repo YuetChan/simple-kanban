@@ -3,7 +3,6 @@ package com.tycorp.simplekanban.engine.domain.user;
 import com.google.gson.annotations.Expose;
 import com.tycorp.simplekanban.engine.domain.user.value.Permission;
 import com.tycorp.simplekanban.engine.domain.project.Project;
-import com.tycorp.simplekanban.engine.domain.user_secret.UserSecret;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,9 +43,6 @@ public class User {
            @AttributeOverride(name = "permissible", column = @Column(name = "permissible"))
    })
    private List<Permission> permissionList =  new ArrayList<>();
-
-   @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   private UserSecret userSecret;
 
    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    private List<Project> projectList = new ArrayList<>();
