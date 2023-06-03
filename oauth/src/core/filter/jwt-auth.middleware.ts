@@ -17,7 +17,7 @@ export class JwtAuthMiddleware implements NestMiddleware {
 			const { email } = this.jwtSvc.decode(jwt) as User;
 
 			req.user = await axios.get(
-				`${process.env.REST_HOST}/users`, {
+				`${process.env.APISERVER_HOST}/users`, {
 					params: {
 						email: email
 					}

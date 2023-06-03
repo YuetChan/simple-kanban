@@ -1,60 +1,60 @@
 @Library('jenkins-common-lib@master') _
 
 pipeline{
-  agent any
-  tools {
-    jdk "openjdk-11"
-    maven "mvn-3.6.3"
-  }
+    agent any
+    tools {
+        jdk "openjdk-11"
+        maven "mvn-3.6.3"
+    }
 
-  environment {
-    DOCKER_REPO = "simple-kanban-apiserver"
-  }
+    environment {
+        DOCKER_REPO = "simple-kanban-apiserver"
+    }
 
-  stages {
-    stage("Checkout") {
-      steps {
-        script {
-          CheckoutGit(
-            "https://github.com/YuetChan/simple-kanban", 
-            env.GIT_BRANCH, 
-            "apiserver")
+    stages {
+        stage("Checkout") {
+            steps {
+                script {
+                    CheckoutGit(
+                        "https://github.com/YuetChan/simple-kanban",
+                        env.GIT_BRANCH,
+                        "apiserver")
+                }
+            }
         }
-      }
-    }
 
-    stage("Post-Checkout") {
-      steps {
-        sh "cp -r ./apiserver/* ./"
-        sh "rm -rf ./apiserver"
-        sh "ls"
-      }
-    }
-
-    stage("Compile") {
-      steps {
-        sh "mvn compile"
-      }
-    }
-
-    stage("Unit test") {
-      steps {
-        sh "mvn test"
-      }
-    }
-
-    stage("Build") {
-      steps {
-        sh "mvn clean package"
-      }
-    }
-
-    stage("Build and push docker image") {
-      steps {
-        script {
-          BuildAndPushDockerImage("tycorp/simple-kanban-apiserver")
+        stage("Post-Checkout") {
+            steps {
+                sh "cp -r ./apiserver/* ./"
+                sh "rm -rf ./apiserver"
+                sh "ls"
+            }
         }
-      }
+
+        stage("Compile") {
+            steps {
+                sh "mvn compile"
+            }
+        }
+
+        stage("Unit test") {
+            steps {
+                sh "mvn test"
+            }
+        }
+
+        stage("Build") {
+            steps {
+                sh "mvn clean package"
+            }
+        }
+
+        stage("Build and push docker image") {
+            steps {
+                script {
+                    BuildAndPushDockerImage("tycorp/simple-kanban-apiserver")
+                }
+            }
+        }
     }
-  }
 }

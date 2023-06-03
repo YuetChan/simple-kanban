@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
-import { RegistrationModule } from 'src/registration/registration.module';
+import { RegistrationModule } from '../../../registration/registration.module';
 
 import { JwtAuthService } from './jwt-auth.service';
 

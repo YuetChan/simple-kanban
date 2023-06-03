@@ -9,8 +9,9 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, "google") {
 
     constructor() {
         super({
-            clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            
             callbackURL: process.env.GOOGLE_REDIRECT,
             scope: [ "email", "profile" ]
         });
@@ -26,9 +27,10 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, "google") {
         return {
             providerId: id,
             provider: "google",
-      
+    
             email: emails[0].value,
             name: name.givenName + " " + name.familyName
         }
     }
+
 }
