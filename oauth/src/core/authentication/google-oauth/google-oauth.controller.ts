@@ -18,6 +18,6 @@ export class GoogleOauthController {
     @UseGuards(GoogleOauthGuard)
     async googleAuthRedirect(@Req() req, @Res() res) { 
         res.cookie("jwt", await this.jwtAuthSvc.getJwt(req.user, LoginType.GOOGLE));
-        res.redirect(302, `${process.env.UI_HOST}`);
+        res.redirect(302, `${req.query.redirectUrl}`);
     }
 }

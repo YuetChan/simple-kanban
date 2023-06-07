@@ -10,10 +10,4 @@
   <root name="com.tycorp.simplekanban" level="INFO" additivity="false">
     <appender-ref ref="STDOUT" />
   </root>
-<!--  <logger name="com.tycorp.simplekanban" level="TRACE" additivity="false">-->
-<!--    <appender-ref ref="STDOUT"/>-->
-<!--  </logger>-->
-<!--  <logger name="com.tycorp.simplekanban" level="DEBUG" additivity="false">-->
-<!--    <appender-ref ref="STDOUT"/>-->
-<!--  </logger>-->
 </configuration>

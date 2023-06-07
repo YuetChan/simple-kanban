@@ -1,4 +1,4 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -8,18 +8,12 @@ import { useCookies } from "react-cookie";
 
 import "./App.css";
 
-import { createTask } from "./features/task/services/tasks-service";
 import { createProject, deleteProject, getProjectById, searchProjectsByNotUserEmail, searchProjectsByUserEmail, searchShareProjectsByUserEmail } from "./features/project/services/projects-service";
 
-import { redirectToLoginPage } from "./services/auth.services";
-
 import { Project } from "./types/Project";
-import { Task } from "./types/Task";
 
 import KanbanTable from "./layouts/kanban-table";
 import KanbanDrawer from "./layouts/kanban-drawer";
-import TaskAddButton from "./features/task/components/task-add-button";
-import TaskCreateDialog from "./features/task/components/task-create-dialog";
 import ProjectCreateDialog from "./features/project/components/project-create-dialog";
 import ProjectDeleteDialog from "./features/project/components/project-delete-dialog";
 

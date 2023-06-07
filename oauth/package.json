@@ -9,12 +9,10 @@
         "prebuild": "rimraf dist",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
-        "start:local": "env-cmd -f .env.local nest start --watch",
-        "start:dev": "env-cmd -f .env.dev nest start --watch",
-        "start:prod": "env-cmd -f .env.prod nest start --watch",
-        "build:local": "webpack --env env=local --mode development",
-        "build:dev": "webpack --env env=dev --mode development",
-        "build:prod": "webpack --env env=prod --mode production",
+
+        "start:local": "env-cmd -f .env nest start --watch",
+        "build:deploy": "webpack --mode production",
+
         "test": "jest",
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",

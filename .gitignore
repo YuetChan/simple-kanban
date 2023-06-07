@@ -24,7 +24,8 @@
 
 /oauth/dist*
 
-/ui/.build
+/ui/build
+/ui/.env*
 
 # compiled output
 /ui/dist
@@ -109,3 +110,5 @@
 
 ### VS Code ###
 /apiserver/.vscode/
+
+/apiserver/.env*
