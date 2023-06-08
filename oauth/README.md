@@ -1,18 +1,40 @@
-# Simple Kanban Oauth
+## Running the OAuth Api Locally
 
-Simple Kanban Oauth is an Oauth service of Simple Kanban built in Nest.js.
+To run the oauth api locally, follow these steps:
 
-## Description
+1. Clone the repository: `git clone <repository-url>`
+2. Navigate to the project directory: `cd oauth`
+3. Install the dependencies: `npm install`
+4. Update the environment variables in the `.env` file located in the `/oauth` directory
+    ```
+    NODE_ENV=local
 
-Simple Kanban Oauth provides Oauth APIs to implement __social media sign in__ feature in [simple-kanban-user-guide](https://github.com/YuetChan/simple-kanban-user-guide "simple-kanban-user-guide").
+    BACKEND_URL=<your-backend-url>
 
-## User guide
-Please refer to [simple-kanban-user-guide](https://github.com/YuetChan/simple-kanban-user-guide "simple-kanban-user-guide") for detail documentation.
+    GOOGLE_CLIENT_SECRET=<your-client-secret>
+    GOOGLE_CLIENT_ID=<your-client-id>
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+    GOOGLE_REDIRECT=<your-google-redirect>
 
-Please make sure to update tests as appropriate.
+    JWT_SECRET=<your-jwt-secret>
+    ```
 
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+5. Start the development server: `npm run start:local`
+
+6. Access the oauth api at`http://localhost:3200`
+
+### Deploying the OAuth Api
+To deploy the oauth API, follow these steps:
+
+1. Build the project:
+    ```
+    npm run build:deploy
+    ```
+2. Build the Docker image:
+    ```
+    docker build -t <image-name> .
+    ```
+3. Run the Docker container:
+    ```
+    docker run -d -p 3200:3200 --name <container-name> <image-name> -e NODE_ENV=<your-env>  -e BACKEND_URL=<your-backend-url> -e GOOGLE_CLIENT_SECRET=<your-google-client-secret> -e  GOOGLE_CLIENT_ID=<your-google-client-id> -e GOOGLE_REDIRECT=<your-google-redirect-url> -e JWT_SECRET=<your-jwt-secret>
+    ```

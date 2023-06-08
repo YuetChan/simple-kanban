@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const url = `${process.env.REACT_APP_APISERVER_URL}/users`;
+const url = `${process.env.REACT_APP_backend_URL}/users`;
 
 const getUserSecretById = (id: string) => {
     return axios.get(`${url}/${id}/userSecret`).then(res => {

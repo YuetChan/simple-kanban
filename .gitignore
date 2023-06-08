@@ -67,48 +67,48 @@
 /ui/.env
 
 ## Other ###
-/apiserver/HELP.md
+/backend/HELP.md
 
 ### Maven build ###
-/apiserver/target/
-/apiserver/!.mvn/wrapper/maven-wrapper.jar
-/apiserver/!**/src/main/**/target/
-/apiserver/!**/src/test/**/target/
+/backend/target/
+/backend/!.mvn/wrapper/maven-wrapper.jar
+/backend/!**/src/main/**/target/
+/backend/!**/src/test/**/target/
 
-/apiserver/dependencies
-/apiserver/spring-boot-loader
-/apiserver/snapshot-dependencies
-/apiserver/application
+/backend/dependencies
+/backend/spring-boot-loader
+/backend/snapshot-dependencies
+/backend/application
 
 ### Properties ###
-/apiserver/*.properties
+/backend/*.properties
 
 ### STS ###
-/apiserver/.apt_generated
-/apiserver/.classpath
-/apiserver/.factorypath
-/apiserver/.project
-/apiserver/.settings
-/apiserver/.springBeans
-/apiserver/.sts4-cache
+/backend/.apt_generated
+/backend/.classpath
+/backend/.factorypath
+/backend/.project
+/backend/.settings
+/backend/.springBeans
+/backend/.sts4-cache
 
 ### IntelliJ IDEA ###
-/apiserver/.idea
-/apiserver/*.iws
-/apiserver/*.iml
-/apiserver/*.ipr
+/backend/.idea
+/backend/*.iws
+/backend/*.iml
+/backend/*.ipr
 
 ### NetBeans ###
-/apiserver/nbproject/private/
-/apiserver/nbbuild/
-/apiserver/dist/
-/apiserver/nbdist/
-/apiserver/.nb-gradle/
-/apiserver/build/
-/apiserver/!**/src/main/**/build/
-/apiserver/!**/src/test/**/build/
+/backend/nbproject/private/
+/backend/nbbuild/
+/backend/dist/
+/backend/nbdist/
+/backend/.nb-gradle/
+/backend/build/
+/backend/!**/src/main/**/build/
+/backend/!**/src/test/**/build/
 
 ### VS Code ###
-/apiserver/.vscode/
+/backend/.vscode/
 
-/apiserver/.env*
+/backend/.env*

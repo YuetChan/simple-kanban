@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const url = `${process.env.REACT_APP_APISERVER_URL}/crud-events/value`;
+const url = `${process.env.REACT_APP_backend_URL}/crud-events/value`;
 
 const getCrudEventsByProjectId = (projectId: string) => {
     return axios.get(`${url}/${projectId}`, {}).then(res => {

@@ -1,7 +1,7 @@
 import axios from "axios"
 import { Task } from "../../../types/Task";
 
-const url = `${process.env.REACT_APP_APISERVER_URL}/tasks`;
+const url = `${process.env.REACT_APP_backend_URL}/tasks`;
 
 const createTask = (task: Task) => {
     return axios.post(`${url}`, {

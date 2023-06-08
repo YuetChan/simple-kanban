@@ -1,25 +1,27 @@
-# Simple Kanban
+## Running the Ui app Locally
 
-This is a sefl host Kanban application that allows you to manage tasks using a Kanban board. It provides a simple and intuitive interface for organizing your tasks and tracking their progress.
+To run the ui app locally, follow these steps:
 
-## Features
+1. Clone the repository: `git clone <repository-url>`
+2. Navigate to the project directory: `cd ui`
+3. Install the dependencies: `npm install`
+4. Update the environment variables in the `.env` file located in the `ui` directory
+    ```
+    NODE_ENV=local
 
-The Kanban application includes the following features:
+    REACT_APP_BACKEND_URL=<your-backend-url>
+    REACT_APP_OAUTH_URL=<your-oauth-url>
+    ```
+5. Start the development server: `npm run start:local`
+6. Open your browser and navigate to `http://localhost:3000`
 
-| Feature              | Description                                                |
-| -------------------- | ---------------------------------------------------------- |
-| Kanban Board         | Organize tasks into columns representing different stages  |
-| Task Cards           | Create cards for individual tasks with title and description |
-| Drag and Drop        | Easily move tasks between columns by dragging and dropping |
-| Task Prioritization  | Assign priority levels to tasks (Low, Medium, High)        |
-| Subtask Lists        | Create subtask lists within each task card for detailed tracking |
-| Task Details         | View and edit task details including title, description, and more |
-| Task Assignees       | Assign tasks to specific team members                     |
-| Due Dates            | Set due dates for tasks and get reminders                 |
-| Comments             | Coming soon ... |
-| Filtering            | Filter tasks based on criteria such as priority or assignee |
+### Deploying the Ui App
+To deploy the Ui app, follow these steps:
 
+1. Update the environment variables in the `.env.deploy` file located in the `/ui` directory to match your deployment environment.    
 
-## Installation
-
-
+2. Build the project:
+    ```
+    npm run build:deploy
+    ```
+3. Upload the `/build` folder to S3

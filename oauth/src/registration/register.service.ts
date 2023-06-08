@@ -14,7 +14,7 @@ export class RegisterService {
   	}
 
 	async getOrCreateUser(user: User) {
-		return axios.get(`${process.env.APISERVER_URL}/users`, { 
+		return axios.get(`${process.env.backend_URL}/users`, { 
 			params: { 
 				email: user.email 
 			} 
@@ -46,7 +46,7 @@ export class RegisterService {
 	}
 
 	async getRoleById(id): Promise<string> {
-		return await axios.get(`${process.env.APISERVER_URL}/users/${id}/role`).then(res => {
+		return await axios.get(`${process.env.backend_URL}/users/${id}/role`).then(res => {
 			if(res.status === HttpStatus.OK) { 
 				return res.data.data.role; 
 			}
@@ -59,7 +59,7 @@ export class RegisterService {
 	}
 
 	async createUser(user): Promise<User> {
-		return await axios.post<{ data: { user: any } }>(`${process.env.APISERVER_URL}/users`, {
+		return await axios.post<{ data: { user: any } }>(`${process.env.backend_URL}/users`, {
 			data: {
 				user: {
 					email: user.email,
