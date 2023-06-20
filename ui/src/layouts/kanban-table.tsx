@@ -434,7 +434,7 @@ const KanbanTable = (props: KanbanTableProps) => {
                     dispatch(updateActiveProject(res));
                 });
             }).catch(err => {
-                console.log(err);
+                console.error(err);
 
                 alert("Opps, failed to add collaborator")
             });
@@ -474,7 +474,7 @@ const KanbanTable = (props: KanbanTableProps) => {
                     dispatch(updateActiveProject(res));
                 })
             }).catch(err => {
-                console.log(err);
+                console.error(err);
 
                 alert("Opps, failed to remove collaborator")
             });
@@ -499,7 +499,7 @@ const KanbanTable = (props: KanbanTableProps) => {
                     dispatch(updateActiveProject(res));
                 })
             }).catch(err => {
-                console.log(err);
+                console.error(err);
 
                 alert("Opps, failed to update project name")
             });
@@ -522,7 +522,7 @@ const KanbanTable = (props: KanbanTableProps) => {
                     dispatch(updateActiveProject(res));
                 })
             }).catch(err => {
-                console.log(err);
+                console.error(err);
 
                 alert("Opps, failed to update project description")
             });
@@ -650,7 +650,7 @@ const KanbanTable = (props: KanbanTableProps) => {
 
                 dispatch(updateActiveProject(undefined));
             }).catch(err => {
-                console.log(err);
+                console.error(err);
 
                 alert("Opps, failed to remove yourself from project")
             });

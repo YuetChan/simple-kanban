@@ -44,8 +44,8 @@ describe('ProjectDeleteDialog', () => {
         );
 
         expect(screen.getByLabelText("Enter DELETE")).toBeInTheDocument(); 
-        expect(screen.getByRole("button", { name: "Cancel"})).toBeInTheDocument(); 
-        expect(screen.getByRole("button", { name: "Delete"})).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument(); 
+        expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
     });
 
     it("Entering DELETE should enable Delete button", () => {
@@ -59,11 +59,11 @@ describe('ProjectDeleteDialog', () => {
 
         fireEvent.change(deleteTextfield, { target: { value: "DELETE" } });    
         
-        const deleteButton = screen.getByRole("button", { name: "Delete"})    
+        const deleteButton = screen.getByRole("button", { name: "Delete" })    
 
         fireEvent.click(deleteButton);
 
-        expect(props.handleOnDelete).toBeCalledTimes(1) 
+        expect(props.handleOnDelete).toBeCalledTimes(1)  
     });
 
     it("Delete button should be disable by default", () => {

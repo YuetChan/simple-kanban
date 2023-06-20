@@ -13,13 +13,14 @@ const ProjectWithOwnerIcon = (props: ProjectWithOwnerIconProps) => {
         <Stack 
             direction="row" 
             justifyContent="space-between"
-            
+            alignItems="center"
+
             style={{
                 width: "100%",
-                padding: "2px"
+                padding: "2px",
             }}>
             <div>
-                { truncate(props.projectName, 18) }
+                { truncate(props.projectName, 16) }
             </div>
 
             <div data-testid="project-owner-avatar">

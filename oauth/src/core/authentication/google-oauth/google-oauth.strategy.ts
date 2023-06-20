@@ -13,6 +13,7 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, "google") {
             clientID: process.env.GOOGLE_CLIENT_ID,
             
             callbackURL: process.env.GOOGLE_REDIRECT,
+
             scope: [ "email", "profile" ]
         });
     }

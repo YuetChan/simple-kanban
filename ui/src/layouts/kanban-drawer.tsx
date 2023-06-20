@@ -167,7 +167,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
             }}>
                 <ListItem key={ "kanban-drawer-icon" }>
                     <div style={{ 
-                        width: "210px"
+                        width: "210px",
+                        transform: "translateY(-4px)",
                         }}>
                         <img 
                             src="https://i.ibb.co/NjWwY0t/Screenshot-from-2023-05-17-19-03-10.png" 
@@ -184,10 +185,13 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                         alignItems="center"  
                         
                         sx={{ 
-                            width: "100%" 
+                            width: "100%",
+                            paddingLeft: "2px"
                         }}>
                         <div style={{
-                            color: "rgb(47, 47, 47)" 
+                            color: "rgb(47, 47, 47)" ,
+                            fontFamily:"'Caveat', cursive",
+                            fontSize: "24px"
                             }}>
                             <b>Projects: </b>
                         </div>
@@ -198,9 +202,16 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </Stack>
                 </ListItem>
 
-               <ListItem key={ "kanban-drawer-yours-label" }>
+               <ListItem 
+                key={ "kanban-drawer-yours-label" }
+                sx={{
+                    display: "flex",
+                    justifyContent: "center"
+                }}>
                     <div style={{
-                        color: "rgb(47, 47, 47)" 
+                        color: "rgb(47, 47, 47)",
+                        fontFamily:"'Caveat', cursive",
+                        fontSize: "24px",
                         }}>
                         <b>Yours: </b>
                     </div>  
@@ -209,7 +220,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                <ListItem 
                     key={ "kanban-drawer-yours-list" }
                     sx={{
-                        marginBottom: "12px"
+                        marginBottom: "12px",
+                        padding: "0px 0px 0px 16px",
                     }}>
                     <List 
                         ref={ projectsCacheState._allProjects.filter(project => project.name === projectsCacheState._activeProject?.name).length > 0
@@ -219,16 +231,17 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
                         sx={{ 
                             width: "100%",
-                            maxHeight: "180px",
+                            maxHeight: "160px",
                             overflow: "auto",
-                            background: "white",
-                            padding: "16px 0px"
+                            padding: "8px 0px",
                         }}>
                         <ListItem
                             key={ "kanban-drawer-yours-list-placeholder" }
 
                             sx={{ 
                                 padding: "0px 16px",
+                                fontFamily:"'Caveat', cursive",
+                                fontSize: "24px",
                                 display: projectsCacheState._allProjects.length === 0
                                 ? "block"
                                 : "none" }}>
@@ -239,7 +252,12 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                 (
                                     <ListItem 
                                         key={ "kanban-drawer-yours-" + project.name }
-                                        sx={{  padding: "0px" }}>
+                                        sx={{  
+                                            padding: "0px" ,
+                                            fontFamily:"'Caveat', cursive",
+                                            fontSize: "22px",
+                                            
+                                            }}>
                                         <ListItemButton  
                                             ref={ 
                                                 projectsCacheState._activeProject?.name ===  project.name
@@ -250,9 +268,13 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                             onClick={ (e: any) => handleOnProjectChange(project.id) }
                                         
                                             sx={{ 
-                                                paddingTop: "0px", 
-                                                paddingBottom: "0px",
-                                                background: projectsCacheState._activeProject?.name ===  project.name? "rgba(255, 165, 0, 0.75)": null,
+                                                padding: "8px 8px 8px 28px",
+
+                                                borderTopLeftRadius: "45px",
+                                                borderBottomLeftRadius: "45px",
+
+                                                background: projectsCacheState._activeProject?.name ===  project.name? "white": null,
+                                                color: "black"
                                                 }}>
 
                                             <ProjectWithOwnerIcon 
@@ -267,9 +289,16 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </List>
                 </ListItem> 
 
-                <ListItem key={ "kanban-drawer-your-are-in-label" }>
+                <ListItem 
+                    key={ "kanban-drawer-your-are-in-label" }
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center"
+                    }}>
                     <div style={{
-                        color: "rgb(47, 47, 47)" 
+                        color: "rgb(47, 47, 47)" ,
+                        fontFamily:"'Caveat', cursive",
+                        fontSize: "24px"
                         }}>
                         <b>You are in: </b>
                     </div>  
@@ -278,7 +307,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                 <ListItem 
                     key={ "kanban-drawer-your-are-in-list" }
                     sx={{
-                        marginBottom: "12px"
+                        marginBottom: "12px",
+                        padding: "0px 0px 0px 16px",
                     }}>
                     <List 
                         ref={ 
@@ -289,15 +319,16 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
                         sx={{ 
                             width: "100%",
-                            maxHeight: "180px",
+                            maxHeight: "160px",
                             overflow: "auto",
-                            background: "white",
                             padding: "16px 0px"
                         }}>
                         <ListItem 
                             key={ "kanban-drawer-your-are-in-placeholder" }
                             sx={{ 
                             padding: "0px 16px",
+                            fontFamily:"'Caveat', cursive",
+                            fontSize: "24px",
                             display: projectsCacheState._allShareProjects.length === 0
                             ? "block"
                             : "none" }}>
@@ -307,17 +338,23 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                         {
                             projectsCacheState._allShareProjects.map(project => 
                                 (
-                                    <ListItem key={ "kanban-drawer-your-are-in-" + project.name }>
+                                    <ListItem 
+                                        key={ "kanban-drawer-your-are-in-" + project.name }
+                                        >
                                         <ListItemButton  
                                             ref={ projectsCacheState._activeProject?.name ===  project.name? activeProjectRef: null }
 
                                             onClick={ (e: any) => handleOnProjectChange(project.id) }
                                         
                                             sx={{ 
-                                                paddingTop: "0px", 
-                                                paddingBottom: "0px",
-                                                background: projectsCacheState._activeProject?.name ===  project.name? "rgba(255, 165, 0, 0.75)": null,
-                                                borderRadius: "2px"
+                                                paddingTop: "8px", 
+                                                paddingBottom: "8px",
+
+                                                borderTopLeftRadius: "45px",
+                                                borderBottomLeftRadius: "45px",
+
+                                                background: projectsCacheState._activeProject?.name ===  project.name? "white": null,
+                                                color: "black"
                                                 }}>
 
                                             <ProjectWithOwnerIcon 
@@ -332,9 +369,18 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </List>
                 </ListItem>         
 
-                <ListItem key={ "kanban-drawer-your-are-not-in-label" }>
+                <ListItem 
+                    key={ "kanban-drawer-your-are-not-in-label" }
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center"
+                    }}>
                     <div style={{
-                        color: "rgb(47, 47, 47)" 
+                        color: "rgb(47, 47, 47)",
+                        fontFamily:"'Caveat', cursive",
+                        fontSize: "24px",
+
+
                         }}>
                         <b>You are not in: </b>
                     </div>  
@@ -343,7 +389,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                 <ListItem 
                     key={ "kanban-drawer-your-are-not-in-list" }
                     sx={{
-                        marginBottom: "12px"
+                        marginBottom: "12px",
+                        padding: "0px 0px 0px 16px",
                     }}>
                     <List 
                         ref={ 
@@ -354,15 +401,16 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
 
                         sx={{ 
                             width: "100%",
-                            maxHeight: "180px",
+                            maxHeight: "160px",
                             overflow: "auto",
-                            background: "white",
                             padding: "16px 0px"
                         }}>
                         <ListItem 
                             key={ "kanban-drawer-your-are-not-in-placeholder" }
                             sx={{ 
                                 padding: "0px 16px",
+                                fontFamily:"'Caveat', cursive",
+                                fontSize: "24px",
                                 display: projectsCacheState._allNotProjects.length === 0
                                 ? "block"
                                 : "none" }}>
@@ -379,10 +427,14 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                             onClick={ (e: any) => handleOnOrgProjectClick(project.id) }
                                         
                                             sx={{ 
-                                                paddingTop: "0px", 
-                                                paddingBottom: "0px",
-                                                background: projectsCacheState._activeProject?.name ===  project.name? "rgba(255, 165, 0, 0.75)": null,
-                                                borderRadius: "2px"
+                                                paddingTop: "8px", 
+                                                paddingBottom: "8px",
+
+                                                borderTopLeftRadius: "45px",
+                                                borderBottomLeftRadius: "45px",
+
+                                                background: projectsCacheState._activeProject?.name ===  project.name? "white": null,
+                                                color: "black"
                                                 }}>
 
                                                 

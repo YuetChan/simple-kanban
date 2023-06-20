@@ -325,6 +325,10 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
         dispatch(dueDateUpdate(new Date(date)));
     }
 
+    const getDueAtInDate = (dueAt: any) => {
+        return new Date(dueAt);
+    }
+
     // ------------------ Assignee ------------------
     const [ allAssignees, setAllAssignees ] = React.useState<Array<string>>([]);
 
@@ -401,13 +405,12 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                                 <div style={{ fontSize: "13px" }}>Due date</div>
 
                                 <DatePicker 
-                                    selected={ datesState._dueDate } 
+                                    selected={ getDueAtInDate(datesState._dueDate) } 
                                     onChange={ (date: any) => handleOnDueDateChange(date) } 
                                     />
                             </Stack>
                         </Stack>
   
-              
                         <TaskPrioritySelect
                             value={ "low" }
 

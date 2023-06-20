@@ -16,35 +16,18 @@ import { store } from "./store";
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-
-const isDev = process.env.NODE_ENV === 'development';
-const isProd = process.env.NODE_ENV === 'production';
-
 root.render(
-  <React.StrictMode>
-    {
-       (
-        <Provider store={ store }>
-          <DndProvider backend={ HTML5Backend }>
-            <App />
-          </DndProvider>
-        </Provider>
-  
-      )
-    }
-
-    {/* {
-      isProd? (
-        <Provider store={ store }>
-        <DndProvider backend={ HTML5Backend }>
-          <App />
-        </DndProvider>
-        </Provider>
-      ): null
-
-    } */}
-
-  </React.StrictMode>
+    <React.StrictMode>
+        {
+            (
+                <Provider store={ store }>
+                    <DndProvider backend={ HTML5Backend }>
+                        <App />
+                    </DndProvider>
+                </Provider>
+            )
+        }
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

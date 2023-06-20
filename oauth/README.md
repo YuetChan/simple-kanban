@@ -10,6 +10,7 @@ To run the oauth api locally, follow these steps:
     NODE_ENV=local
 
     BACKEND_URL=<your-backend-url>
+    UI_URL=<your-ui-url>
 
     GOOGLE_CLIENT_SECRET=<your-client-secret>
     GOOGLE_CLIENT_ID=<your-client-id>

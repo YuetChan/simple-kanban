@@ -25,19 +25,60 @@ import { actions as usersCacheActions } from "./stores/user-cache-slice";
 import { actions as projectsCacheActions } from "./stores/projects-cache-slice";
 import { actions as projectDeleteDialogActions } from "./stores/project-delete-dialog-slice";
 import { actions as projectCreateDialogActions } from "./stores/project-create-dialog-slice";
-import { actions as kanbanTableActions } from "./stores/kanban-table-slice";
 
 import KanbanOauthPage from "./layouts/kanban-oauth-page";
 import KanbanEmptyPage from "./layouts/kanban-empty-page";
+
 import CrudEventsPolling from "./features/crud-event/components/crud-events-polling";
 import KanbanEventNotifier from "./layouts/kanban-event-notifier";
+
+import { getUserByEmail } from "./features/user/services/users-service";
 
 function App() {
     // ------------------ Dispatch ------------------
     const dispatch = useDispatch();
 
     // ------------------ Cookies -----------------
-    const [ cookies, removeCookie ] = useCookies(["jwt"]);
+    const [ cookies, setCookie ] = useCookies(["jwt"]);
+    
+    // ------------------ Query param ------------------
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+
+        const jwt = searchParams.get("jwt");
+        
+        if(jwt !== null && cookies.jwt !== null && cookies.jwt === jwt) {
+            const url = new URL(window.location.href);
+
+            searchParams.delete("jwt");
+            
+            const newUrl = `${url.origin}${url.pathname}?${searchParams.toString()}`;
+    
+            window.history.replaceState(null, "", newUrl);
+        }else if(jwt !== null && cookies.jwt !== null && cookies.jwt !== jwt) {
+            const url = new URL(window.location.href);
+
+            searchParams.delete("jwt");
+            
+            const newUrl = `${url.origin}${url.pathname}?${searchParams.toString()}`;
+    
+            window.history.replaceState(null, "", newUrl);
+            setCookie("jwt", jwt);
+        }else if(jwt !== null && cookies.jwt === null) {
+            const url = new URL(window.location.href);
+
+            searchParams.delete("jwt");
+            
+            const newUrl = `${url.origin}${url.pathname}?${searchParams.toString()}`;
+    
+            window.history.replaceState(null, "", newUrl);
+            setCookie("jwt", jwt);
+        }else if(jwt === null && cookies.jwt !== null) { 
+
+        }else if(jwt === null && cookies.jwt === null) {
+            setCookie("jwt", "");
+        }
+    }, []);
 
     // ------------------ Projects cache ------------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
@@ -77,7 +118,7 @@ function App() {
                     dispatch(hideProjectDeleteDialog())
                 });
             }).catch(err => {
-                console.log(err);
+                console.error(err);
             });
         }
     }
@@ -99,7 +140,7 @@ function App() {
                 dispatch(updateProjects([ ... projectsCacheState._allProjects, res ]));
                 dispatch(updateActiveProject(res));
             }).catch(err => {
-                console.log(err);
+                console.error(err);
             });
 
             dispatch(hideProjectCreateDialog());
@@ -110,17 +151,14 @@ function App() {
         dispatch(hideProjectCreateDialog());
     }
 
-    // ------------------ Table ------------------
-    const { refreshTable } = kanbanTableActions;
 
     // ------------------ Empty page ------------------
     const handleOnCreateProjectClick = () => {
-        dispatch(showProjectCreateDialog())
+        dispatch(showProjectCreateDialog());
     }
 
     // ------------------ Ui events ------------------
-
-
+    // In progress ...
 
     // ------------------ Auth ------------------
     const [ authed, setAuthed ] = useState(false);
@@ -132,19 +170,19 @@ function App() {
             searchProjectsByUserEmail(loginedUserEmail, 0).then(res => {
                 dispatch(updateProjects(res.projects));
             }).catch(err => {
-                console.log(err);
+                console.error(err);
             });
 
             searchProjectsByNotUserEmail(loginedUserEmail, 0).then(res => {
                 dispatch(updateNotProjects(res.projects));
             }).catch(err => {
-                console.log(err);
+                console.error(err);
             });
 
             searchShareProjectsByUserEmail(loginedUserEmail, 0).then(res => {
                 dispatch(updateShareProjects(res.projects));
             }).catch(err => {
-                console.log(err);
+                console.error(err);
             });
         } 
     }, [ authed ]);
@@ -159,7 +197,12 @@ function App() {
                 const decoded = jwt_decode<{ email: string }>(cookies.jwt.toString());
                 
                 if(decoded.email) {
-                    dispatch(updateLoginedUserEmail(decoded.email));
+                    getUserByEmail(decoded.email).then(res => {
+                        dispatch(updateLoginedUserEmail(decoded.email));
+                    }).catch(err => {
+                        console.error(err);
+                        dispatch(updateLoginedUserEmail(""));
+                    })
                 }else {
                     dispatch(updateLoginedUserEmail(""));
                 }
@@ -169,7 +212,7 @@ function App() {
         }catch {
             dispatch(updateLoginedUserEmail(""));
         }
-    }, []);
+    }, [ cookies ]);
 
     return (
         <div className="App" >

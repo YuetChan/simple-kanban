@@ -126,7 +126,7 @@ const KanbanCard = (props: KanbanCardProps) => {
         updateTask(task).then(res => {
             dispatch(refreshTable());
         }).catch(err => {
-            console.log(err);
+            console.error(err);
         });
     }
 

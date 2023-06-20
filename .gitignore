@@ -1,6 +1,4 @@
 /oauth/.env*
-
-# dependencies
 /oauth/node_modules
 /oauth/.pnp
 /oauth.pnp.js
@@ -27,11 +25,10 @@
 /ui/build
 /ui/.env*
 
-# compiled output
 /ui/dist
 /ui/node_modules
 
-# Logs
+# logs
 /ui/logs
 /ui/*.log
 /ui/npm-debug.log*
@@ -40,14 +37,14 @@
 /ui/yarn-error.log*
 /ui/lerna-debug.log*
 
-# OS
+# os
 /ui/.DS_Store
 
-# Tests
+# testing
 /ui/coverage
 /ui/.nyc_output
 
-# IDEs and editors
+# ides and editors
 /ui/.idea
 /ui/.project
 /ui/.classpath
@@ -55,8 +52,6 @@
 /ui/*.launch
 /ui/.settings/
 /ui/*.sublime-workspace
-
-# IDE - VSCode
 /ui/.vscode/*
 /ui/!.vscode/settings.json
 /ui/!.vscode/tasks.json
@@ -112,3 +107,6 @@
 /backend/.vscode/
 
 /backend/.env*
+
+# aws
+/*.pem

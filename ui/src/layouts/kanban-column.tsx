@@ -116,7 +116,7 @@ const KanbanColumn = (props: KanbanColumnProps) => {
         updateTask(task).then(res => {
             dispatch(refreshTable());
         }).catch(err => {
-            console.log(err);
+            console.error(err);
         });
     }
 

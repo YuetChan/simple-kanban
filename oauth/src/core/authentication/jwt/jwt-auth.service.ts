@@ -19,7 +19,7 @@ export class JwtAuthService {
                     email: user.email,
                     name: user.name
                 });
-        
+
                 return this.jwtSvc.sign({ 
                     provider: user.provider,
   

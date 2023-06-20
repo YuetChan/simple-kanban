@@ -24,6 +24,8 @@ export class RegisterService {
 			const user = res.data.data.user;
 			const role = await this.getRoleById(user.id)
 
+			console.log(role)
+
 			return {
 				id: user.id,
 
@@ -38,6 +40,7 @@ export class RegisterService {
 			
 			return {
 				id: _user.id,
+				
 				email: user.email,
 				name: user.name,
 				role: "user"
