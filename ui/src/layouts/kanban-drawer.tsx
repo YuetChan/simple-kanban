@@ -165,7 +165,11 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
             <List sx={{
                 display: minimized? "none": null
             }}>
-                <ListItem key={ "kanban-drawer-icon" }>
+                <ListItem 
+                    key={ "kanban-drawer-icon" }
+                    sx={{
+                        padding: "2px 16px"
+                    }}>
                     <div style={{ 
                         width: "210px",
                         transform: "translateY(-4px)",
@@ -178,7 +182,11 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </div>
                 </ListItem>
 
-                <ListItem key={ "kanban-drawer-project-select" }>
+                <ListItem 
+                    key={ "kanban-drawer-project-select" }
+                    sx={{
+                        padding: "2px 0px 2px 24px"
+                    }}>
                     <Stack 
                         direction="row" 
                         justifyContent="space-between" 
@@ -202,12 +210,12 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     </Stack>
                 </ListItem>
 
-               <ListItem 
-                key={ "kanban-drawer-yours-label" }
-                sx={{
-                    display: "flex",
-                    justifyContent: "center"
-                }}>
+                <ListItem 
+                    key={ "kanban-drawer-yours-label" }
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center"
+                    }}>
                     <div style={{
                         color: "rgb(47, 47, 47)",
                         fontFamily:"'Caveat', cursive",
