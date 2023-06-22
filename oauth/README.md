@@ -21,7 +21,6 @@ To run the oauth api locally, follow these steps:
     ```
 
 5. Start the development server: `npm run start:local`
-
 6. Access the oauth api at`http://localhost:3200`
 
 ### Deploying the OAuth Api
