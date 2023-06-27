@@ -88,6 +88,7 @@ const UserListMenu = (props: UserListMenuProps) => {
                                         if(collaboratorEmail !== ownerEmail) {
                                             return (
                                                 <FormControlLabel
+                                                    key={`collaborator-menu-item-${collaboratorEmail}`}
                                                     control={
                                                         <Checkbox 
                                                             checked={ props.userCheckMp?.get(collaboratorEmail) }
@@ -101,7 +102,7 @@ const UserListMenu = (props: UserListMenuProps) => {
                                                                 } 
                                                             }} />}
                                                         style={{ fontSize: "12px" }}
-                                                        label={ ownerEmail }
+                                                        label={ collaboratorEmail }
                                                         />)
                                         }
                                     })

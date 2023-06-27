@@ -33,6 +33,8 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     // ------------------ User cache --------------
     const { updateLoginedUserEmail } = usersCacheActions;
 
+    const userCacheState = useSelector((state: AppState) => state.UserCache);
+
     // ------------------ Projects cache --------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
@@ -60,20 +62,29 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
         scrollToActiveProject();
     }, [ projectsCacheState._activeProject ])
 
-    const handleOnProjectChange = (projectId: string) => {
+    const handleOnProjectSelect = (projectId: string) => {
         const projects = projectsCacheState._allProjects.filter(project => {
             return project.id === projectId
         });
 
-        dispatch(updateActiveProject(projects.length > 0 ? projects[0] : undefined));
+        dispatch(updateActiveProject(projects.length > 0? projects[0]: undefined));
     };
 
-    const handleOnOrgProjectClick = (projectId: string) => {
-        const projects = projectsCacheState._allProjects.filter(project => {
+    const handleOnShareProjectSelect = (projectId: string) => {
+        const projects = projectsCacheState._allShareProjects.filter(project => {
             return project.id === projectId
         });
 
-        alert(`Name: ${projects[0].name} \n Owner email: ${projects[0].userEmail}` );
+        dispatch(updateActiveProject(projects.length > 0 ? projects[0] : undefined)); 
+
+    }
+
+    const handleOnNotProjectClick = (projectId: string) => {
+        const projects = projectsCacheState._allNotProjects.filter(project => {
+            return project.id === projectId
+        });
+
+        alert(`Project name: ${projects[0].name} \nOwner email: ${projects[0].userEmail}` );
     }
 
     const handleOnNewProjectClick = () => {
@@ -264,7 +275,6 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                             padding: "0px" ,
                                             fontFamily:"'Caveat', cursive",
                                             fontSize: "22px",
-                                            
                                             }}>
                                         <ListItemButton  
                                             ref={ 
@@ -273,7 +283,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                                 : null 
                                             }
 
-                                            onClick={ (e: any) => handleOnProjectChange(project.id) }
+                                            onClick={ (e: any) => handleOnProjectSelect(project.id) }
                                         
                                             sx={{ 
                                                 padding: "8px 8px 8px 28px",
@@ -348,15 +358,19 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                                 (
                                     <ListItem 
                                         key={ "kanban-drawer-your-are-in-" + project.name }
+                                        style={{
+                                            padding: "0px" ,
+                                            fontFamily:"'Caveat', cursive",
+                                            fontSize: "24px",
+                                        }}
                                         >
                                         <ListItemButton  
                                             ref={ projectsCacheState._activeProject?.name ===  project.name? activeProjectRef: null }
 
-                                            onClick={ (e: any) => handleOnProjectChange(project.id) }
+                                            onClick={ (e: any) => handleOnShareProjectSelect(project.id) }
                                         
                                             sx={{ 
-                                                paddingTop: "8px", 
-                                                paddingBottom: "8px",
+                                                padding: "8px 8px 8px 28px",
 
                                                 borderTopLeftRadius: "45px",
                                                 borderBottomLeftRadius: "45px",
@@ -428,15 +442,20 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                         {
                             projectsCacheState._allNotProjects.map(project => 
                                 (
-                                    <ListItem key={ "kanban-drawer-your-are-not-in-" + project.name }>
+                                    <ListItem 
+                                        key={ "kanban-drawer-your-are-not-in-" + project.name }
+                                        style={{
+                                            padding: "0px",
+                                            fontFamily:"'Caveat', cursive",
+                                            fontSize: "24px",
+                                        }}>
                                         <ListItemButton  
                                             ref={ projectsCacheState._activeProject?.name ===  project.name? activeProjectRef: null }
 
-                                            onClick={ (e: any) => handleOnOrgProjectClick(project.id) }
+                                            onClick={ (e: any) => handleOnNotProjectClick(project.id) }
                                         
                                             sx={{ 
-                                                paddingTop: "8px", 
-                                                paddingBottom: "8px",
+                                                padding: "8px 8px 8px 28px",
 
                                                 borderTopLeftRadius: "45px",
                                                 borderBottomLeftRadius: "45px",
@@ -464,7 +483,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
                     key={ "kanban-drawer-mini-profile" }
                     sx={{ marginTop: "12px"}}>
                     <UserProfileMini 
-                        email="yuetcheukchan@gmail.com" 
+                        email={userCacheState._loginedUserEmail} 
                         size={ 36 }
 
                         handleOnSignout={ handleOnSignout }

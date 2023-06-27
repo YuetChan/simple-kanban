@@ -2,16 +2,16 @@ import axios from "axios";
 
 import { Project } from "../../../types/Project";
 
-const localhost = 'http://localhost:8080/projects';
+const url = `${process.env.REACT_APP_BACKEND_URL}/projects`;
 
 const getProjectById = (id: string) => {
-    return axios.get(`${localhost}/${id}`).then(res => {
+    return axios.get(`${url}/${id}`).then(res => {
         return res.data.data.project;
     });
 }
 
 const searchProjectsByUserEmail = (email: string, start: number) => {
-    return axios.get(`${localhost}?userEmail=${email}&start=${start}`).then(res => {
+    return axios.get(`${url}?userEmail=${email}&start=${start}`).then(res => {
         const data = res.data.data;
 
         return {
@@ -23,31 +23,31 @@ const searchProjectsByUserEmail = (email: string, start: number) => {
 }
 
 const searchShareProjectsByUserEmail = (email: string, start: number) => {
-    return axios.get(`${localhost}/share?email=${email}&start=${start}`).then(res => {
+    return axios.get(`${url}/share?userEmail=${email}&start=${start}`).then(res => {
         const data = res.data.data;
 
         return {
             projects: data.projects,
             page: data.page,
-            totalPage: data.data.totalPage
+            totalPage: data.totalPage
         };
     });
 }
 
 const searchProjectsByNotUserEmail = (email: string, start: number) => {
-    return axios.get(`${localhost}/not?email=${email}&start=${start}`).then(res => {
+    return axios.get(`${url}/not?userEmail=${email}&start=${start}`).then(res => {
         const data = res.data.data;
 
         return {
             projects: data.projects,
             page: data.page,
-            totalPage: data.data.totalPage
+            totalPage: data.totalPage
         };
     });
 }
 
 const createProject = (project: Project) => {
-    return axios.post(`${localhost}`, {
+    return axios.post(`${url}`, {
         data: {
             project: project
         }
@@ -58,11 +58,11 @@ const createProject = (project: Project) => {
 }
 
 const deleteProject = (id: string) => {
-    return axios.delete(`${localhost}/${id}`).then(res => res);
+    return axios.delete(`${url}/${id}`).then(res => res);
 }
 
 const updateProjectById = (id: string, project: Project) => {
-    return axios.patch(`${localhost}/${id}`, {
+    return axios.patch(`${url}/${id}`, {
         data: {
             project: project
         }

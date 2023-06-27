@@ -138,34 +138,41 @@ public class ProjectController {
    }
 
    @GetMapping(value = "/not", produces = "application/json")
-   public ResponseEntity<String> getAllProjectsByNotUserEmail(
+   public ResponseEntity<String> searchNotProjectsByUserEmail(
            @RequestParam(name = "userEmail") String userEmail,
            @RequestParam(name = "start") int start) {
       LOGGER.debug("User is present");
+      Optional<User> userMaybe = userRepository.findByEmail(userEmail);
 
-      Page<Project> page = projectRepository.findAllByUserEmailNot(
-              userEmail,
-              PageRequest.of(start, 100, Sort.by("createdAt").descending()));
-      List<Project> projectList = page.getContent();
+      if(userMaybe.isPresent()) {
+         Page<Project> page = projectRepository.findProjectListByCollaboratorNot(
+                 userMaybe.get(),
+                 PageRequest.of(start, 100, Sort.by("createdAt").descending()));
+         List<Project> projectList = page.getContent();
 
-      Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
+         Type projectListType = new TypeToken<ArrayList<Project>>() {}.getType();
 
-      JsonObject dataJson = new JsonObject();
-      JsonObject resJson = new JsonObject();
+         JsonObject dataJson = new JsonObject();
+         JsonObject resJson = new JsonObject();
 
-      dataJson.add(
-              "projects",
-              GsonHelper.getExposeSensitiveGson()
-                      .toJsonTree(
-                              projectList,
-                              projectListType));
+         dataJson.add(
+                 "projects",
+                 GsonHelper.getExposeSensitiveGson()
+                         .toJsonTree(
+                                 projectList,
+                                 projectListType));
 
-      dataJson.addProperty("page", start);
-      dataJson.addProperty("totalPage", page.getTotalPages());
+         dataJson.addProperty("page", start);
+         dataJson.addProperty("totalPage", page.getTotalPages());
 
-      resJson.add("data", dataJson);
+         resJson.add("data", dataJson);
 
-      return new ResponseEntity(resJson.toString(), HttpStatus.OK);
+         return new ResponseEntity(resJson.toString(), HttpStatus.OK);
+      }else {
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      }
+
+
    }
 
    @PostMapping(value = "", produces = "application/json")

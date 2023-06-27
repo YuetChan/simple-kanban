@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface ComplexProjectRepository {
    // collaborator is required
    Page<Project> findProjectListByCollaborator(User collaborator, Pageable pageable);
+   Page<Project> findProjectListByCollaboratorNot(User collaborator, Pageable pageable);
 }

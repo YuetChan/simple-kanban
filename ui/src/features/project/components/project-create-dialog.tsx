@@ -57,7 +57,6 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
                 </DialogContentText>
 
                 <TextField
-                    autoFocus
                     margin="dense"
                     label="Enter name"
                     fullWidth
@@ -68,7 +67,6 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
                     />
 
                 <TextField
-                    autoFocus
                     margin="dense"
                     label="Enter description"
                     fullWidth

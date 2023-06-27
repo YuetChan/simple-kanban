@@ -47,7 +47,10 @@ const KanbanTable = (props: KanbanTableProps) => {
     // ------------------ Project cache ------------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-    const { updateActiveProject } = projectsCacheActions;
+    const { 
+        updateActiveProject, 
+        updateProjects, updateNotProjects, updateShareProjects 
+    } = projectsCacheActions;
 
     // ------------------ Task cache ------------------
     const tasksState = useSelector((state: AppState) => state.TasksCache);
@@ -432,6 +435,10 @@ const KanbanTable = (props: KanbanTableProps) => {
  
                 getProjectById(activeProject.id).then(res => {
                     dispatch(updateActiveProject(res));
+                    dispatch(updateProjects([ 
+                        ... projectsCacheState._allProjects.filter(project => project.id !== activeProject.id), 
+                        res
+                    ]));
                 });
             }).catch(err => {
                 console.error(err);
@@ -472,6 +479,10 @@ const KanbanTable = (props: KanbanTableProps) => {
  
                 getProjectById(activeProject.id).then(res => {
                     dispatch(updateActiveProject(res));
+                    dispatch(updateProjects([ 
+                        ... projectsCacheState._allProjects.filter(project => project.id !== activeProject.id), 
+                        res
+                    ]));
                 })
             }).catch(err => {
                 console.error(err);
@@ -489,14 +500,16 @@ const KanbanTable = (props: KanbanTableProps) => {
                 ... activeProject,
                 name: name
             }
-
-            console.log(updatedProject)
  
             updateProjectById(activeProject.id, updatedProject).then(res => {
                 alert("Project name updated");
  
                 getProjectById(activeProject.id).then(res => {
                     dispatch(updateActiveProject(res));
+                    dispatch(updateProjects([ 
+                        ... projectsCacheState._allProjects.filter(project => project.id !== activeProject.id), 
+                        res
+                    ]));
                 })
             }).catch(err => {
                 console.error(err);
@@ -520,6 +533,10 @@ const KanbanTable = (props: KanbanTableProps) => {
  
                 getProjectById(activeProject.id).then(res => {
                     dispatch(updateActiveProject(res));
+                    dispatch(updateProjects([ 
+                        ... projectsCacheState._allProjects.filter(project => project.id !== activeProject.id), 
+                        res
+                    ]));
                 })
             }).catch(err => {
                 console.error(err);
@@ -613,7 +630,6 @@ const KanbanTable = (props: KanbanTableProps) => {
         dispatch(updateActiveTags(tags))
     }
 
-
     // -------------- Collaborators menu --------------
     const [ collaboratorsMenuAnchorEl, setCollaboratorsMenuAnchorEl ] = useState(null);
 
@@ -648,7 +664,12 @@ const KanbanTable = (props: KanbanTableProps) => {
             updateProjectById(updatedProject.id, updatedProject).then(res => {
                 alert("You are removed from project");
 
-                dispatch(updateActiveProject(undefined));
+                dispatch(updateShareProjects(projectsCacheState._allShareProjects.filter(project => project.id !== updatedProject.id)))
+                dispatch(updateActiveProject(projectsCacheState._allProjects.length > 0
+                    ? projectsCacheState._allProjects[0]
+                    : undefined));
+
+                setCollaboratorsMenuAnchorEl(null);
             }).catch(err => {
                 console.error(err);
 

@@ -39,4 +39,30 @@ public class ComplexProjectRepositoryImpl implements ComplexProjectRepository {
 
       return new PageImpl(matchedProjects, pageable, totalElements);
    }
+
+   @Override
+   public Page<Project> findProjectListByCollaboratorNot(User collaborator, Pageable pageable) {
+      CriteriaBuilder cBuilder = em.getCriteriaBuilder();
+
+      CriteriaQuery<Project> cqProject = cBuilder.createQuery(Project.class);
+      Root<Project> rProject = cqProject.from(Project.class);
+
+      cqProject.select(rProject)
+              .where(
+                      cBuilder.and(
+                              cBuilder.notEqual(rProject.get(Project_.userEmail), collaborator.getEmail()),
+                              cBuilder.not(cBuilder.isMember(collaborator, rProject.get(Project_.collaboratorList)))
+                      )
+              )
+              .orderBy(QueryUtils.toOrders(pageable.getSort(), rProject, cBuilder));
+
+      int totalElements = em.createQuery(cqProject).getResultList().size();
+
+      List<Project> matchedProjects = em.createQuery(cqProject)
+              .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+              .setMaxResults(pageable.getPageSize())
+              .getResultList();
+
+      return new PageImpl<>(matchedProjects, pageable, totalElements);
+   }
 }

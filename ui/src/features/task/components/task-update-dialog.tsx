@@ -365,9 +365,8 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     useEffect(() => {
         if(projectsCacheState._activeProject) {
             setAllAssignees([
-                ... projectsCacheState._activeProject.collaboratorList.map(collaborator => 
-                    collaborator.email),
-                userCacheState._loginedUserEmail
+                ... projectsCacheState._activeProject.collaboratorList.map(collaborator => collaborator.email),
+                projectsCacheState._activeProject.userEmail
             ])
         }
     }, [ projectsCacheState._activeProject ]);

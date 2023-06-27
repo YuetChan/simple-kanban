@@ -343,8 +343,8 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
         if(projectsCacheState._activeProject) {
             setAllAssignees([
                 ... projectsCacheState._activeProject.collaboratorList.map(collaborator => collaborator.email),
-                userCacheState._loginedUserEmail
-            ])
+                projectsCacheState._activeProject.userEmail
+            ]);
         }
     }, [ projectsCacheState._activeProject ]);
 

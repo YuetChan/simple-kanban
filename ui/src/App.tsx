@@ -174,12 +174,14 @@ function App() {
             });
 
             searchProjectsByNotUserEmail(loginedUserEmail, 0).then(res => {
+                console.log(res)
                 dispatch(updateNotProjects(res.projects));
             }).catch(err => {
                 console.error(err);
             });
 
             searchShareProjectsByUserEmail(loginedUserEmail, 0).then(res => {
+                console.log(res)
                 dispatch(updateShareProjects(res.projects));
             }).catch(err => {
                 console.error(err);

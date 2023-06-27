@@ -9,5 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProjectRepository extends PagingAndSortingRepository<Project, String>, ComplexProjectRepository {
    Page<Project> findByUserEmail(String userEmail, Pageable pageable);
-   Page<Project> findAllByUserEmailNot(String userEmail, Pageable pageable);
 }
