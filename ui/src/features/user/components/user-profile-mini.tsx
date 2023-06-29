@@ -33,7 +33,7 @@ const UserProfileMini = (props: UserProfileMiniProps) => {
 
             <Stack direction="column" alignItems="flex-start">
                 <div>
-                    <b>{ truncate(props.email.split("@")[0], 15) }</b>
+                    { truncate(props.email.split("@")[0], 15) }
                 </div>
 
                 <div>

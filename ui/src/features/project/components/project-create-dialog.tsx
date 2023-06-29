@@ -58,7 +58,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
 
                 <TextField
                     margin="dense"
-                    label="Enter name"
+                    label="Enter project name"
                     fullWidth
                     variant="standard" 
                     value={ projectName }
@@ -68,7 +68,7 @@ const ProjectCreateDialog = (props: ProjectCreateDialogProps) => {
 
                 <TextField
                     margin="dense"
-                    label="Enter description"
+                    label="Enter project description"
                     fullWidth
                     variant="standard" 
                     value={ projectDescription }
