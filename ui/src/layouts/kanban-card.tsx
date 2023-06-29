@@ -55,11 +55,11 @@ const KanbanCard = (props: KanbanCardProps) => {
         }
 
         if(priority === stringToEnum("medium")) {
-            return "#ffa502"
+            return "#ffef00"
         }
 
         if(priority === stringToEnum("high")) {
-            return "#ff6348"
+            return "#ffa502"
         }
     }
 
@@ -233,7 +233,7 @@ const KanbanCard = (props: KanbanCardProps) => {
                         fontSize: "28px",
                         fontFamily: "'Caveat', cursive",
 
-                        color: props.task.priority === stringToEnum("high")? "ghostwhite" : "black"
+                        color: "black"
                         }}>
                         { props.task?.title } 
                     </div>
