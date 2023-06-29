@@ -4,7 +4,7 @@ import KanbanInfiniteDropdown from '../../../components/kanban-infinite-dropdown
 
 import { Tag } from "../../../types/Tag"
 
-const localhost = "http://localhost:8080/tags";
+const url = `${process.env.REACT_APP_BACKEND_URL}/tags`;
 
 interface TagsDropdownProps {
     projectId?: string,
@@ -14,12 +14,12 @@ interface TagsDropdownProps {
 
 const TagsDropdown = (props: TagsDropdownProps) => {
     const searchTagsByProjectId = (prefix: string, start: number) => 
-    axios.get(`${localhost}?projectId=${props.projectId}&prefix=${prefix}&start=${start}`)
+    axios.get(`${url}?projectId=${props.projectId}&prefix=${prefix}&start=${start}`)
 
     const handleOnScrollBottom = (
         scrollHeight: number, scrollTop: number, clientHeight: number, 
         callback: Function) => {
-            // Custom imple 
+            // Custom imple ...
 
             callback();
     }
@@ -55,8 +55,7 @@ const TagsDropdown = (props: TagsDropdownProps) => {
         
             style={{
                 padding: "0px 8px 0px 8px"
-            }}
-            />
+            }} />
     )
 }
 
