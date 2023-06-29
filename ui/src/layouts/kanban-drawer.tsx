@@ -76,7 +76,6 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
         });
 
         dispatch(updateActiveProject(projects.length > 0 ? projects[0] : undefined)); 
-
     }
 
     const handleOnNotProjectClick = (projectId: string) => {
@@ -84,7 +83,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
             return project.id === projectId
         });
 
-        alert(`Project name: ${projects[0].name} \nOwner email: ${projects[0].userEmail}` );
+        alert(`Project name: ${projects[0].name} \nOwner email: ${projects[0].userEmail}`);
     }
 
     const handleOnNewProjectClick = () => {
@@ -101,13 +100,13 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
         const targetProjectRef = activeProjectRef.current;
 
         if (listRef.current && targetProjectRef) {
-          const listElement = listRef.current;
-          const targetElement = targetProjectRef.parentElement;
+            const listElement = listRef.current;
+            const targetElement = targetProjectRef.parentElement;
       
-          // Calculate the scroll position
-          const scrollPosition = targetElement.offsetTop - listElement.offsetTop;
+            // Calculate the scroll position
+            const scrollPosition = targetElement.offsetTop - listElement.offsetTop;
       
-          listElement.scrollTop = scrollPosition;
+            listElement.scrollTop = scrollPosition;
         }
     }
 

@@ -4,7 +4,7 @@ import { Avatar, FormControl, InputLabel, MenuItem, Select, Stack } from "@mui/m
 
 import { truncate } from "../../../libs/text-lib";
 
-import { textToAvatar } from "../../../services/avatar-service";
+import { textToAvatarDataUrl } from "../../../services/avatar-service";
 
 interface AssigneeSelectProps {
   assignee: string,
@@ -24,18 +24,21 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
     }
 
     const getAssigneeHTML = (assignee: string): any => {
+        const isNone = assignee === "none";
+        const truncatedAssignee = truncate(assignee, 18);
+      
         return (
-            <Stack 
-                direction="row" 
-                alignItems="center" 
-                spacing={ 3 }>
-                <Avatar style={{ height: "24px", width: "24px", background: "white"}} >
-                    { textToAvatar(assignee) }
-                </Avatar>
-
-                <div>{ truncate(assignee, 18) }</div>
+            <Stack direction="row" alignItems="center" spacing={3}>
+                <Avatar 
+                    alt={ assignee } 
+                    src={ isNone ? "" : textToAvatarDataUrl(assignee) } 
+                    style={{ 
+                        height: "24px", 
+                        width: "24px" 
+                        }} />
+                <div>{ isNone ? "none" : truncatedAssignee }</div>
             </Stack>
-        )
+        );
     }
 
   // ------------------ Html template ------------------

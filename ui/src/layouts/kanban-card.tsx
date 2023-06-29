@@ -5,7 +5,7 @@ import { Avatar, Card, CardContent, CardActionArea, Stack, Typography } from "@m
 import { updateTask } from "../features/task/services/tasks-service";
 
 import { stringToEnum } from "../services/backend-enum-service";
-import { textToAvatar } from "../services/avatar-service";
+import { textToAvatarDataUrl } from "../services/avatar-service";
 
 import TagChip from "../features/tag/components/tag-chip";
 
@@ -131,15 +131,21 @@ const KanbanCard = (props: KanbanCardProps) => {
     }
 
     // ------------------ Html template ------------------  
-    const getAvatarHTML = (value: string) => {
+    const getAvatarHTML = (assignee: string): JSX.Element => {
+        const isNone = assignee === "none";
+      
         return (
-            <Avatar style={{
+          <Avatar
+            alt={ isNone ? "none" : assignee }
+            src={ isNone ? "" : textToAvatarDataUrl(assignee) }
+            
+            style={{
                 width: "24px",
-                height: "24px"}} >
-                { textToAvatar(value) }
-            </Avatar>
-            )
-    }
+                height: "24px",
+            }} />
+        );
+    };
+      
 
     const getSubtaskCheckboxHTML= (subtasks: Array<string>, checkedValues: Array<string>) => {
         return (
@@ -178,7 +184,7 @@ const KanbanCard = (props: KanbanCardProps) => {
                 position: "relative", 
                 borderRadius: "3px",
                 
-                background: props.highlight? "ghostwhite": getColorByPriority(),
+                background: props.highlight? "seashell": getColorByPriority(),
 
                 ... props.style
                 }}>
@@ -226,6 +232,8 @@ const KanbanCard = (props: KanbanCardProps) => {
                                 
                         fontSize: "28px",
                         fontFamily: "'Caveat', cursive",
+
+                        color: props.task.priority === stringToEnum("high")? "ghostwhite" : "black"
                         }}>
                         { props.task?.title } 
                     </div>

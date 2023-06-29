@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 
 import { Avatar, AvatarGroup, Link, Stack, Tooltip } from "@mui/material";
 
-import { textToAvatar } from "../../../services/avatar-service";
+import { textToAvatarDataUrl } from "../../../services/avatar-service";
 
 import { AppState } from "../../../stores/app-reducers";
 
@@ -23,9 +23,10 @@ const UserList = (props: UserListProps) => {
     const getAvatarIcon = (email: string) => {
         return (
             <Tooltip key={`tooltip-${email}`} title={ email }>
-                <Avatar >
-                    { textToAvatar(email) }
-                </Avatar>
+                <Avatar 
+                    alt={ email } 
+                    src={ textToAvatarDataUrl(email) } 
+                    />
             </Tooltip>
         )
     }

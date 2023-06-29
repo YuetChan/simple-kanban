@@ -1,7 +1,7 @@
-import { Stack } from "@mui/material";
+import { Avatar, Stack } from "@mui/material";
 
 import { truncate } from "../../../libs/text-lib";
-import { textToAvatar } from "../../../services/avatar-service";
+import { textToAvatarDataUrl } from "../../../services/avatar-service";
 
 interface ProjectWithOwnerIconProps {
     projectName: string,
@@ -23,9 +23,16 @@ const ProjectWithOwnerIcon = (props: ProjectWithOwnerIconProps) => {
                 { truncate(props.projectName, 16) }
             </div>
 
-            <div data-testid="project-owner-avatar">
-                { textToAvatar(props.ownerEmail, 21) }
-            </div>
+            <Avatar 
+                alt={props.ownerEmail} 
+                src={textToAvatarDataUrl(props.ownerEmail)} 
+                data-testid="project-owner-avatar" 
+                
+                style={{
+                    height: "21px",
+                    width: "21px"
+                }}
+                />
         </Stack>
     )
 }

@@ -1,6 +1,6 @@
 import { Avatar, Stack } from "@mui/material";
 import { truncate } from "../../../libs/text-lib";
-import { textToAvatar } from "../../../services/avatar-service";
+import { textToAvatarDataUrl } from "../../../services/avatar-service";
 
 
 interface UserProfileMiniProps {
@@ -22,9 +22,14 @@ const UserProfileMini = (props: UserProfileMiniProps) => {
             alignItems="center" 
             spacing={ 1.4 }
             >
-            <Avatar>
-                { textToAvatar(props.email, props.size) }
-            </Avatar>
+            <Avatar 
+                alt={ props.email } 
+                src={ textToAvatarDataUrl(props.email) } 
+                
+                style={{
+                    height: props.size,
+                    width: props.size
+                }} />
 
             <Stack direction="column" alignItems="flex-start">
                 <div>

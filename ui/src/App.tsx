@@ -230,7 +230,7 @@ function App() {
                     <KanbanDrawer style={{ height: "100vh" }}/>
 
                     {
-                        projectsCacheState._allProjects.length === 0
+                        projectsCacheState._allProjects.length === 0 && projectsCacheState._activeProject === undefined
                         ? <KanbanEmptyPage handleOnCreateProjectClick={ handleOnCreateProjectClick } />
                         : <KanbanTable />
                     }
