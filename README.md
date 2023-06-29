@@ -16,8 +16,9 @@ The Kanban application includes the following features:
 | Task Details         | View and edit task details including title, description, and more |
 | Task Assignees       | Assign tasks to specific team members                     |
 | Due Dates            | Set due dates for tasks and get reminders                 |
-| Comments             | Coming soon ... |
+| Comments             | Comment on tasks (Coming soon ...) |
 | Filtering            | Filter tasks based on criteria such as priority or assignee |
+| Live Interactions Updates | Stay in sync with real-time user interactions on the Kanban Board (Coming soon ...)
 
 ## Prerequisites
 
@@ -25,19 +26,19 @@ Before running Simple Kanban, make sure you have the following components up and
 
 - OAuth API: This API handles user authentication and authorization.
 - Backend API: This API provides the core functionality for the Kanban application.
-- Ui App: The frontend user interface built with React.
+- UI App: The frontend user interface.
 
 ## Running the OAuth API
 
-To run the OAuth API, follow the instructions in the `/oauth/README.md`.
+To run/deploy the OAuth API, follow the instructions in the `/oauth/README.md`.
 
 ## Running the Backend API
 
-To run the Backend API, follow the instructions in the `/backend/README.md`.
+To run/deploy the Backend API, follow the instructions in the `/backend/README.md`.
 
 ## Running the Ui App
 
-To run the ui app, follow the instructions in the `/ui/README.md`.
+To run/deploy the UI App, follow the instructions in the `/ui/README.md`.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
