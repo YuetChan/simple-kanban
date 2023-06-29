@@ -58,9 +58,9 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
                 onChange={ (e) => handlOnAssigneeSelect(e) }
                 >
                 <MenuItem 
-                    key={ "assignee-select" + assignee }
-
+                    key={ "assignee-select-none" }
                     value={ "none" }
+
                     style={{
                         minWidth: "256px", 
                         maxWidth: "360px", 
@@ -72,7 +72,9 @@ const AssigneeSelect = (props: AssigneeSelectProps) => {
                 {
                     props.allAssignees.map(assignee => (
                         <MenuItem 
+                            key={ `assignee-select-${ assignee }` }
                             value={ assignee }
+
                             style={{
                                 minWidth: "256px", 
                                 maxWidth: "360px", 

@@ -217,8 +217,8 @@ const KanbanInfiniteDropdown = (props: KanbanInfiniteDropdownProps) => {
                                 {   
                                     options.map(option => (
                                         <MenuItem 
-                                            key={ "dropdown_" + option } 
-                                            value={ "dropdown_" + option } 
+                                            key={ "dropdown-" + option } 
+                                            value={ "dropdown-" + option } 
 
                                             onPointerDown={(e) => { handleOnItemClick(e) } }
                                         
