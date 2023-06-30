@@ -38,15 +38,15 @@ Before running Simple Kanban, make sure you have the following components up and
 
 ## Running/deploying the OAuth API
 
-To run/deploy the OAuth API, follow the instructions in the `/oauth/README.md`.
+To run/deploy the OAuth API, follow the instructions on the `/oauth/README.md`.
 
 ## Running/deploying the Backend API
 
-To run/deploy the Backend API, follow the instructions in the `/backend/README.md`.
+To run/deploy the Backend API, follow the instructions on the `/backend/README.md`.
 
 ## Running/deploying the Ui App
 
-To run/deploy the UI App, follow the instructions in the `/ui/README.md`.
+To run/deploy the UI App, follow the instructions on the `/ui/README.md`.
 
 
 
