@@ -1,7 +1,7 @@
 
 [![Release](https://img.shields.io/badge/Release-v1.0.0-blue.svg)](https://github.com/YuetChan/simple-kanban/releases/tag/v1.0.0)
 [![Build](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/YuetChan/simple-kanban)
-[![Issue](https://img.shields.io/github/issues/YuetChan/code-meta)](https://github.com/YuetChan/simple-kanban/issues)
+[![Issue](https://img.shields.io/github/issues/YuetChan/simple-kanban)](https://github.com/YuetChan/simple-kanban/issues)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/YuetChan/simple-kanban/LICENSE)
 # Simple Kanban
 
