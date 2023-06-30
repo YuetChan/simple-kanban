@@ -9,11 +9,11 @@ To run the backend api locally, follow these steps:
 3. Update the environment variables in `.env` file located in `/backend`. 
     ```
     SPRING_ENV=local;
-    DB_URL=`<your-db-url>`
-    DB_USERNAME=`<your-db-username>`
-    DB_PWD=`<your-db-pwd>`
-    CORS_ORIGIN=`<your-ui-url>`
-    CORRELATION_ALIAS=correlationId
+    DB_URL=`<your-db-url>`;
+    DB_USERNAME=`<your-db-username>`;
+    DB_PWD=`<your-db-pwd>`;
+    CORS_ORIGIN=`<your-ui-url>`;
+    CORRELATION_ALIAS=correlationId;
     ```
 
 4. Build and run the application using Intelij

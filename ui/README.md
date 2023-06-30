@@ -11,7 +11,6 @@ To run the ui app locally, follow these steps:
 4. Update the environment variables in the `.env` file located in the `ui` directory
     ```
     NODE_ENV=local
-
     REACT_APP_BACKEND_URL=<your-backend-url>
     REACT_APP_OAUTH_URL=<your-oauth-url>
     ```
@@ -22,10 +21,14 @@ To run the ui app locally, follow these steps:
 ### Deploying the UI App
 To deploy the Ui app, follow these steps:
 
-1. Update the environment variables in the `.env.deploy` file located in the `/ui` directory to match your deployment environment.    
+1. Clone the repository: `git clone <repository-url>`
 
-2. Build the project:
+2. Navigate to the project directory: `cd /path/to/repository/ui`
+
+3. Update the environment variables in the `.env.deploy` file located in the `/ui` directory to match your deployment environment.    
+
+4. Build the project:
     ```
     npm run build:deploy
     ```
-3. Upload the `/build` folder to S3
+5. For AWS user, upload the `/build` folder to a S3 bucket and setup the web endpoint
