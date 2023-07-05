@@ -34,6 +34,13 @@ The Kanban application includes the following features:
 ## Live demo
 Check out! [https://simplekanban.yuetchan.us/?](https://simplekanban.yuetchan.us/?)
 
+## Roadmap
+
+The following features are planned for future development:
+- Landing Page : Add landing page to improve visibility and indexing on Google search.
+- Comments: Allow users to comment on tasks for better collaboration and communication.
+- Real-Time Updates: Enable real-time updates to reflect changes made by other users in real-time.
+
 ## Prerequisites
 
 Before running Simple Kanban, make sure you have the following components up and running:
