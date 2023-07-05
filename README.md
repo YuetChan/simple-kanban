@@ -37,7 +37,8 @@ Check out! [https://simplekanban.yuetchan.us/?](https://simplekanban.yuetchan.us
 ## Roadmap
 
 The following features are planned for future development:
-- Landing Page : Add landing page to improve visibility and indexing on Google search.
+- Landing Page: Add landing page to improve visibility and indexing on Google search.
+- Retry: Retried failed request
 - Comments: Allow users to comment on tasks for better collaboration and communication.
 - Real-Time Updates: Enable real-time updates to reflect changes made by other users in real-time.
 
