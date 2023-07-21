@@ -22,7 +22,7 @@ const KanbanDemoOauthPage = (props: KanbanDemoOauthPageProps) => {
         }
   
         try {
-            const res = await fetch("http://localhost:3200/oauth/demo-oauth", {
+            const res = await fetch(`${process.env.REACT_APP_OAUTH_URL}/oauth/demo-oauth`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const KanbanDemoOauthPage = (props: KanbanDemoOauthPageProps) => {
             
                 className="login-with-demo-btn"
                 style={{ marginBottom: "18px" }}>
-                Sign in or Register a Demo Account
+                Sign in or Register an Anonymous Demo Account
             </button>
 
             <TextField
