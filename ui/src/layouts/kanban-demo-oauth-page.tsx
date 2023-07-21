@@ -22,7 +22,7 @@ const KanbanDemoOauthPage = (props: KanbanDemoOauthPageProps) => {
         }
   
         try {
-            const res = await fetch(`${process.env.REACT_APP_OAUTH_URL}/oauth/demo-oauth`, {
+            const res = await fetch(`${process.env.REACT_APP_DEMO_OAUTH_URL}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -47,7 +47,6 @@ const KanbanDemoOauthPage = (props: KanbanDemoOauthPageProps) => {
                 // Reload the page with the updated URL
                 window.location.href = currentURL.toString();
             } else {
-                // Handle the case where the demo login fails (e.g., username already exists)
                 alert("Error during demo signin / registration");
                 console.error("Error during demo signin / registration:", res);
             }
@@ -78,9 +77,7 @@ const KanbanDemoOauthPage = (props: KanbanDemoOauthPageProps) => {
                     width: "360px",
                     background: "whitesmoke",
             
-                    // border: "dashed 4px rgba(48, 48, 48, 0.75)",
                     borderRadius: "4px",
-                   
                     padding: "54px 18px 54px 18px",
               
                     ... props.style,

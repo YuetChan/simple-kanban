@@ -16,7 +16,6 @@ export class DemoOauthController {
 
         const jwt = await this.jwtAuthSvc.getJwt(user, LoginType.GOOGLE);
 
-        // Send the JWT as the response data with a 200 status code
         res.status(201).json({ 
             jwt: jwt
         });
