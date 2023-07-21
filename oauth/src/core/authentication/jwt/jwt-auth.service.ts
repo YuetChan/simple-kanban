@@ -26,6 +26,8 @@ export class JwtAuthService {
                     id: registeredUser.id,
                     email: registeredUser.email,
                     name: registeredUser.name,
+
+                    justRegistered: registeredUser.justRegistered
                 }) ;
             }catch(e) {
                 console.error("Err", e);
@@ -39,6 +41,8 @@ export class JwtAuthService {
             id: user.id,
             email: user.email,
             name: user.name,
+            
+            justRegistered: user.justRegistered
         });
     
     }

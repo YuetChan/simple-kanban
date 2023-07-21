@@ -31,7 +31,8 @@ export class RegisterService {
 
 				email: user.email as string,
 				name: user.name as string,
-				role: role
+				role: role,
+				justRegistered: false
 			};
 		}).catch(async err => {
 			console.debug("Create user");
@@ -43,7 +44,8 @@ export class RegisterService {
 				
 				email: user.email,
 				name: user.name,
-				role: "user"
+				role: "user",
+				justRegistered: true
 			}
 		});
 	}

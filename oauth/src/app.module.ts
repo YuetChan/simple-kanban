@@ -9,6 +9,7 @@ import { FilterModule } from './core/filter/filter.module';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DemoOauthModule } from './core/authentication/demo-oauth/demo-oauth-module';
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { AppService } from './app.service';
         }),
 
         GoogleOauthModule,
+        DemoOauthModule,
         JwtAuthModule,
 
         FilterModule,

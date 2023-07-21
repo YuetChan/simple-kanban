@@ -33,6 +33,7 @@ import CrudEventsPolling from "./features/crud-event/components/crud-events-poll
 import KanbanEventNotifier from "./layouts/kanban-event-notifier";
 
 import { getUserByEmail } from "./features/user/services/users-service";
+import KanbanDemoOauthPage from "./layouts/kanban-demo-oauth-page";
 
 function App() {
     // ------------------ Dispatch ------------------
@@ -52,7 +53,7 @@ function App() {
 
             searchParams.delete("jwt");
             
-            const newUrl = `${url.origin}${url.pathname}?${searchParams.toString()}`;
+            const newUrl = `${ url.origin }${ url.pathname }?${ searchParams.toString() }`;
     
             window.history.replaceState(null, "", newUrl);
         }else if(jwt !== null && cookies.jwt !== null && cookies.jwt !== jwt) {
@@ -60,7 +61,7 @@ function App() {
 
             searchParams.delete("jwt");
             
-            const newUrl = `${url.origin}${url.pathname}?${searchParams.toString()}`;
+            const newUrl = `${ url.origin }${ url.pathname }?${ searchParams.toString() }`;
     
             window.history.replaceState(null, "", newUrl);
             setCookie("jwt", jwt);
@@ -69,7 +70,7 @@ function App() {
 
             searchParams.delete("jwt");
             
-            const newUrl = `${url.origin}${url.pathname}?${searchParams.toString()}`;
+            const newUrl = `${ url.origin }${ url.pathname }?${ searchParams.toString() }`;
     
             window.history.replaceState(null, "", newUrl);
             setCookie("jwt", jwt);
@@ -237,7 +238,9 @@ function App() {
                 </Stack>
             </Stack>
 
-            <KanbanOauthPage style={{ display: authed? "none": "flex" }}/>
+            {/* <KanbanOauthPage style={{ display: authed? "none": "flex" }}/> */}
+
+            <KanbanDemoOauthPage style={{ display: authed? "none": "flex" }}/>
  
             <ProjectCreateDialog 
                 title="Create Project"
