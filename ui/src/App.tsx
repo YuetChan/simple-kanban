@@ -218,7 +218,7 @@ function App() {
     }, [ cookies ]);
 
     return (
-        <div className="App" >
+        <div className="App">
             <Stack 
                 direction="column" 
                 sx={{ 

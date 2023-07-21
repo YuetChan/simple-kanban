@@ -17,12 +17,11 @@ const KanbanDemoOauthPage = (props: KanbanDemoOauthPageProps) => {
 
     const handleDemoLogin = async () => {
         if (demoUsername.trim() === "") {
-            alert("Please enter a demo name.");
+            alert("Please enter a non empty account name.");
             return;
         }
   
         try {
-            // Assuming you have an API endpoint for demo login, make a POST request to create a user
             const res = await fetch("http://localhost:3200/oauth/demo-oauth", {
                 method: "POST",
                 headers: {
@@ -60,48 +59,83 @@ const KanbanDemoOauthPage = (props: KanbanDemoOauthPageProps) => {
     return (
         <div
             style={{
-                height: "100vh",
-                flexDirection: "column",
+                flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
+
+                height: "100vh",
+                width: "100vw",
   
                 ... props.style,
-            }}
-        >
-        <TextField
-            label="Enter an account name"
-            variant="outlined"
-            value={ demoUsername }
+            }}>
 
-            onChange={(e) => setDemoUsername(e.target.value)}
-
-            style={{ marginBottom: "18px" }}/>
-
-        <button 
-            type="button" 
-
-            onClick={ handleDemoLogin } 
+            <div
+                style={{
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
             
-            className="login-with-demo-btn">
-            Sign in or Register a Demo Account
-        </button>
+                    width: "360px",
+                    background: "whitesmoke",
+            
+                    // border: "dashed 4px rgba(48, 48, 48, 0.75)",
+                    borderRadius: "4px",
+                   
+                    padding: "54px 18px 54px 18px",
+              
+                    ... props.style,
+                }}>
+            <img 
+                src="https://i.ibb.co/NjWwY0t/Screenshot-from-2023-05-17-19-03-10.png" 
+                width={ 200 } 
+                height={ 65} 
+
+                style={{
+                    marginBottom: "36px"
+                }}/>
+
+            <button 
+                type="button" 
+
+                onClick={ handleDemoLogin } 
+            
+                className="login-with-demo-btn"
+                style={{ marginBottom: "18px" }}>
+                Sign in or Register a Demo Account
+            </button>
+
+            <TextField
+                label="Enter an account name"
+                variant="outlined"
+                value={ demoUsername }
+
+                onChange={(e) => setDemoUsername(e.target.value)}
+
+                style={{
+                    background: "white"
+                }}/>
+
+
  
-        <div style={{
-            margin: "36px 0px 36px 0px"
-        }}>
-            ----- OR -----
-        </div>
+            <div style={{
+                margin: "36px 0px 36px 0px"
+            }}>
+                ----- OR -----
+            </div>
 
-        <button 
-            type="button" 
+            <button 
+                type="button" 
 
-            className="login-with-google-btn"
+                className="login-with-google-btn"
 
-            onClick={ handleOnGoogleSignInClick } >
-            Sign in with Google
-        </button>
+                onClick={ handleOnGoogleSignInClick } >
+                Sign in with Google
+            </button>
+            </div>
+
+
         
-      </div>
+        </div>
     );
   };
   
