@@ -43,9 +43,6 @@ const TaskUpdateDialog = (props: TaskUpdateDialog) => {
     // ------------------ Projects cache ------------------
     const projectsCacheState = useSelector((state: AppState) => state.ProjectsCache);
 
-    // ------------------ User cache ------------------
-    const userCacheState = useSelector((state: AppState) => state.UserCache);
-
     // ------------------ Tasks cache------------------
     const tasksCacheState = useSelector((state: AppState) => state.TasksCache);
 

@@ -77,6 +77,7 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
 
     const [ task, setTask ] = React.useState<Task>(defaultTask);
 
+    // Hopefully this will fix the issue on ocassional empty headUUID and tailUUID
     useEffect(() => {
         if(projectsCacheState._activeProject) {
             const projectUUID = projectsCacheState._activeProject?.projectUUID;
@@ -87,18 +88,54 @@ const TaskCreateDialog = (props: TaskCreateDialogProps) => {
                 setTask({
                     ... task,
                     taskNode: {
-                        ... task.taskNode,
+                        projectId: projectsCacheState._activeProject.id,
+
                         headUUID: allTasks.backlog[0].taskNode.headUUID,
-                        tailUUID: allTasks.backlog[0].id
+                        tailUUID: allTasks.backlog[0].id,
+                        status: stringToEnum("backlog")
                     }
                 });
             }else {
                 setTask({
                     ... task,
                     taskNode: {
-                        ... task.taskNode,
+                        projectId: projectsCacheState._activeProject.id,
+                        
                         headUUID: projectUUID?.uuid1,
-                        tailUUID: projectUUID?.uuid2
+                        tailUUID: projectUUID?.uuid2,
+                        status: stringToEnum("backlog"),
+                    }
+                });
+            }
+        }
+    }, [ projectsCacheState._activeProject ]);
+
+    useEffect(() => {
+        if(projectsCacheState._activeProject) {
+            const projectUUID = projectsCacheState._activeProject?.projectUUID;
+
+            const allTasks = tasksCacheState._allTasks;
+      
+            if(allTasks?.backlog.length > 0) {
+                setTask({
+                    ... task,
+                    taskNode: {
+                        projectId: projectsCacheState._activeProject.id,
+
+                        headUUID: allTasks.backlog[0].taskNode.headUUID,
+                        tailUUID: allTasks.backlog[0].id,
+                        status: stringToEnum("backlog")
+                    }
+                });
+            }else {
+                setTask({
+                    ... task,
+                    taskNode: {
+                        projectId: projectsCacheState._activeProject.id,
+                        
+                        headUUID: projectUUID?.uuid1,
+                        tailUUID: projectUUID?.uuid2,
+                        status: stringToEnum("backlog"),
                     }
                 });
             }
