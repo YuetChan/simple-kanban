@@ -49,14 +49,16 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     }
 
     const handleOnCollaboratorAddKeyPress = (e: any) => {
-        if(e.key === "Tab") {
+        if(e.key === "Tab") { 
             e.preventDefault();
+            collaboratorRemoveRef.current.focus()
         }
     }
 
     const handleOnCollaboratorRemoveKeyPress = (e: any) => {
         if(e.key === "Tab") {
             e.preventDefault();
+            projectNameRef.current.focus()
         }
     }
 
@@ -91,18 +93,21 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
     const handleOnNewProjectNameUpdateKeyPress = (e: any) => {
         if(e.key === "Tab") {
             e.preventDefault();
+            e.preventDefault();
+            projectDescriptionRef.current.focus();
         }
     }
 
     const handleOnNewProjectDescriptionUpdateKeyPress = (e: any) => {
         if(e.key === "Tab") {
             e.preventDefault();
+            collaboratorAddRef.current.focus();
         }
     }
 
     const handleOnNewProjectNameUpdate = () => {
         if(props.handleOnNewProjectNameUpdate) {
-            props.handleOnNewProjectNameUpdate(newProjectName)
+            props.handleOnNewProjectNameUpdate(newProjectName);
         }
     }
 
@@ -129,7 +134,15 @@ const ProjectOwnerMenu = (props: ProjectOwnerMenuProps) => {
             PaperProps={{ 
                 style: { 
                     width: "330px" 
-                }}}>
+                }}}
+                
+                MenuListProps={{
+                    onKeyDown: (event) => {
+                        if (event.key === 'Tab') {
+                            event.preventDefault(); // Prevent the default action of the Tab key
+                        }
+                    },
+                }}>
 
             <Stack direction="column" spacing={ 1.4 } >
                 

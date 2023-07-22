@@ -116,7 +116,7 @@ function App() {
             deleteProject(activeProject.id).then(res => {
                 searchProjectsByUserEmail(userCacheState._loginedUserEmail, 0).then(res => {
                     dispatch(updateProjects(res.projects));
-                    dispatch(hideProjectDeleteDialog())
+                    dispatch(hideProjectDeleteDialog());
                 });
             }).catch(err => {
                 console.error(err);

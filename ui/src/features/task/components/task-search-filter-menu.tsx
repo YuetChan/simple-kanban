@@ -58,6 +58,14 @@ const TaskSearchFilterMenu = (props: TaskSearchFilterMenuProps) => {
             sx={{
                 padding: "8px 0px 8px 0px",
                 display: props.shallowOpen? "block": "none"
+            }}
+            
+            MenuListProps={{
+                onKeyDown: (event) => {
+                    if (event.key === 'Tab') {
+                        event.preventDefault(); // Prevent the default action of the Tab key
+                    }
+                },
             }}>
                 <Stack 
                     direction="row" 

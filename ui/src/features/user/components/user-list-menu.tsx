@@ -131,6 +131,14 @@ const UserListMenu = (props: UserListMenuProps) => {
         sx={{
             padding: "8px 0px 8px 0px",
             display: props.shallowOpen? "block" : "none"
+        }}
+        
+        MenuListProps={{
+            onKeyDown: (event) => {
+                if (event.key === 'Tab') {
+                    event.preventDefault(); // Prevent the default action of the Tab key
+                }
+            },
         }}>
         <div style={{ padding: "8px" }}>
             <KanbanIconTitle 

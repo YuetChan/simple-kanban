@@ -113,7 +113,7 @@ const KanbanDrawer = (props: KanbanDrawerProps) => {
     // ------------------ Html template ------------------
     return (
         <div style={{
-            width: minimized? "0px" : "240px",
+            width: minimized? "0px" : "290px",
             height: "100%",
             background: "whitesmoke",
             position: "relative",
